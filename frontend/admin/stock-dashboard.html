@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock & Revenue Manager | Mishra Industries Limited</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+<body class="bg-slate-50 flex">
+
+    <aside class="w-72 bg-slate-900 h-screen sticky top-0 text-white p-8 flex flex-col shadow-2xl animate__animated animate__fadeInLeft">
+        <h2 class="text-2xl font-black mb-12 text-orange-500 tracking-tighter uppercase">Mishra Admin</h2>
+        <nav class="space-y-6 flex-1">
+            <a href="site-editor.html" class="flex items-center p-4 hover:bg-slate-800 rounded-2xl transition font-bold"><i class="fas fa-edit mr-3"></i> Site Editor</a>
+            <a href="#" class="flex items-center p-4 bg-blue-900 rounded-2xl font-bold shadow-lg"><i class="fas fa-chart-line mr-3"></i> Analytics & Stock</a>
+        </nav>
+        <a href="../index.html" class="p-4 border-2 border-slate-700 rounded-2xl text-center font-bold hover:bg-red-500 hover:border-red-500 transition">Logout</a>
+    </aside>
+
+    <main class="flex-1 p-12 overflow-y-auto">
+        <header class="flex justify-between items-center mb-12 animate__animated animate__fadeIn">
+            <div>
+                <h1 class="text-4xl font-black text-slate-800 uppercase tracking-tight">Revenue & Inventory</h1>
+                <p class="text-slate-400 font-bold text-sm mt-1 uppercase tracking-widest">Mishra Industries Control Center</p>
+            </div>
+            <div class="flex gap-4">
+                <div class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-gray-100 text-center">
+                    <span class="text-gray-400 text-[10px] font-black uppercase tracking-widest block mb-1">Total Stock Value</span>
+                    <span id="totalRevenue" class="font-black text-blue-900 text-2xl">₹0</span>
+                    <button onclick="window.print()" class="bg-blue-900 text-white px-6 py-4 rounded-3xl font-black text-sm hover:bg-orange-500 transition shadow-xl flex items-center gap-2 no-print">
+    <i class="fas fa-file-pdf"></i> Generate Report
+</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+            <div class="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-xl border border-gray-50 animate__animated animate__fadeInUp">
+                <h3 class="text-xl font-black text-slate-800 mb-6 uppercase tracking-tight">Stock Value by Category</h3>
+                <canvas id="revenueChart" height="150"></canvas>
+            </div>
+            
+            <div class="space-y-6 animate__animated animate__fadeInRight">
+                <div class="bg-orange-500 p-8 rounded-[2rem] text-white shadow-xl shadow-orange-200">
+                    <i class="fas fa-wallet text-3xl mb-4"></i>
+                    <h4 class="text-sm font-bold opacity-80 uppercase tracking-widest mb-1">Top Selling Category</h4>
+                    <p id="topCategory" class="text-2xl font-black uppercase">Cables</p>
+                </div>
+                <div class="bg-white p-8 rounded-[2rem] border border-red-100 shadow-sm">
+                    <h4 class="text-red-500 font-black uppercase text-[10px] tracking-widest mb-4">Critical Stock Alerts</h4>
+                    <div id="alertList" class="space-y-3">
+                        </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden animate__animated animate__fadeInUp">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 border-b">
+                    <tr class="text-xs font-black text-slate-400 uppercase tracking-widest">
+                        <th class="p-8">Product Details</th>
+                        <th class="p-8">Current Inventory</th>
+                        <th class="p-8 text-right">Update Levels</th>
+                    </tr>
+                </thead>
+                <tbody id="stockTableBody">
+                    </tbody>
+            </table>
+        </div>
+    </main>
+
+    <script src="../assets/js/admin.js"></script>
+    <script>
+        let myChart;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initDashboard();
+        });
+
+        function initDashboard() {
+            const products = JSON.parse(localStorage.getItem("Mishra_Products")) || [];
+            renderStockTable(products);
+            renderRevenueChart(products);
+            calculateTopStats(products);
+        }
+
+        function renderStockTable(products) {
+            const tableBody = document.getElementById('stockTableBody');
+            const alertList = document.getElementById('alertList');
+            tableBody.innerHTML = "";
+            alertList.innerHTML = "";
+
+            products.forEach(product => {
+                const isLow = product.stock < 10;
+                if(isLow) {
+                    alertList.innerHTML += `
+                        <div class="flex items-center text-red-600 animate__animated animate__headShake">
+                            <i class="fas fa-exclamation-triangle mr-2 text-xs"></i>
+                            <span class="text-xs font-bold">${product.name} (${product.stock})</span>
+                        </div>`;
+                }
+
+                tableBody.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50 transition group">
+                        <td class="p-8">
+                            <div class="flex items-center gap-6">
+                                <img src="${product.image}" class="w-16 h-16 rounded-2xl object-cover shadow-md group-hover:scale-110 transition">
+                                <div>
+                                    <p class="font-black text-slate-800 uppercase tracking-tighter text-lg">${product.name}</p>
+                                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">${product.id}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-8">
+                            <div class="flex items-center gap-3">
+                                <div class="w-24 bg-gray-100 h-2 rounded-full overflow-hidden">
+                                    <div class="h-full ${isLow ? 'bg-red-500' : 'bg-green-500'}" style="width: ${Math.min(product.stock, 100)}%"></div>
+                                </div>
+                                <span class="font-black text-slate-700">${product.stock} Units</span>
+                            </div>
+                        </td>
+                        <td class="p-8 text-right">
+                            <div class="flex items-center justify-end gap-3">
+                                <input type="number" id="input-${product.id}" value="${product.stock}" 
+                                    class="w-20 border-2 border-slate-100 p-3 rounded-2xl text-center font-black focus:border-orange-500 outline-none transition bg-slate-50">
+                                <button onclick="handleDashboardUpdate('${product.id}')" 
+                                    class="bg-slate-900 text-white p-4 rounded-2xl hover:bg-orange-500 transition shadow-xl transform active:scale-95">
+                                    <i class="fas fa-save"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>`;
+            });
+        }
+
+        function renderRevenueChart(products) {
+            const ctx = document.getElementById('revenueChart').getContext('2d');
+            const categories = [...new Set(products.map(p => p.category))];
+            const data = categories.map(cat => {
+                return products
+                    .filter(p => p.category === cat)
+                    .reduce((sum, p) => sum + (p.price * p.stock), 0);
+            });
+
+            if (myChart) myChart.destroy();
+            
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: categories,
+                    datasets: [{
+                        label: 'Inventory Value (₹)',
+                        data: data,
+                        backgroundColor: '#003366',
+                        borderRadius: 12,
+                        barThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function calculateTopStats(products) {
+            const total = products.reduce((sum, p) => sum + (p.price * p.stock), 0);
+            document.getElementById('totalRevenue').innerText = "₹" + total.toLocaleString();
+        }
+
+        function handleDashboardUpdate(id) {
+            const newQty = parseInt(document.getElementById(`input-${id}`).value);
+            updateStock(id, newQty); // From admin.js
+            initDashboard(); // Re-render everything
+        }
+    </script>
+</body>
+</html>

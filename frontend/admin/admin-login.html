@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | Mishra Industries</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+</head>
+<body class="bg-slate-900 h-screen flex items-center justify-center p-6">
+
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate__animated animate__zoomIn">
+        <div class="bg-blue-800 p-8 text-center text-white">
+            <h1 class="text-2xl font-black tracking-tight">MISHRA <span class="text-orange-400 text-lg">ADMIN</span></h1>
+            <p class="text-blue-200 text-sm mt-2">Secure Management Portal</p>
+        </div>
+
+        <form class="p-8 space-y-6">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Select Admin Role</label>
+                <select id="adminRole" class="w-full border-2 border-gray-100 rounded-lg p-3 outline-none focus:border-blue-600 transition">
+                    <option value="super">Super Admin (Site Editor)</option>
+                    <option value="stock">Stock Manager (Inventory)</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Admin Email</label>
+                <input type="email" placeholder="admin@mishra.com" class="w-full border-2 border-gray-100 rounded-lg p-3 outline-none focus:border-blue-600 transition">
+            </div>
+
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Security Password</label>
+                <input type="password" placeholder="••••••••" class="w-full border-2 border-gray-100 rounded-lg p-3 outline-none focus:border-blue-600 transition">
+            </div>
+
+            <button type="button" onclick="handleLogin()" class="w-full bg-blue-800 text-white font-bold py-4 rounded-lg hover:bg-orange-500 transition-all duration-300 shadow-lg">
+                Enter Dashboard
+            </button>
+        </form>
+
+        <div class="bg-gray-50 p-4 text-center border-t">
+            <a href="../index.html" class="text-sm text-gray-500 hover:text-blue-800">← Back to Main Website</a>
+        </div>
+    </div>
+
+    <script>
+        function handleLogin() {
+            const role = document.getElementById('adminRole').value;
+            
+            // Logic to redirect based on role
+            if(role === 'super') {
+                window.location.href = 'site-editor.html';
+            } else {
+                window.location.href = 'stock-dashboard.html';
+            }
+        }
+    </script>
+</body>
+</html>

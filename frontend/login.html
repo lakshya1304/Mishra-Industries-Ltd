@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Mishra Industries Limited</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #f3f4f6; }
+        .active-type { border-color: #f97316 !important; color: #1e3a8a !important; background-color: #fffaf0; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-10">
+
+    <div class="bg-white w-full max-w-5xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row animate__animated animate__zoomIn">
+        
+        <div class="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
+            <header class="mb-10">
+                <h1 id="loginHeader" class="text-4xl font-black text-blue-900 leading-tight">Customer Login</h1>
+                <p class="text-gray-400 font-bold text-sm mt-2 uppercase tracking-widest">Access your Mishra Ind. account</p>
+            </header>
+
+            <div class="flex gap-4 mb-10">
+                <button id="btnCustomer" onclick="setLoginType('customer')" class="active-type flex-1 py-4 border-2 border-gray-100 rounded-2xl font-black text-xs uppercase tracking-widest transition-all">
+                    Customer
+                </button>
+                <button id="btnRetailer" onclick="setLoginType('retailer')" class="flex-1 py-4 border-2 border-gray-100 rounded-2xl font-black text-xs text-gray-400 uppercase tracking-widest hover:border-blue-900 transition-all">
+                    Retailer
+                </button>
+            </div>
+
+            <form id="loginForm" class="space-y-5">
+                <div id="businessField" class="group hidden animate__animated animate__fadeInDown">
+                    <label class="text-[10px] font-black text-orange-500 uppercase tracking-widest ml-1">Registered Business Name</label>
+                    <input type="text" id="loginBusiness" placeholder="e.g. Mishra Electric Store" 
+                        class="w-full mt-1 p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-orange-500 transition-all font-bold text-sm">
+                </div>
+
+                <div class="group">
+                    <label class="text-[10px] font-black text-blue-900 uppercase tracking-widest ml-1">Email Address</label>
+                    <input type="email" id="loginEmail" placeholder="mishra@industries.com" 
+                        class="w-full mt-1 p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-900 transition-all font-bold text-sm">
+                </div>
+                
+                <div class="group">
+                    <label class="text-[10px] font-black text-blue-900 uppercase tracking-widest ml-1">Password</label>
+                    <input type="password" id="loginPass" placeholder="••••••••" 
+                        class="w-full mt-1 p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-900 transition-all font-bold text-sm">
+                </div>
+
+                <button type="button" onclick="handleLogin()" 
+                    class="w-full bg-orange-500 text-white font-black py-5 rounded-2xl hover:bg-orange-600 transition-all shadow-xl shadow-orange-500/20 transform active:scale-95 mt-4 uppercase tracking-widest text-sm">
+                    Login to Shop
+                </button>
+            </form>
+
+            <footer class="mt-10 text-center">
+                <p class="text-sm font-bold text-gray-400">
+                    Need a new account? <a href="register.html" class="text-blue-900 hover:text-orange-500 underline decoration-2 underline-offset-4">Register Here</a>
+                </p>
+            </footer>
+        </div>
+
+        <div class="hidden md:flex w-1/2 bg-blue-900 p-16 flex-col justify-between relative overflow-hidden">
+            <div class="absolute -bottom-20 -right-20 w-80 h-80 bg-blue-800 rounded-full opacity-50"></div>
+            <div class="relative z-10 text-3xl font-black text-white">MISHRA <span class="text-orange-500">IND.</span></div>
+            <div class="relative z-10">
+                <h2 class="text-4xl font-black text-white mb-4 leading-tight">World-Class <br>Industrial Brands.</h2>
+                <p class="text-blue-300 font-bold text-sm uppercase tracking-[0.2em]">Authorized B2B Partner</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentType = 'customer';
+
+        function setLoginType(type) {
+            currentType = type;
+            const btnCust = document.getElementById('btnCustomer');
+            const btnRet = document.getElementById('btnRetailer');
+            const businessField = document.getElementById('businessField');
+            const header = document.getElementById('loginHeader');
+
+            if(type === 'customer') {
+                btnCust.classList.add('active-type');
+                btnRet.classList.remove('active-type');
+                businessField.classList.add('hidden');
+                header.innerText = "Customer Login";
+            } else {
+                btnRet.classList.add('active-type');
+                btnCust.classList.remove('active-type');
+                businessField.classList.remove('hidden');
+                header.innerText = "Retailer Login";
+            }
+        }
+
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value;
+            const pass = document.getElementById('loginPass').value;
+            const business = document.getElementById('loginBusiness').value;
+            const users = JSON.parse(localStorage.getItem("Mishra_Users")) || [];
+
+            const user = users.find(u => u.email === email && u.password === pass);
+
+            if (user) {
+                if (user.accountType !== currentType) {
+                    alert(`Access Denied: This is a ${user.accountType} account.`);
+                    return;
+                }
+                // Check business name match for retailers
+                if (currentType === 'retailer' && user.businessName !== business) {
+                    alert("Business Name does not match our records.");
+                    return;
+                }
+                localStorage.setItem("Mishra_Session", JSON.stringify(user));
+                window.location.href = 'index.html';
+            } else {
+                alert("Invalid Credentials.");
+            }
+        }
+    </script>
+</body>
+</html>

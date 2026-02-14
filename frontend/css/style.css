@@ -1,0 +1,286 @@
+/* Custom Styles for Mishra Industries */
+:root {
+  --primary-blue: #003366;
+  --accent-orange: #ff8c00;
+}
+
+/* Smooth Scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Product Card Hover Zoom */
+.group:hover img {
+  transform: scale(1.1);
+  transition: transform 0.5s ease;
+}
+
+/* Modern Button Animation */
+button {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* Glassmorphism Effect for Navbar */
+.glass-nav {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary-blue);
+  border-radius: 10px;
+}
+
+/* Custom Sidebar Checkbox Style */
+input[type="checkbox"] {
+  accent-color: #ff8c00; /* This makes the tick mark Orange */
+  width: 1.1rem;
+  height: 1.1rem;
+  cursor: pointer;
+}
+
+/* Sidebar Hover Effect */
+aside label:hover {
+  transition: 0.2s;
+  padding-left: 5px;
+}
+/* --- Mishra Industries Floating Label System --- */
+
+/* 1. The Container: Keeps the label positioned relative to the box */
+.relative-input-group {
+  position: relative;
+  margin-bottom: 1.5rem; /* Adds space between your fields */
+}
+
+/* 2. The Input: The actual box where you type */
+.floating-input {
+  width: 100%;
+  padding: 1.25rem 1rem 0.75rem 1rem; /* Extra top padding for the label */
+  background: #f9fafb;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 0.75rem;
+  outline: none;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  color: #1f2937;
+}
+
+/* 3. The Label: The text that will move */
+.floating-label {
+  position: absolute;
+  left: 1rem;
+  top: 1rem; /* Starts inside the box */
+  color: #9ca3af;
+  pointer-events: none; /* Allows you to click "through" the text into the box */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-weight: 500;
+}
+
+/* 4. THE ANIMATION LOGIC:
+   This moves the label UP when you click (focus) or when the box is NOT empty */
+.floating-input:focus ~ .floating-label,
+.floating-input:not(:placeholder-shown) ~ .floating-label {
+  top: -0.7rem;
+  left: 0.8rem;
+  font-size: 0.75rem;
+  color: #003366; /* Mishra Blue */
+  background: white;
+  padding: 0 0.4rem;
+  font-weight: 700;
+  z-index: 10;
+}
+
+.type-option input:checked + .type-label {
+  border-color: #ff8c00 !important; /* Mishra Orange */
+  color: #003366 !important; /* Mishra Blue */
+  background: white !important;
+  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.1);
+}
+
+/* 5. Focus Effect: Changes border color to your brand orange */
+.floating-input:focus {
+  border-color: #ff8c00; /* Mishra Orange */
+  background: white;
+  box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.1);
+}
+/* Account Type Selector Styles */
+.account-type-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.type-option {
+  flex: 1;
+  position: relative;
+}
+
+.type-option input {
+  display: none; /* Hide the ugly default button */
+}
+
+.type-label {
+  display: block;
+  text-align: center;
+  padding: 1rem;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.8rem;
+  transition: all 0.3s ease;
+  color: #9ca3af;
+}
+
+/* Color change when selected */
+.type-option input:checked + .type-label {
+  border-color: #ff8c00; /* Mishra Orange */
+  color: #003366; /* Mishra Blue */
+  background: white;
+  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.15);
+}
+
+/* Helper class to hide elements */
+.hidden {
+  display: none !important;
+}
+
+/* Make selected account type stand out */
+.type-option input:checked + .type-label {
+  border-color: #ff8c00 !important; /* Mishra Orange */
+  color: #003366 !important; /* Mishra Blue */
+  background: #fff !important;
+}
+
+@media print {
+  .no-print,
+  aside,
+  button,
+  input,
+  nav {
+    display: none !important;
+  }
+  body {
+    background: white !important;
+    padding: 0 !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .rounded-\[2rem\] {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: 1px solid #eee !important;
+  }
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+  th,
+  td {
+    border: 1px solid #ddd !important;
+    padding: 12px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  nav a {
+    font-size: 1.1rem;
+  }
+}
+
+/* --- Mishra Industries Flexbox Layout Engine --- */
+
+/* 1. Main Responsive Container */
+.container-adaptive {
+  display: flex;
+  flex-direction: column; /* Stacks by default (Mobile First) */
+  width: 100%;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* 2. Responsive Row: Stacks on mobile, Rows on PC */
+.row-responsive {
+  display: flex;
+  flex-direction: column; /* Stacked for mobile */
+  gap: 1.5rem;
+}
+
+/* 3. Automatic Grid for Products */
+.product-grid-adaptive {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr; /* Single column for mobile */
+}
+
+/* 4. Mobile Navigation Stack */
+.nav-mobile-stack {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* --- Media Queries for Desktop (768px and up) --- */
+@media (min-width: 768px) {
+  .container-adaptive {
+    max-width: 1280px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+
+  .row-responsive {
+    flex-direction: row; /* Side-by-side for PC */
+    align-items: stretch;
+  }
+
+  /* Split layout: 50/50 for login or hero sections */
+  .col-half {
+    flex: 1;
+  }
+
+  .product-grid-adaptive {
+    /* 3 Columns for PC */
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Extra Large Screens (Laptops) */
+@media (min-width: 1024px) {
+  .product-grid-adaptive {
+    /* 4 Columns for larger screens */
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* --- Utility Helpers --- */
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

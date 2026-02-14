@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | Mishra Industries Limited</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="bg-gray-50 font-sans text-slate-900">
+
+    <nav class="glass-nav sticky top-0 z-50 p-4 shadow-sm bg-white/95">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-black text-blue-900 cursor-pointer" onclick="location.href='index.html'">
+                MISHRA <span class="text-orange-500">IND.</span>
+            </h1>
+            <a href="shop.html" class="text-blue-900 font-bold hover:text-orange-500 transition">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Shop
+            </a>
+        </div>
+    </nav>
+
+    <div class="container mx-auto py-12 px-6">
+        <div id="productDetailContainer" class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row animate__animated animate__fadeInUp">
+            
+            <div class="md:w-1/2 bg-gray-100 p-10 flex items-center justify-center relative group">
+                <img id="displayImage" src="" alt="Product Image" class="rounded-2xl shadow-lg transition duration-500 group-hover:scale-105 max-h-[500px] object-contain">
+                <span id="displayStatus" class="absolute top-6 left-6 bg-blue-900 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-widest">
+                    Industrial Grade
+                </span>
+            </div>
+
+            <div class="md:w-1/2 p-12 flex flex-col justify-center">
+                <nav class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-4">
+                    Home / Shop / <span id="displayCategory" class="text-orange-500">Category</span>
+                </nav>
+                
+                <h1 id="displayName" class="text-4xl font-black text-blue-900 mb-4 uppercase tracking-tight">Product Name</h1>
+                
+                <div class="flex items-center mb-6 text-yellow-400">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                    <span class="ml-3 text-gray-400 font-bold text-sm">(Verified Industrial Item)</span>
+                </div>
+
+                <p id="displayDescription" class="text-gray-500 leading-relaxed mb-8 text-lg border-l-4 border-orange-500 pl-6">
+                    Description loading...
+                </p>
+                
+                <div class="text-4xl font-black text-blue-900 mb-8 flex items-baseline gap-2">
+                    <span id="displayPrice">₹0.00</span>
+                    <span class="text-sm text-gray-400 font-normal tracking-normal uppercase">/ Unit</span>
+                </div>
+
+                <div class="flex items-center gap-4 mb-10">
+                    <div class="flex items-center border-2 border-gray-100 rounded-xl overflow-hidden">
+                        <button onclick="changeQty(-1)" class="px-4 py-4 bg-gray-50 hover:bg-gray-100 transition font-bold">-</button>
+                        <input type="number" id="quantityInput" value="1" readonly class="w-16 text-center font-bold outline-none bg-white">
+                        <button onclick="changeQty(1)" class="px-4 py-4 bg-gray-50 hover:bg-gray-100 transition font-bold">+</button>
+                    </div>
+                    <button id="addToCartBtn" class="flex-1 bg-blue-900 text-white py-4 rounded-xl font-bold hover:bg-orange-500 transition shadow-xl transform active:scale-95">
+                        <i class="fas fa-cart-plus mr-2"></i> Add to Cart
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-t pt-8">
+                    <div class="flex items-center text-sm font-bold text-gray-600"><i class="fas fa-truck-fast text-orange-500 mr-3 text-lg"></i> Door-Step Delivery</div>
+                    <div class="flex items-center text-sm font-bold text-gray-600"><i class="fas fa-shield-halved text-orange-500 mr-3 text-lg"></i> Mishra Warranty</div>
+                    <div class="flex items-center text-sm font-bold text-gray-600"><i class="fas fa-certificate text-orange-500 mr-3 text-lg"></i> ISI Certified</div>
+                    <div class="flex items-center text-sm font-bold text-gray-600"><i class="fas fa-hand-holding-dollar text-orange-500 mr-3 text-lg"></i> Wholesale Price</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/cart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Fetch the ID saved when you clicked the card in shop.html
+            const currentId = localStorage.getItem("current_view_id");
+            const products = JSON.parse(localStorage.getItem("Mishra_Products")) || [];
+            
+            // Find the specific product
+            const product = products.find(p => p.id === currentId);
+
+            if (product) {
+                // Update UI elements
+                document.getElementById('displayName').innerText = product.name;
+                document.getElementById('displayPrice').innerText = "₹" + product.price.toLocaleString();
+                document.getElementById('displayDescription').innerText = product.description;
+                document.getElementById('displayCategory').innerText = product.category;
+                document.getElementById('displayImage').src = product.image;
+                document.title = `${product.name} | Mishra Industries`;
+
+                // Configure Add to Cart button
+                document.getElementById('addToCartBtn').onclick = () => {
+                    const qty = parseInt(document.getElementById('quantityInput').value);
+                    for(let i=0; i<qty; i++) {
+                        addToCart(product.name, product.price);
+                    }
+                    alert(`${qty} units of ${product.name} added to cart!`);
+                };
+            } else {
+                // If no product is found, send back to shop
+                window.location.href = 'shop.html';
+            }
+        });
+
+        function changeQty(amt) {
+            const input = document.getElementById('quantityInput');
+            let val = parseInt(input.value) + amt;
+            if (val < 1) val = 1;
+            input.value = val;
+        }
+    </script>
+</body>
+</html>

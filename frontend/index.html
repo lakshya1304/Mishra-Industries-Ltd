@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Mishra Industries Limited | India's Best Online Electrical Store
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+      }
+      /* Slideshow Styles */
+      .slide {
+        display: none;
+        animation: fadeEffect 1.5s;
+      }
+      @keyframes fadeEffect {
+        from {opacity: 0.4} 
+        to {opacity: 1}
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 font-sans">
+    <nav
+      class="glass-nav sticky top-0 z-50 shadow-sm bg-white/95 backdrop-blur-md border-b border-gray-100"
+    >
+      <div class="w-full px-6 py-4 flex justify-between items-center">
+        <div
+          class="flex items-center space-x-4 cursor-pointer"
+          onclick="location.href = 'index.html'"
+        >
+          <img
+            src="./images/logo.jpg"
+            class="h-14 w-14 object-cover rounded-full border-2 border-white shadow-lg"
+          />
+          <div class="flex flex-col leading-none">
+            <span class="text-2xl font-black text-blue-900">MISHRA</span>
+            <span
+              class="text-[11px] font-extrabold tracking-[0.3em] text-orange-500 uppercase mt-1"
+            >
+              INDUSTRIES
+            </span>
+          </div>
+        </div>
+
+        <nav
+          class="hidden lg:flex items-center space-x-10 text-sm font-bold text-black
+        >
+          <a
+            href="index.html"
+            class="hover:text-orange-500 transition duration-300"
+          >
+            Home
+          </a>
+
+          <a
+            href="shop.html"
+            class="hover:text-orange-500 transition duration-300"
+          >
+            Products
+          </a>
+
+          <a
+            href="#about"
+            class="hover:text-orange-500 transition duration-300"
+          >
+            About Us
+          </a>
+
+          <a
+            href="#contact"
+            class="hover:text-orange-500 transition duration-300"
+          >
+            Contact Us
+          </a>
+
+          <a
+            href="login.html"
+            class="flex items-center hover:text-blue-900 transition duration-300"
+          >
+            <i class="far fa-user mr-2 text-xs"></i>
+            Login
+          </a>
+
+          <a
+            href="admin/admin-login.html"
+            class="bg-blue-50 text-blue-900 px-4 py-2 rounded-lg hover:bg-blue-100 transition duration-300"
+          >
+            Admin Portal
+          </a>
+
+          <button onclick="toggleCart()" class="relative group">
+            <div
+              class="p-2 rounded-full bg-gray-50 group-hover:bg-orange-50 transition"
+            >
+              <i
+                class="fas fa-shopping-cart text-xl text-blue-900 group-hover:text-orange-600"
+              ></i>
+            </div>
+            <span
+              id="cartCount"
+              class="absolute -top-1 -right-1 bg-orange-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center border-2 border-white font-bold"
+            >
+              0
+            </span>
+          </button>
+        </nav>
+
+        <button
+          id="mobileMenuBtn"
+          class="lg:hidden  flex text-2xl text-blue-900 focus:outline-none"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </nav>
+
+    <div
+      id="mobileMenu"
+      class="fixed inset-0 bg-white z-[999] hidden flex-col p-6"
+    >
+      <div class="flex justify-between items-center mb-8">
+        <span class="text-xl font-black text-blue-900">MENU</span>
+        <button id="closeMobileMenu" class="text-3xl text-gray-500">
+          &times;
+        </button>
+      </div>
+
+      <nav class="flex flex-col space-y-6 text-lg font-bold">
+        <a href="index.html" class="text-gray-800">Home</a>
+        <a href="shop.html" class="text-gray-800">Products</a>
+        <a
+          href="#about"
+          class="text-gray-800"
+          onclick="document.getElementById('mobileMenu').classList.add('hidden')"
+          >About Us</a
+        >
+        <a
+          href="#contact"
+          class="text-gray-800"
+          onclick="document.getElementById('mobileMenu').classList.add('hidden')"
+          >Contact Us</a
+        >
+        <a href="login.html" class="text-gray-800">Login</a>
+        <a
+          href="admin/admin-login.html"
+          class="text-blue-900 bg-blue-50 px-4 py-3 rounded-lg text-center"
+        >
+          Admin Portal
+        </a>
+      </nav>
+    </div>
+
+    <header
+      class="bg-blue-900 text-white py-16 relative overflow-hidden shadow-inner"
+    >
+      <div
+        class="container mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center justify-between animate__animated animate__fadeIn"
+      >
+        <div class="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
+          <h1 class="text-6xl font-black uppercase tracking-tight mb-4">
+            The Brand of India
+          </h1>
+          <p class="text-blue-200 text-xl max-w-xl mb-10">
+            India's best online electrical shopping store for industrial and
+            residential solutions.
+          </p>
+
+          <div
+            class="flex flex-col sm:flex-row justify-center md:justify-start items-center gap-6"
+          >
+            <a
+              href="shop.html"
+              class="w-full sm:w-auto bg-orange-500 text-white px-10 py-4 rounded-xl font-bold text-lg shadow-xl hover:bg-orange-600 transition"
+            >
+              <i class="fas fa-shopping-bag mr-2"></i> View All Products
+            </a>
+            <a
+              href="#about"
+              class="w-full sm:w-auto border-2 border-blue-400 text-blue-100 px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-800 transition"
+            >
+              Learn More About Us
+            </a>
+          </div>
+        </div>
+
+        <div
+          class="md:w-1/2 flex justify-center md:justify-end animate__animated animate__fadeInRight"
+        >
+          <div class="relative group">
+            <div
+              class="absolute -inset-1 bg-gradient-to-r from-blue-400 to-orange-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"
+            ></div>
+            
+            <div id="slideshow" class="relative rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform hover:scale-105 transition duration-500">
+                <img src="./images/1.jpg" class="slide w-full h-80 object-cover" />
+                <img src="./images/2.jpeg" class="slide w-full h-80 object-cover" />
+                <img src="./images/3.jpeg" class="slide w-full h-80 object-cover" />
+                <img src="./images/4.jpg" class="slide w-full h-80 object-cover" />
+                <img src="./images/5.jpg" class="slide w-full h-80 object-cover" />
+                <img src="./images/6.jpg" class="slide w-full h-80 object-cover" />
+                <img src="./images/7.jpg" class="slide w-full h-80 object-cover" />
+                <img src="./images/8.jpeg" class="slide w-full h-80 object-cover" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="absolute top-0 right-0 w-96 h-96 bg-blue-800 rounded-full blur-3xl opacity-20 -mr-20 -mt-20"
+      ></div>
+    </header>
+
+    <section id="about" class="py-20 bg-white">
+      <div class="container mx-auto px-6">
+        <div class="mb-20 text-center max-w-5xl mx-auto">
+          <h2 class="text-4xl font-black text-blue-900 mb-6 uppercase">
+            Mishra Industries.ltd - Electrical Online Store in India!
+          </h2>
+          <p class="text-gray-600 text-lg leading-relaxed mb-6">
+            Mishraindustries.ltd is India's best online electrical shopping
+            store, supplying world-class electrical products to meet all
+            industrial and residential purposes. We are the leading wide-variety
+            of electrical product suppliers, dealers, and distributors in India,
+            serving B2B B2C customers.
+          </p>
+          <p class="text-gray-600 text-lg leading-relaxed">
+            Our E-Commerce portal aims to bridge the gap between buyers and
+            sellers by delivering the best qualitative and assured products at
+            your door-step. Our portal makes easy for every buyer or customer to
+            place the order 24/7 and gain the complete benefit of the product to
+            the earliest.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
+          <div
+            class="hover-lift bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center"
+          >
+            <i class="fas fa-users-cog text-3xl text-orange-500 mb-4"></i>
+            <h4 class="font-bold text-blue-900 uppercase text-xs mb-2">
+              600+ Certified Sellers
+            </h4>
+          </div>
+          <div
+            class="hover-lift bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center"
+          >
+            <i class="fas fa-boxes-stacked text-3xl text-orange-500 mb-4"></i>
+            <h4 class="font-bold text-blue-900 uppercase text-xs mb-2">
+              50k+ Products
+            </h4>
+          </div>
+          <div
+            class="hover-lift bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center"
+          >
+            <i class="fas fa-tags text-3xl text-orange-500 mb-4"></i>
+            <h4 class="font-bold text-blue-900 uppercase text-xs mb-2">
+              50+ Brands
+            </h4>
+          </div>
+          <div
+            class="hover-lift bg-gray-50 p-6 rounded-2xl border border-gray-100 text-center"
+          >
+            <i class="fas fa-truck-fast text-3xl text-orange-500 mb-4"></i>
+            <h4 class="font-bold text-blue-900 uppercase text-xs mb-2">
+              Door-Step Delivery
+            </h4>
+          </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-16 items-center mb-24">
+          <div
+            class="bg-blue-900 p-12 rounded-3xl text-white shadow-xl relative overflow-hidden"
+          >
+            <h3
+              class="text-3xl font-black mb-6 text-orange-500 uppercase tracking-tight"
+            >
+              Mishra Industries - The brand of India!
+            </h3>
+            <p class="text-blue-100 text-lg leading-relaxed mb-6">
+              "The one-stop solution for all electrical needs."
+            </p>
+          </div>
+          <div>
+            <h3 class="text-2xl font-black text-blue-900 mb-6 uppercase">
+              Hassle-free online purchase at easy prices
+            </h3>
+            <p class="text-gray-600 leading-relaxed mb-6">
+              MIL Industries comes from the conglomerate, Mishra Group, which
+              stands tall withholding the frame of excellence since 2026. Sachin
+              Kumar Mishra, our founder, instilled commitment, integrity and
+              perseverance in our team. Our values go hand in hand with our
+              ambition to envision a better future.
+            </p>
+            <div class="flex flex-wrap gap-4">
+              <div class="flex items-center text-sm font-bold text-gray-500">
+                <i class="fas fa-check text-orange-500 mr-2"></i> NET BANKING
+              </div>
+              <div class="flex items-center text-sm font-bold text-gray-500">
+                <i class="fas fa-check text-orange-500 mr-2"></i> RTGS
+              </div>
+              <div class="flex items-center text-sm font-bold text-gray-500">
+                <i class="fas fa-check text-orange-500 mr-2"></i> CARD PAYMENT
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 rounded-3xl p-12 border border-gray-200">
+          <h3
+            class="text-2xl font-black text-blue-900 mb-8 uppercase text-center"
+          >
+            Amazing brands & deals at wholesale prices
+          </h3>
+          <p class="text-gray-600 text-center max-w-3xl mx-auto mb-12">
+            We are all set to revolutionize the industrial and electrical equipment purchases with technology at the forefront. We make procurement easy for business & hassle-free, with the best prices & on-time deliveries through the power of digitization. We have customized options for all sectors starting from Dealers, Panel Builder, Contractor or Builders, Manufacturer or Industries, OEM’s or even an End Users, which adds value into solution and increasing their growth.
+          </p>
+          <div
+            class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 text-center"
+          >
+            <div
+              class="p-4 bg-white rounded-xl shadow-sm font-bold text-blue-900 text-xs"
+            >
+              SIEMENS
+            </div>
+            <div
+              class="p-4 bg-white rounded-xl shadow-sm font-bold text-blue-900 text-xs"
+            >
+              ABB
+            </div>
+            <div
+              class="p-4 bg-white rounded-xl shadow-sm font-bold text-blue-900 text-xs"
+            >
+              GM MODULAR
+            </div>
+            <div
+              class="p-4 bg-white rounded-xl shadow-sm font-bold text-blue-900 text-xs"
+            >
+              SCHNEIDER
+            </div>
+            <div
+              class="p-4 bg-white rounded-xl shadow-sm font-bold text-blue-900 text-xs"
+            >
+              ANCHOR
+            </div>
+            <div
+              class="p-4 bg-white rounded-xl shadow-sm font-bold text-blue-900 text-xs"
+            >
+              CROMPTON
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="py-24 bg-gray-50 border-t border-gray-200">
+      <div class="container mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-black text-blue-900 uppercase mb-4">
+            Contact Us
+          </h2>
+          <div class="h-1.5 w-24 bg-orange-500 mx-auto rounded-full"></div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-12">
+          <div class="space-y-8">
+            <div class="flex items-start space-x-6">
+              <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
+                <i class="fas fa-location-dot text-white text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-blue-900 uppercase text-xs mb-1">
+                  Our Location
+                </h4>
+                <p class="text-gray-600 font-bold">
+                  Purulia Road, Tatisilwai, Ranchi, Jharkhand:835103 </p>
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-6">
+              <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
+                <i class="fas fa-phone text-white text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-blue-900 uppercase text-xs mb-1">
+                  Call Us
+                </h4>
+                <p class="text-gray-600 font-bold">+91 94730 56840</p>
+              </div>
+            </div>
+            <div class="flex items-start space-x-6">
+              <div class="bg-blue-900 p-4 rounded-2xl shadow-lg">
+                <i class="fas fa-envelope text-white text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-black text-blue-900 uppercase text-xs mb-1">
+                  Email Us
+                </h4>
+                <p class="text-gray-600 font-bold">
+                  mishraindustriesltd@gmail.com
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="lg:col-span-2 bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-gray-100"
+          >
+            <form class="grid md:grid-cols-2 gap-8">
+              <div class="space-y-2">
+                <label
+                  class="text-[10px] font-black text-blue-900 uppercase tracking-widest ml-1"
+                  >Your Name</label
+                >
+                <input
+                  type="text"
+                  placeholder="Full Name"
+                  class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-orange-500 transition-all font-bold text-sm"
+                />
+              </div>
+              <div class="space-y-2">
+                <label
+                  class="text-[10px] font-black text-blue-900 uppercase tracking-widest ml-1"
+                  >Email Address</label
+                >
+                <input
+                  type="email"
+                  placeholder="email@example.com"
+                  class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-orange-500 transition-all font-bold text-sm"
+                />
+              </div>
+              <div class="md:col-span-2 space-y-2">
+                <label
+                  class="text-[10px] font-black text-blue-900 uppercase tracking-widest ml-1"
+                  >Your Message</label
+                >
+                <input
+                  placeholder="How can we help you?"
+                  class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-orange-500 transition-all font-bold text-sm"
+                />
+              </div>
+              <button
+                type="submit"
+                class="md:col-span-2 bg-blue-900 text-white font-black py-5 rounded-2xl hover:bg-orange-500 transition-all shadow-xl uppercase tracking-widest text-sm transform active:scale-95"
+              >
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+        let slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+            let i;
+            let slides = document.getElementsByClassName("slide");
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) {slideIndex = 1}    
+            slides[slideIndex-1].style.display = "block";  
+            setTimeout(showSlides, 3000); // Change image every 3 seconds
+        }
+    </script>
+
+    <script>
+      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
+      const mobileMenu = document.getElementById("mobileMenu");
+      const closeMobileMenu = document.getElementById("closeMobileMenu");
+
+      mobileMenuBtn.addEventListener("click", () => {
+        mobileMenu.classList.remove("hidden");
+        mobileMenu.classList.add("flex");
+      });
+
+      closeMobileMenu.addEventListener("click", () => {
+        mobileMenu.classList.add("hidden");
+        mobileMenu.classList.remove("flex");
+      });
+    </script>
+
+    <script src="js/cart.js"></script>
+    <script>
+      function toggleCart() {
+        document
+          .getElementById("cartSidebar")
+          .classList.toggle("translate-x-full");
+      }
+    </script>
+  </body>
+</html>
