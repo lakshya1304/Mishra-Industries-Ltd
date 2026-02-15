@@ -17,154 +17,76 @@
     />
     <link rel="stylesheet" href="css/style.css" />
     <style>
-      html {
-        scroll-behavior: smooth;
-      }
-      .hover-lift {
-        transition: transform 0.3s ease;
-      }
-      .hover-lift:hover {
-        transform: translateY(-5px);
-      }
-      /* Slideshow Styles */
-      .slide {
-        display: none;
-        animation: fadeEffect 1.5s;
-      }
-      @keyframes fadeEffect {
-        from {opacity: 0.4} 
-        to {opacity: 1}
-      }
+      
     </style>
   </head>
   <body class="bg-gray-50 font-sans">
-    <nav
-      class="glass-nav sticky top-0 z-50 shadow-sm bg-white/95 backdrop-blur-md border-b border-gray-100"
-    >
-      <div class="w-full px-6 py-4 flex justify-between items-center">
-        <div
-          class="flex items-center space-x-4 cursor-pointer"
-          onclick="location.href = 'index.html'"
-        >
-          <img
-            src="./images/logo.jpg"
-            class="h-14 w-14 object-cover rounded-full border-2 border-white shadow-lg"
-          />
-          <div class="flex flex-col leading-none">
-            <span class="text-2xl font-black text-blue-900">MISHRA</span>
-            <span
-              class="text-[11px] font-extrabold tracking-[0.3em] text-orange-500 uppercase mt-1"
-            >
-              INDUSTRIES
-            </span>
-          </div>
+<nav class="glass-nav sticky top-0 z-50 shadow-sm bg-white/95 backdrop-blur-md border-b border-gray-100">
+    <div class="w-full px-6 py-4 flex justify-between items-center">
+        
+        <div class="flex items-center space-x-4 cursor-pointer shrink-0" onclick="location.href = 'index.html'">
+            <img src="./images/logo.jpg" class="h-12 w-12 md:h-14 md:w-14 object-cover rounded-full border-2 border-white shadow-lg" />
+            <div class="flex flex-col leading-none">
+                <span class="text-xl md:text-2xl font-black text-blue-900">MISHRA</span>
+                <span class="text-[9px] md:text-[11px] font-extrabold tracking-[0.3em] text-orange-500 uppercase mt-1">INDUSTRIES</span>
+            </div>
         </div>
 
-        <nav
-          class="flex items-center space-x-10 text-sm font-bold text-black
-        >
-          <a
-            href="index.html"
-            class="hover:text-orange-500 transition duration-300"
-          >
-            Home
-          </a>
-
-          <a
-            href="shop.html"
-            class="hover:text-orange-500 transition duration-300"
-          >
-            Products
-          </a>
-
-          <a
-            href="#about"
-            class="hover:text-orange-500 transition duration-300"
-          >
-            About Us
-          </a>
-
-          <a
-            href="#contact"
-            class="hover:text-orange-500 transition duration-300"
-          >
-            Contact Us
-          </a>
-
-          <a
-            href="login.html"
-            class="flex items-center hover:text-blue-900 transition duration-300"
-          >
-            <i class="far fa-user mr-2 text-xs"></i>
-            Login
-          </a>
-
-          <a
-            href="admin/admin-login.html"
-            class="bg-blue-50 text-blue-900 px-4 py-2 rounded-lg hover:bg-blue-100 transition duration-300"
-          >
-            Admin Portal
-          </a>
-
-          <button onclick="toggleCart()" class="relative group">
-            <div
-              class="p-2 rounded-full bg-gray-50 group-hover:bg-orange-50 transition"
-            >
-              <i
-                class="fas fa-shopping-cart text-xl text-blue-900 group-hover:text-orange-600"
-              ></i>
+        <div class="flex items-center">
+            <div class="flex items-center space-x-10 text-sm font-bold text-gray-700 mr-10">
+                <a href="index.html" class="hover:text-orange-500 transition">Home</a>
+                <a href="shop.html" class="hover:text-orange-500 transition">Products</a>
+                <a href="#about" class="hover:text-orange-500 transition">About Us</a>
+                <a href="#contact" class="hover:text-orange-500 transition">Contact Us</a>
+                <a href="login.html" class="flex items-center hover:text-blue-900 transition">
+                    <i class="far fa-user mr-2 text-xs"></i> Login
+                </a>
+                <a href="admin/admin-login.html" class="bg-blue-50 text-blue-900 px-4 py-2 rounded-lg hover:bg-blue-100 transition">Admin Portal</a>
             </div>
-            <span
-              id="cartCount"
-              class="absolute -top-1 -right-1 bg-orange-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center border-2 border-white font-bold"
-            >
-              0
-            </span>
-          </button>
-        </nav>
 
-        <button
-          id="mobileMenuBtn"
-          class="lg:hidden  flex text-2xl text-blue-900 focus:outline-none"
-        >
-          <i class="fas fa-bars"></i>
-        </button>
-      </div>
+            <div class="flex items-center space-x-5">
+                <button onclick="toggleCart()" class="relative group focus:outline-none">
+                    <div class="p-2 rounded-full bg-gray-50 group-hover:bg-orange-50 transition">
+                        <i class="fas fa-shopping-cart text-xl text-blue-900 group-hover:text-orange-600"></i>
+                    </div>
+                    <span id="cartCount" class="absolute -top-1 -right-1 bg-orange-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center border-2 border-white font-bold">0</span>
+                </button>
+
+                <button id="mobileMenuBtn" class="lg:hidden flex text-2xl text-blue-900 focus:outline-none">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div> 
+    </div>
+</nav>
+
+<div id="mobileMenu" class="fixed inset-0 bg-white z-[999] hidden flex-col p-6 animate__animated animate__fadeIn">
+    <div class="flex justify-between items-center mb-10 border-b pb-4">
+        <span class="text-xl font-black text-blue-900 uppercase">Menu</span>
+        <button id="closeMobileMenu" class="text-4xl text-gray-400">&times;</button>
+    </div>
+    <nav class="flex flex-col space-y-6 text-xl font-bold">
+        <a href="index.html" class="border-b pb-4">Home</a>
+        <a href="shop.html" class="border-b pb-4">Products</a>
+        <a href="#about" class="border-b pb-4" onclick="closeMenu()">About Us</a>
+        <a href="#contact" class="border-b pb-4" onclick="closeMenu()">Contact Us</a>
+        <a href="login.html" class="border-b pb-4">Login</a>
     </nav>
+</div>
 
-    <div
-      id="mobileMenu"
-      class="fixed inset-0 bg-white z-[999] hidden flex-col p-6"
-    >
-      <div class="flex justify-between items-center mb-8">
-        <span class="text-xl font-black text-blue-900">MENU</span>
-        <button id="closeMobileMenu" class="text-3xl text-gray-500">
-          &times;
-        </button>
+    <div id="mobileMenu" class="fixed inset-0 bg-white z-[999] hidden flex-col p-6 animate__animated animate__fadeIn">
+      <div class="flex justify-between items-center mb-10 border-b pb-4">
+        <span class="text-xl font-black text-blue-900 uppercase tracking-widest">Menu</span>
+        <button id="closeMobileMenu" class="text-4xl text-gray-400 hover:text-red-500 transition">&times;</button>
       </div>
 
-      <nav class="flex flex-col space-y-6 text-lg font-bold">
-        <a href="index.html" class="text-gray-800">Home</a>
-        <a href="shop.html" class="text-gray-800">Products</a>
-        <a
-          href="#about"
-          class="text-gray-800"
-          onclick="document.getElementById('mobileMenu').classList.add('hidden')"
-          >About Us</a
-        >
-        <a
-          href="#contact"
-          class="text-gray-800"
-          onclick="document.getElementById('mobileMenu').classList.add('hidden')"
-          >Contact Us</a
-        >
-        <a href="login.html" class="text-gray-800">Login</a>
-        <a
-          href="admin/admin-login.html"
-          class="text-blue-900 bg-blue-50 px-4 py-3 rounded-lg text-center"
-        >
-          Admin Portal
-        </a>
+      <nav class="flex flex-col space-y-6 text-xl font-bold">
+        <a href="index.html" class="text-gray-800 border-b pb-4">Home</a>
+        <a href="shop.html" class="text-gray-800 border-b pb-4">Products</a>
+        <a href="#about" class="text-gray-800 border-b pb-4" onclick="closeMenu()">About Us</a>
+        <a href="#contact" class="text-gray-800 border-b pb-4" onclick="closeMenu()">Contact Us</a>
+        <a href="login.html" class="text-gray-800 border-b pb-4">Login</a>
+        <a href="admin/admin-login.html" class="text-blue-900 bg-blue-50 px-4 py-4 rounded-xl text-center">Admin Portal</a>
       </nav>
     </div>
 
@@ -468,39 +390,10 @@
       </div>
     </section>
 
-    <script>
-        let slideIndex = 0;
-        showSlides();
 
-        function showSlides() {
-            let i;
-            let slides = document.getElementsByClassName("slide");
-            for (i = 0; i < slides.length; i++) {
-                slides[i].style.display = "none";  
-            }
-            slideIndex++;
-            if (slideIndex > slides.length) {slideIndex = 1}    
-            slides[slideIndex-1].style.display = "block";  
-            setTimeout(showSlides, 3000); // Change image every 3 seconds
-        }
-    </script>
-
-    <script>
-      const mobileMenuBtn = document.getElementById("mobileMenuBtn");
-      const mobileMenu = document.getElementById("mobileMenu");
-      const closeMobileMenu = document.getElementById("closeMobileMenu");
-
-      mobileMenuBtn.addEventListener("click", () => {
-        mobileMenu.classList.remove("hidden");
-        mobileMenu.classList.add("flex");
-      });
-
-      closeMobileMenu.addEventListener("click", () => {
-        mobileMenu.classList.add("hidden");
-        mobileMenu.classList.remove("flex");
-      });
-    </script>
-
+        
+    
+        <script src="js/main.js"></script>
     <script src="js/cart.js"></script>
     <script>
       function toggleCart() {

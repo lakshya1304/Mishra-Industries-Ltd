@@ -203,6 +203,24 @@ aside label:hover {
     font-size: 1.1rem;
   }
 }
+html {
+        scroll-behavior: smooth;
+      }
+      .hover-lift {
+        transition: transform 0.3s ease;
+      }
+      .hover-lift:hover {
+        transform: translateY(-5px);
+      }
+      /* Slideshow Styles */
+      .slide {
+        display: none;
+        animation: fadeEffect 1.5s;
+      }
+      @keyframes fadeEffect {
+        from {opacity: 0.4} 
+        to {opacity: 1}
+      }
 
 /* --- Mishra Industries Flexbox Layout Engine --- */
 

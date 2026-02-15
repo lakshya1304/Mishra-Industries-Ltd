@@ -108,3 +108,52 @@ function handleRegistration() {
     alert(`Welcome to Mishra Industries, ${name}! Your ${type} account is ready.`);
     window.location.href = 'login.html';
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+    const mobileBtn = document.getElementById("mobileMenuBtn");
+    const mobileMenu = document.getElementById("mobileMenu");
+    const closeBtn = document.getElementById("closeMobileMenu");
+
+    // Open/Close Mobile Menu logic for Image 2
+    if (mobileBtn && mobileMenu) {
+        mobileBtn.onclick = () => {
+            mobileMenu.classList.remove("hidden");
+            mobileMenu.classList.add("flex");
+        };
+    }
+
+    if (closeBtn) {
+        closeBtn.onclick = () => {
+            mobileMenu.classList.add("hidden");
+            mobileMenu.classList.remove("flex");
+        };
+    }
+});
+
+// Global function for toggleCart (so the onclick works)
+function toggleCart() {
+    const sidebar = document.getElementById("cartSidebar");
+    if (sidebar) {
+        sidebar.classList.toggle("translate-x-full");
+    }
+}
+
+// Global helper for mobile links
+function closeMenu() {
+    document.getElementById("mobileMenu").classList.add("hidden");
+}
+
+let slideIndex = 0;
+        showSlides();
+
+        function showSlides() {
+            let i;
+            let slides = document.getElementsByClassName("slide");
+            for (i = 0; i < slides.length; i++) {
+                slides[i].style.display = "none";  
+            }
+            slideIndex++;
+            if (slideIndex > slides.length) {slideIndex = 1}    
+            slides[slideIndex-1].style.display = "block";  
+            setTimeout(showSlides, 3000); // Change image every 3 seconds
+        }
