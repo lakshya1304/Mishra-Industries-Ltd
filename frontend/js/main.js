@@ -157,3 +157,37 @@ let slideIndex = 0;
             slides[slideIndex-1].style.display = "block";  
             setTimeout(showSlides, 3000); // Change image every 3 seconds
         }
+
+        // Global function for the Cart Button
+function toggleCart() {
+    const sidebar = document.getElementById('cartSidebar');
+    if (sidebar) {
+        sidebar.classList.toggle('translate-x-full');
+    }
+}
+
+// Global function to close mobile menu
+function closeMenu() {
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (mobileMenu) {
+        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('flex');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    const closeBtn = document.getElementById('closeMobileMenu');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    if (mobileBtn) {
+        mobileBtn.onclick = () => {
+            mobileMenu.classList.remove('hidden');
+            mobileMenu.classList.add('flex');
+        };
+    }
+
+    if (closeBtn) {
+        closeBtn.onclick = closeMenu;
+    }
+});

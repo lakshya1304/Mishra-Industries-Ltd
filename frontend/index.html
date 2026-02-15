@@ -21,71 +21,48 @@
     </style>
   </head>
   <body class="bg-gray-50 font-sans">
-<nav class="glass-nav sticky top-0 z-50 shadow-sm bg-white/95 backdrop-blur-md border-b border-gray-100">
-    <div class="w-full px-6 py-4 flex justify-between items-center">
+<body class="bg-gray-50">
+
+    <nav class="glass-nav sticky top-0 z-[100] shadow-sm bg-white/95 backdrop-blur-md border-b border-gray-100">
+      <div class="w-full px-6 py-4 flex justify-between items-center">
         
         <div class="flex items-center space-x-4 cursor-pointer shrink-0" onclick="location.href = 'index.html'">
-            <img src="./images/logo.jpg" class="h-12 w-12 md:h-14 md:w-14 object-cover rounded-full border-2 border-white shadow-lg" />
-            <div class="flex flex-col leading-none">
-                <span class="text-xl md:text-2xl font-black text-blue-900">MISHRA</span>
-                <span class="text-[9px] md:text-[11px] font-extrabold tracking-[0.3em] text-orange-500 uppercase mt-1">INDUSTRIES</span>
-            </div>
+          <img src="./images/logo.jpg" class="h-12 w-12 md:h-14 md:w-14 object-cover rounded-full border-2 border-white shadow-lg" />
+          <div class="flex flex-col leading-none">
+            <span class="text-xl md:text-2xl font-black text-blue-900">MISHRA</span>
+            <span class="text-[9px] md:text-[11px] font-extrabold tracking-[0.3em] text-orange-500 uppercase mt-1">INDUSTRIES</span>
+          </div>
         </div>
 
         <div class="flex items-center">
-            <div class="flex items-center space-x-10 text-sm font-bold text-gray-700 mr-10">
-                <a href="index.html" class="hover:text-orange-500 transition">Home</a>
-                <a href="shop.html" class="hover:text-orange-500 transition">Products</a>
-                <a href="#about" class="hover:text-orange-500 transition">About Us</a>
-                <a href="#contact" class="hover:text-orange-500 transition">Contact Us</a>
-                <a href="login.html" class="flex items-center hover:text-blue-900 transition">
-                    <i class="far fa-user mr-2 text-xs"></i> Login
-                </a>
-                <a href="admin/admin-login.html" class="bg-blue-50 text-blue-900 px-4 py-2 rounded-lg hover:bg-blue-100 transition">Admin Portal</a>
-            </div>
-
-            <div class="flex items-center space-x-5">
-                <button onclick="toggleCart()" class="relative group focus:outline-none">
-                    <div class="p-2 rounded-full bg-gray-50 group-hover:bg-orange-50 transition">
-                        <i class="fas fa-shopping-cart text-xl text-blue-900 group-hover:text-orange-600"></i>
-                    </div>
-                    <span id="cartCount" class="absolute -top-1 -right-1 bg-orange-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center border-2 border-white font-bold">0</span>
-                </button>
-
-                <button id="mobileMenuBtn" class="lg:hidden flex text-2xl text-blue-900 focus:outline-none">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
+          <div class="flex items-center space-x-8 text-sm font-bold text-gray-700 mr-8">
+            <a href="index.html" class="hover:text-orange-500 transition">Home</a>
+            <a href="shop.html" class="hover:text-orange-500 transition">Products</a>
+            <a href="index.html#about" class="hover:text-orange-500 transition">About Us</a>
+            <a href="index.html#contact" class="hover:text-orange-500 transition">Contact Us</a>
+            <a href="login.html" class="flex items-center hover:text-blue-900 transition">
+              <i class="far fa-user mr-2 text-xs"></i> Login
+            </a>
+            <a href="admin/admin-login.html" class="bg-blue-50 text-blue-900 px-4 py-2 rounded-lg hover:bg-blue-100 transition">Admin Portal</a>
+          </div>
+            <button id="mobileMenuBtn" class="lg:hidden flex text-2xl text-blue-900 focus:outline-none">
+              <i class="fas fa-bars"></i>
+            </button>
+          </div>
         </div> 
-    </div>
-</nav>
-
-<div id="mobileMenu" class="fixed inset-0 bg-white z-[999] hidden flex-col p-6 animate__animated animate__fadeIn">
-    <div class="flex justify-between items-center mb-10 border-b pb-4">
-        <span class="text-xl font-black text-blue-900 uppercase">Menu</span>
-        <button id="closeMobileMenu" class="text-4xl text-gray-400">&times;</button>
-    </div>
-    <nav class="flex flex-col space-y-6 text-xl font-bold">
-        <a href="index.html" class="border-b pb-4">Home</a>
-        <a href="shop.html" class="border-b pb-4">Products</a>
-        <a href="#about" class="border-b pb-4" onclick="closeMenu()">About Us</a>
-        <a href="#contact" class="border-b pb-4" onclick="closeMenu()">Contact Us</a>
-        <a href="login.html" class="border-b pb-4">Login</a>
+      </div>
     </nav>
-</div>
-
     <div id="mobileMenu" class="fixed inset-0 bg-white z-[999] hidden flex-col p-6 animate__animated animate__fadeIn">
       <div class="flex justify-between items-center mb-10 border-b pb-4">
-        <span class="text-xl font-black text-blue-900 uppercase tracking-widest">Menu</span>
+        <span class="text-xl font-black text-blue-900 uppercase">Menu</span>
         <button id="closeMobileMenu" class="text-4xl text-gray-400 hover:text-red-500 transition">&times;</button>
       </div>
-
       <nav class="flex flex-col space-y-6 text-xl font-bold">
-        <a href="index.html" class="text-gray-800 border-b pb-4">Home</a>
-        <a href="shop.html" class="text-gray-800 border-b pb-4">Products</a>
-        <a href="#about" class="text-gray-800 border-b pb-4" onclick="closeMenu()">About Us</a>
-        <a href="#contact" class="text-gray-800 border-b pb-4" onclick="closeMenu()">Contact Us</a>
-        <a href="login.html" class="text-gray-800 border-b pb-4">Login</a>
+        <a href="index.html" class="border-b pb-4">Home</a>
+        <a href="shop.html" class="border-b pb-4">Products</a>
+        <a href="index.html#about" class="border-b pb-4">About Us</a>
+        <a href="index.html#contact" class="border-b pb-4">Contact Us</a>
+        <a href="login.html" class="border-b pb-4">Login</a>
         <a href="admin/admin-login.html" class="text-blue-900 bg-blue-50 px-4 py-4 rounded-xl text-center">Admin Portal</a>
       </nav>
     </div>
@@ -291,7 +268,43 @@
         </div>
       </div>
     </section>
+<section class="py-20 bg-white">
+      <div class="container mx-auto px-6">
+        <div class="grid md:grid-cols-2 gap-8">
+          
+          <div class="flex items-start gap-6 p-10 bg-white border-2 border-green-100 rounded-[2rem] hover:shadow-xl transition-all hover:-translate-y-1">
+            <div class="shrink-0">
+               <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center border-2 border-blue-900">
+                  <i class="fas fa-eye text-blue-900 text-2xl"></i>
+               </div>
+            </div>
+            <div>
+              <h3 class="text-2xl font-black text-blue-900 uppercase mb-4 tracking-tight">Our Vision</h3>
+              <p class="text-gray-600 leading-relaxed font-medium">
+                To become the region’s most trusted and comprehensive source for premium electrical solutions, recognized as the essential link between global innovation and local development. We aim to define the standard for reliability in the electrical supply chain.
+              </p>
+            </div>
+          </div>
 
+          <div class="flex items-start gap-6 p-10 bg-white border-2 border-green-100 rounded-[2rem] hover:shadow-xl transition-all hover:-translate-y-1">
+            <div class="shrink-0">
+               <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center border-2 border-blue-400">
+                  <i class="fas fa-globe-asia text-blue-400 text-2xl animate-pulse"></i>
+               </div>
+            </div>
+            <div>
+              <h3 class="text-2xl font-black text-blue-900 uppercase mb-4 tracking-tight">Our Mission</h3>
+              <p class="text-gray-600 leading-relaxed font-medium">
+                At Mishra Industries Limited, our mission is to simplify the procurement process for our clients by offering unparalleled access to a vast range of top-tier branded electrical products under one roof. We are committed to delivering quality, ensuring on-time availability, and providing expert support to power projects of every scale.
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="contact" class="py-24 bg-gray-50 border-t border-gray-200">
     <section id="contact" class="py-24 bg-gray-50 border-t border-gray-200">
       <div class="container mx-auto px-6">
         <div class="text-center mb-16">
@@ -389,18 +402,58 @@
         </div>
       </div>
     </section>
+<section id="team" class="py-24 bg-white">
+      <div class="container mx-auto px-6">
+        <div class="text-center mb-16">
+          <h2 class="text-4xl font-black text-blue-900 uppercase mb-4">
+            Meet Our Team
+          </h2>
+          <div class="h-1.5 w-24 bg-orange-500 mx-auto rounded-full"></div>
+        </div>
 
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+          
+          <div class="group flex flex-col items-center text-center">
+            <div class="relative mb-6">
+              <div class="absolute -inset-2 bg-gradient-to-r from-blue-900 to-orange-500 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+              <div class="relative w-48 h-48 md:w-56 md:h-56 overflow-hidden rounded-full border-4 border-white shadow-2xl">
+                <img src="./images/MD.jpeg" alt="Sachin Kumar Mishra" class="w-full h-full object-cover object-top hover:scale-110 transition duration-500" />
+              </div>
+            </div>
+            <h3 class="text-xl font-black text-blue-900 uppercase tracking-tight">Sachin Kumar Mishra</h3>
+            <p class="text-orange-500 font-extrabold text-xs uppercase tracking-[0.2em] mt-2">Managing Director</p>
+          </div>
+
+          <div class="group flex flex-col items-center text-center">
+            <div class="relative mb-6">
+              <div class="absolute -inset-2 bg-gradient-to-r from-blue-900 to-orange-500 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+              <div class="relative w-48 h-48 md:w-56 md:h-56 overflow-hidden rounded-full border-4 border-white shadow-2xl">
+                <img src="./images/Director.jpeg" alt="Subhash Saha" class="w-full h-full object-cover object-top hover:scale-110 transition duration-500" />
+              </div>
+            </div>
+            <h3 class="text-xl font-black text-blue-900 uppercase tracking-tight">Subhash Saha</h3>
+            <p class="text-orange-500 font-extrabold text-xs uppercase tracking-[0.2em] mt-2">Director</p>
+          </div>
+
+          <div class="group flex flex-col items-center text-center">
+            <div class="relative mb-6">
+              <div class="absolute -inset-2 bg-gradient-to-r from-blue-900 to-orange-500 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+              <div class="relative w-48 h-48 md:w-56 md:h-56 overflow-hidden rounded-full border-4 border-white shadow-2xl">
+                <img src="./images/Director2.jpeg" alt="Swati Kumari" class="w-full h-full object-cover object-top hover:scale-110 transition duration-500" />
+              </div>
+            </div>
+            <h3 class="text-xl font-black text-blue-900 uppercase tracking-tight">Swati Kumari</h3>
+            <p class="text-orange-500 font-extrabold text-xs uppercase tracking-[0.2em] mt-2">Director</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
 
         
     
         <script src="js/main.js"></script>
     <script src="js/cart.js"></script>
-    <script>
-      function toggleCart() {
-        document
-          .getElementById("cartSidebar")
-          .classList.toggle("translate-x-full");
-      }
-    </script>
+  
   </body>
 </html>

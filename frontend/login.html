@@ -11,14 +11,20 @@
         body { background-color: #f3f4f6; }
         .active-type { border-color: #f97316 !important; color: #1e3a8a !important; background-color: #fffaf0; }
         .hidden { display: none; }
+        /* Modal Backdrop */
+        #otpModal { background-color: rgba(0, 51, 102, 0.8); backdrop-filter: blur(4px); }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 md:p-10">
 
     <div class="bg-white w-full max-w-5xl rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col md:flex-row animate__animated animate__zoomIn">
         
-        <div class="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center">
-            <header class="mb-10">
+        <div class="w-full md:w-1/2 p-8 md:p-16 flex flex-col justify-center relative">
+            <a href="index.html" class="absolute top-8 left-8 text-blue-900 font-bold text-xs uppercase tracking-widest hover:text-orange-500 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i> Back to Website
+            </a>
+
+            <header class="mb-10 mt-6 md:mt-0">
                 <h1 id="loginHeader" class="text-4xl font-black text-blue-900 leading-tight">Customer Login</h1>
                 <p class="text-gray-400 font-bold text-sm mt-2 uppercase tracking-widest">Access your Mishra Ind. account</p>
             </header>
@@ -46,7 +52,10 @@
                 </div>
                 
                 <div class="group">
-                    <label class="text-[10px] font-black text-blue-900 uppercase tracking-widest ml-1">Password</label>
+                    <div class="flex justify-between items-center">
+                        <label class="text-[10px] font-black text-blue-900 uppercase tracking-widest ml-1">Password</label>
+                        <button type="button" onclick="openForgotModal()" class="text-[9px] font-black text-orange-500 uppercase tracking-widest hover:underline decoration-2">Forgot Password?</button>
+                    </div>
                     <input type="password" id="loginPass" placeholder="••••••••" 
                         class="w-full mt-1 p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-900 transition-all font-bold text-sm">
                 </div>
@@ -74,8 +83,38 @@
         </div>
     </div>
 
+    <div id="otpModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md rounded-[2rem] p-8 md:p-10 shadow-2xl animate__animated animate__fadeInUp">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                    <i class="fas fa-key"></i>
+                </div>
+                <h3 class="text-2xl font-black text-blue-900">Reset Password</h3>
+                <p class="text-gray-400 font-bold text-xs uppercase tracking-widest mt-2">Enter your email to receive an OTP</p>
+            </div>
+            
+            <div class="space-y-4">
+                <div id="emailStep">
+                    <input type="email" id="resetEmail" placeholder="Enter your Gmail address" 
+                        class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none focus:border-orange-500 transition-all font-bold text-sm">
+                    <button onclick="sendOTP()" class="w-full bg-blue-900 text-white font-black py-4 rounded-2xl mt-4 uppercase tracking-widest text-xs hover:bg-orange-500 transition-all">Send OTP</button>
+                </div>
+
+                <div id="otpStep" class="hidden">
+                    <p class="text-center text-[10px] font-black text-orange-500 uppercase mb-4">OTP sent to your email!</p>
+                    <input type="text" id="inputOTP" placeholder="Enter 6-Digit OTP" 
+                        class="w-full p-4 bg-gray-50 border-2 border-gray-100 rounded-2xl outline-none focus:border-orange-500 transition-all font-bold text-sm text-center tracking-[0.5em]">
+                    <button onclick="verifyOTP()" class="w-full bg-orange-500 text-white font-black py-4 rounded-2xl mt-4 uppercase tracking-widest text-xs shadow-lg shadow-orange-200">Verify & Login</button>
+                </div>
+            </div>
+            
+            <button onclick="closeForgotModal()" class="w-full mt-6 text-gray-400 font-bold text-[10px] uppercase tracking-widest hover:text-blue-900">Cancel</button>
+        </div>
+    </div>
+
     <script>
         let currentType = 'customer';
+        let generatedOTP = null;
 
         function setLoginType(type) {
             currentType = type;
@@ -97,6 +136,54 @@
             }
         }
 
+        // Forgot Password Logic
+        function openForgotModal() {
+            document.getElementById('otpModal').classList.remove('hidden');
+            document.getElementById('emailStep').classList.remove('hidden');
+            document.getElementById('otpStep').classList.add('hidden');
+        }
+
+        function closeForgotModal() {
+            document.getElementById('otpModal').classList.add('hidden');
+        }
+
+        function sendOTP() {
+            const email = document.getElementById('resetEmail').value;
+            const users = JSON.parse(localStorage.getItem("Mishra_Users")) || [];
+            const userExists = users.find(u => u.email === email);
+
+            if(!email.includes('@')) {
+                alert("Please enter a valid Gmail address.");
+                return;
+            }
+
+            if(userExists) {
+                // In real production, you would call a backend service here to send the actual email.
+                generatedOTP = Math.floor(100000 + Math.random() * 900000);
+                alert(`SIMULATION: OTP sent to ${email}.\nYour OTP is: ${generatedOTP}`);
+                
+                document.getElementById('emailStep').classList.add('hidden');
+                document.getElementById('otpStep').classList.remove('hidden');
+            } else {
+                alert("This email is not registered with us.");
+            }
+        }
+
+        function verifyOTP() {
+            const enteredOTP = document.getElementById('inputOTP').value;
+            if(enteredOTP == generatedOTP) {
+                const email = document.getElementById('resetEmail').value;
+                const users = JSON.parse(localStorage.getItem("Mishra_Users")) || [];
+                const user = users.find(u => u.email === email);
+                
+                localStorage.setItem("Mishra_Session", JSON.stringify(user));
+                alert("OTP Verified Successfully!");
+                window.location.href = 'index.html';
+            } else {
+                alert("Invalid OTP. Please try again.");
+            }
+        }
+
         function handleLogin() {
             const email = document.getElementById('loginEmail').value;
             const pass = document.getElementById('loginPass').value;
@@ -110,7 +197,6 @@
                     alert(`Access Denied: This is a ${user.accountType} account.`);
                     return;
                 }
-                // Check business name match for retailers
                 if (currentType === 'retailer' && user.businessName !== business) {
                     alert("Business Name does not match our records.");
                     return;

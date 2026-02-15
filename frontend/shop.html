@@ -11,19 +11,72 @@
 </head>
 <body class="bg-gray-50">
 
-    <nav class="glass-nav sticky top-0 z-50 shadow-sm">
-        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="text-2xl font-bold text-blue-900" onclick="location.href='index.html'" class="cursor-pointer">
-                MISHRA <span class="text-orange-500">IND.</span>
-            </div>
-            <div class="flex items-center space-x-6">
-                <div class="relative cursor-pointer" onclick="location.href='cart.html'">
-                    <i class="fas fa-shopping-cart text-2xl text-blue-900"></i>
-                    <span id="cartCount" class="absolute -top-2 -right-2 bg-orange-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center border-2 border-white">0</span>
-                </div>
-            </div>
+   <nav class="glass-nav sticky top-0 z-[100] shadow-sm bg-white/95 backdrop-blur-md border-b border-gray-100">
+      <div class="w-full px-6 py-4 flex justify-between items-center">
+        
+        <div class="flex items-center space-x-4 cursor-pointer shrink-0" onclick="location.href = 'index.html'">
+          <img src="./images/logo.jpg" class="h-12 w-12 md:h-14 md:w-14 object-cover rounded-full border-2 border-white shadow-lg" />
+          <div class="flex flex-col leading-none">
+            <span class="text-xl md:text-2xl font-black text-blue-900">MISHRA</span>
+            <span class="text-[9px] md:text-[11px] font-extrabold tracking-[0.3em] text-orange-500 uppercase mt-1">INDUSTRIES</span>
+          </div>
         </div>
+
+        <div class="flex items-center">
+          <div class="flex items-center space-x-8 text-sm font-bold text-gray-700 mr-8">
+            <a href="index.html" class="hover:text-orange-500 transition">Home</a>
+            <a href="shop.html" class="hover:text-orange-500 transition">Products</a>
+            <a href="index.html#about" class="hover:text-orange-500 transition">About Us</a>
+            <a href="index.html#contact" class="hover:text-orange-500 transition">Contact Us</a>
+            <a href="login.html" class="flex items-center hover:text-blue-900 transition">
+              <i class="far fa-user mr-2 text-xs"></i> Login
+            </a>
+            <a href="admin/admin-login.html" class="bg-blue-50 text-blue-900 px-4 py-2 rounded-lg hover:bg-blue-100 transition">Admin Portal</a>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <button onclick="toggleCart()" class="relative group focus:outline-none">
+              <div class="p-2 rounded-full bg-gray-50 group-hover:bg-orange-50 transition">
+                <i class="fas fa-shopping-cart text-xl text-blue-900 group-hover:text-orange-600"></i>
+              </div>
+              <span id="cartCount" class="absolute -top-1 -right-1 bg-orange-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center border-2 border-white font-bold">0</span>
+            </button>
+
+            <button id="mobileMenuBtn" class="lg:hidden flex text-2xl text-blue-900 focus:outline-none">
+              <i class="fas fa-bars"></i>
+            </button>
+          </div>
+        </div> 
+      </div>
     </nav>
+
+    <div id="cartSidebar" class="fixed right-0 top-0 h-full w-[85%] md:w-80 bg-white shadow-2xl z-[1000] translate-x-full transition-transform duration-300 p-6 flex flex-col">
+        <div class="flex justify-between items-center border-b pb-4">
+            <h2 class="text-xl font-black text-blue-900 uppercase">Your <span class="text-orange-500">Cart</span></h2>
+            <button onclick="toggleCart()" class="text-3xl text-gray-300 hover:text-red-500 transition">&times;</button>
+        </div>
+        <div id="cartItemsList" class="flex-1 overflow-y-auto py-6">
+            </div>
+        <div class="border-t pt-6">
+            <button onclick="location.href='cart.html'" class="w-full bg-orange-500 text-white py-4 rounded-xl font-bold hover:bg-orange-600 shadow-lg">Checkout Now</button>
+        </div>
+    </div>
+
+    <div id="mobileMenu" class="fixed inset-0 bg-white z-[999] hidden flex-col p-6 animate__animated animate__fadeIn">
+      <div class="flex justify-between items-center mb-10 border-b pb-4">
+        <span class="text-xl font-black text-blue-900 uppercase">Menu</span>
+        <button id="closeMobileMenu" class="text-4xl text-gray-400 hover:text-red-500 transition">&times;</button>
+      </div>
+      <nav class="flex flex-col space-y-6 text-xl font-bold">
+        <a href="index.html" class="border-b pb-4">Home</a>
+        <a href="shop.html" class="border-b pb-4">Products</a>
+        <a href="index.html#about" class="border-b pb-4">About Us</a>
+        <a href="index.html#contact" class="border-b pb-4">Contact Us</a>
+        <a href="login.html" class="border-b pb-4">Login</a>
+        <a href="admin/admin-login.html" class="text-blue-900 bg-blue-50 px-4 py-4 rounded-xl text-center">Admin Portal</a>
+      </nav>
+    </div>
+
             <div class="bg-white border-b border-gray-100">
     <div class="container mx-auto px-6 py-10">
         <div class="flex flex-col lg:flex-row justify-between items-center gap-8">

@@ -27,9 +27,15 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-6">
 
-    <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl p-8 md:p-16 animate__animated animate__fadeIn">
-        
-        <header class="text-center mb-12">
+    <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-2xl p-8 md:p-16 animate__animated animate__fadeIn relative">
+        <div class="absolute top-8 left-8 md:top-12 md:left-16">
+          <a href="index.html" class="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-widest hover:text-orange-500 transition-all whitespace-nowrap group">
+            <i class="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-1"></i>
+            <span>Back to main website</span>
+        </a>
+        </div>
+
+        <header class="text-right mb-12">
             <h1 class="text-5xl font-black text-blue-900 mb-4 tracking-tighter uppercase">Create Account</h1>
             <p class="text-gray-400 font-bold uppercase tracking-widest text-sm">Mishra Industries Premium Portal</p>
         </header>
@@ -107,7 +113,6 @@
         }
 
         function handleRegistration() {
-            // Your existing logic to save to localStorage
             alert("Mishra Industries: Registering " + selectedType);
         }
     </script>
