@@ -90,31 +90,6 @@
         </footer>
     </div>
 
-    <script>
-        let selectedType = 'customer';
-
-        function toggleType(type) {
-            selectedType = type;
-            const tabCust = document.getElementById('tabCustomer');
-            const tabRet = document.getElementById('tabRetailer');
-            const bizInp = document.getElementById('bizContainer');
-
-            if(type === 'customer') {
-                tabCust.classList.add('active-tab');
-                tabRet.classList.remove('active-tab');
-                tabRet.classList.add('text-gray-400');
-                bizInp.classList.add('hidden');
-            } else {
-                tabRet.classList.add('active-tab');
-                tabCust.classList.remove('active-tab');
-                tabCust.classList.add('text-gray-400');
-                bizInp.classList.remove('hidden');
-            }
-        }
-
-        function handleRegistration() {
-            alert("Mishra Industries: Registering " + selectedType);
-        }
-    </script>
+    <script src="js/register.js"></script>
 </body>
 </html>

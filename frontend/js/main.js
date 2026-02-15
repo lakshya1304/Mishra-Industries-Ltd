@@ -191,3 +191,30 @@ document.addEventListener('DOMContentLoaded', () => {
         closeBtn.onclick = closeMenu;
     }
 });
+
+
+function updateNavbarProfile() {
+    // 1. Retrieve the data from localStorage
+    const sessionData = localStorage.getItem("Mishra_Session");
+
+    if (sessionData) {
+        const user = JSON.parse(sessionData);
+
+        // 2. Map the fields to your HTML elements
+        const nameElement = document.getElementById('userNameDisplay');
+        const authButtons = document.getElementById('authButtons');
+        const profileArea = document.getElementById('userProfileArea');
+
+        if (nameElement) {
+            // We take only the first name for a cleaner look
+            nameElement.innerText = user.fullName.split(' ')[0]; 
+        }
+
+        // 3. Toggle visibility
+        if (authButtons) authButtons.classList.add('hidden');
+        if (profileArea) profileArea.classList.remove('hidden');
+    }
+}
+
+// Run this automatically when any page (index, shop, etc.) loads
+document.addEventListener('DOMContentLoaded', updateNavbarProfile);

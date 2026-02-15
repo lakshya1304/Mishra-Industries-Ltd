@@ -63,7 +63,7 @@ const mishraProducts = [
     { id: "21011", name: "Anchor Roma 1-Way Switch", price: 45, category: "Switches", image: "./Anchor Switches/Anchor Roma 1-Way Switch.jpeg" },
     { id: "21022", name: "Anchor Roma 2-Way Switch", price: 65, category: "Switches", image: "./Anchor Switches/Anchor Roma 2-Way Switch.jpeg" },
     { id: "21033", name: "Anchor Roma 1-Way Switch with Indicator", price: 85, category: "Switches", image: "./Anchor Switches/Anchor Roma 1-Way Switch with Indicator.jpeg" },
-    { id: "30840", name: "Anchor Roma 20A DP Switch", price: 210, category: "Switchgear", image: "./Anchor Switches/Anchor Roma Switch (Fan Mark Special Branding).jpeg" },
+    { id: "30840", name: "Anchor Roma 20A DP Switch", price: 210, category: "Switchgear", image: "./Anchor Switches/Anchor Roma Switch (Fan Mark Special Branding).jpg" },
     { id: "21044", name: "Anchor Roma Bell Push Switch", price: 95, category: "Switches", image: "./Anchor Switches/Anchor Roma Bell Push Switch.jpeg" },
     { id: "21055", name: "Anchor Roma Bell Push with Indicator", price: 130, category: "Switches", image: "./Anchor Switches/Anchor Roma Bell Push Switch with Indicator.jpeg" },
     { id: "21510", name: "Anchor 1-Way Switch (10AX)", price: 40, category: "Switches", image: "./Anchor Switches/1-Way Switch (10AX).jpeg" },
