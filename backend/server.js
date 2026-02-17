@@ -7,6 +7,9 @@ const path = require("path"); // ADDED: Fixed the 'path is not defined' error
 // 1. Load Environment Variables
 dotenv.config();
 
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log("✅ Mishra Industries Database Connected Successfully"))
+  .catch(err => console.log("❌ Connection Error:", err.message));
 // 2. Initialize Express
 const app = express();
 
@@ -58,8 +61,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// 9. Start Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
-});
+require('dotenv').config(); 
+
+module.exports = app;
