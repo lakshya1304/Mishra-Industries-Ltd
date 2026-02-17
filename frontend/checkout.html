@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout | Mishra Industries</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-slate-50 p-6 md:p-20">
+    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-10">
+        
+        <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
+            <h2 class="text-2xl font-black text-blue-900 mb-6 uppercase">Shipping Details</h2>
+            <form id="orderForm" class="space-y-4">
+                <input type="text" id="custName" placeholder="Full Name" class="w-full p-4 bg-slate-50 rounded-xl outline-none border focus:border-orange-500" required>
+                <input type="email" id="custEmail" placeholder="Email Address" class="w-full p-4 bg-slate-50 rounded-xl outline-none border focus:border-orange-500" required>
+                <input type="text" id="custPhone" placeholder="Phone Number" class="w-full p-4 bg-slate-50 rounded-xl outline-none border focus:border-orange-500" required>
+                <textarea id="custAddress" placeholder="Full Delivery Address" class="w-full p-4 bg-slate-50 rounded-xl outline-none border focus:border-orange-500 h-32" required></textarea>
+                <button type="submit" class="w-full bg-orange-500 text-white py-4 rounded-xl font-black uppercase tracking-widest hover:bg-blue-900 transition shadow-lg">Confirm Order</button>
+            </form>
+        </div>
+
+        <div class="bg-blue-900 text-white p-8 rounded-3xl shadow-xl">
+            <h2 class="text-2xl font-black mb-6 uppercase">Order Summary</h2>
+            <div id="summaryItems" class="space-y-4 mb-6 border-b border-white/10 pb-6 max-h-60 overflow-y-auto">
+                </div>
+            <div class="flex justify-between text-xl font-black uppercase">
+                <span>Grand Total</span>
+                <span id="grandTotal" class="text-orange-500">₹0</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cart = JSON.parse(localStorage.getItem("Mishra_Cart")) || [];
+            const summaryContainer = document.getElementById('summaryItems');
+            let total = 0;
+
+            cart.forEach(item => {
+                total += item.price;
+                summaryContainer.innerHTML += `
+                    <div class="flex justify-between text-sm">
+                        <span class="opacity-80">${item.name}</span>
+                        <span class="font-bold">₹${item.price.toLocaleString()}</span>
+                    </div>`;
+            });
+
+            document.getElementById('grandTotal').innerText = `₹${total.toLocaleString()}`;
+
+            // Handle Form Submission
+            document.getElementById('orderForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const orderData = {
+                    customerName: document.getElementById('custName').value,
+                    email: document.getElementById('custEmail').value,
+                    phone: document.getElementById('custPhone').value,
+                    address: document.getElementById('custAddress').value,
+                    items: cart,
+                    totalAmount: total
+                };
+
+                try {
+                    const response = await fetch('http://localhost:5000/api/orders/place', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(orderData)
+                    });
+
+                    if (response.ok) {
+                        alert("🎉 Order Placed Successfully!");
+                        localStorage.removeItem("Mishra_Cart"); // Clear cart
+                        window.location.href = "index.html";
+                    }
+                } catch (err) {
+                    alert("Connection failed. Ensure server is running.");
+                }
+            });
+        });
+    </script>
+</body>
+</html>

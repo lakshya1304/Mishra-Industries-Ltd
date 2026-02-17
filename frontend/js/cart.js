@@ -70,3 +70,29 @@ function renderCart() {
 }
 
 document.addEventListener("DOMContentLoaded", renderCart);
+
+function showCartToast(name) {
+    const toast = document.getElementById('cartToast');
+    const toastName = document.getElementById('toastProductName');
+    const toastBadge = document.getElementById('toastCartCount');
+    const audio = document.getElementById('successSound'); // Get the audio
+    
+    if(!toast) return;
+
+    // 1. Play Sound
+    if(audio) {
+        audio.currentTime = 0; // Reset to start if clicked rapidly
+        audio.play().catch(e => console.log("Audio play blocked by browser. Interaction required."));
+    }
+
+    const cart = JSON.parse(localStorage.getItem("Mishra_Cart")) || [];
+    
+    if(toastBadge) toastBadge.innerText = cart.length;
+    if(toastName) toastName.innerText = name;
+    
+    toast.style.top = "20px";
+    
+    setTimeout(() => {
+        toast.style.top = "-100px";
+    }, 3000);
+}

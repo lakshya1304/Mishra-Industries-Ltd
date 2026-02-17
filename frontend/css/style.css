@@ -204,23 +204,27 @@ aside label:hover {
   }
 }
 html {
-        scroll-behavior: smooth;
-      }
-      .hover-lift {
-        transition: transform 0.3s ease;
-      }
-      .hover-lift:hover {
-        transform: translateY(-5px);
-      }
-      /* Slideshow Styles */
-      .slide {
-        display: none;
-        animation: fadeEffect 1.5s;
-      }
-      @keyframes fadeEffect {
-        from {opacity: 0.4} 
-        to {opacity: 1}
-      }
+  scroll-behavior: smooth;
+}
+.hover-lift {
+  transition: transform 0.3s ease;
+}
+.hover-lift:hover {
+  transform: translateY(-5px);
+}
+/* Slideshow Styles */
+.slide {
+  display: none;
+  animation: fadeEffect 1.5s;
+}
+@keyframes fadeEffect {
+  from {
+    opacity: 0.4;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
 /* --- Mishra Industries Flexbox Layout Engine --- */
 
@@ -301,4 +305,91 @@ html {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 30px;
+  background: #0f172a;
+  color: #fff;
+}
+
+/* Logo + Name */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand img {
+  width: 40px;
+  height: 40px;
+}
+
+.company-name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Nav container */
+.nav-area {
+  display: flex;
+  align-items: center;
+}
+
+/* Desktop nav */
+.nav-links {
+  display: flex;
+  gap: 25px;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: white;
+  font-weight: 500;
+}
+
+/* Hamburger */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.hamburger span {
+  width: 25px;
+  height: 3px;
+  background: white;
+}
+
+/* Mobile logic */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    width: 100%;
+    background: #0f172a;
+    flex-direction: column;
+    align-items: center;
+    display: none;
+    padding: 20px 0;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
 }

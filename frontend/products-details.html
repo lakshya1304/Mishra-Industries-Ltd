@@ -2,251 +2,97 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Product Details | Mishra Industries Limited</title>
+    <title>Product Details | Mishra Industries</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="assets/css/style.css" />
   </head>
-  <body class="bg-gray-50 font-sans text-slate-900">
-    <nav class="glass-nav sticky top-0 z-[100] shadow-sm bg-white/95 backdrop-blur-md border-b border-gray-100">
-      <div class="w-full px-6 py-4 flex justify-between items-center">
-        
-        <div class="flex items-center space-x-4 cursor-pointer shrink-0" onclick="location.href = 'index.html'">
-          <img src="./images/logo.jpg" class="h-12 w-12 md:h-14 md:w-14 object-cover rounded-full border-2 border-white shadow-lg" />
-          <div class="flex flex-col leading-none">
-            <span class="text-xl md:text-2xl font-black text-blue-900">MISHRA</span>
-            <span class="text-[9px] md:text-[11px] font-extrabold tracking-[0.3em] text-orange-500 uppercase mt-1">INDUSTRIES</span>
-          </div>
-        </div>
-
-        <div class="flex items-center">
-          <div class="flex items-center space-x-8 text-sm font-bold text-gray-700 mr-8">
-            <a href="index.html" class="hover:text-orange-500 transition">Home</a>
-            <a href="shop.html" class="hover:text-orange-500 transition">Products</a>
-            <a href="index.html#about" class="hover:text-orange-500 transition">About Us</a>
-            <a href="index.html#contact" class="hover:text-orange-500 transition">Contact Us</a>
-            <a href="login.html" class="flex items-center hover:text-blue-900 transition">
-              <i class="far fa-user mr-2 text-xs"></i> Login
-            </a>
-            <a href="admin/admin-login.html" class="bg-blue-50 text-blue-900 px-4 py-2 rounded-lg hover:bg-blue-100 transition">Admin Portal</a>
-          </div>
-
-          <div class="flex items-center space-x-4">
-            <button onclick="toggleCart()" class="relative group focus:outline-none">
-              <div class="p-2 rounded-full bg-gray-50 group-hover:bg-orange-50 transition">
-                <i class="fas fa-shopping-cart text-xl text-blue-900 group-hover:text-orange-600"></i>
-              </div>
-              <span id="cartCount" class="absolute -top-1 -right-1 bg-orange-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center border-2 border-white font-bold">0</span>
-            </button>
-
-            <button id="mobileMenuBtn" class="lg:hidden flex text-2xl text-blue-900 focus:outline-none">
-              <i class="fas fa-bars"></i>
-            </button>
-          </div>
-        </div> 
+  <body class="bg-gray-50 p-6 md:p-20">
+    <div
+      id="detailsContainer"
+      class="max-w-6xl mx-auto bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row"
+    >
+      <div class="md:w-1/2 bg-slate-100 p-12 flex items-center justify-center">
+        <img
+          id="pImg"
+          src=""
+          class="max-h-[500px] object-contain transition-transform hover:scale-110 duration-500"
+        />
       </div>
-    </nav>
+      <div class="md:w-1/2 p-12 flex flex-col justify-center">
+        <p
+          id="pCat"
+          class="text-orange-500 font-black uppercase tracking-widest mb-2"
+        ></p>
+        <h1
+          id="pName"
+          class="text-4xl font-black text-blue-900 mb-6 uppercase"
+        ></h1>
+        <p id="pDesc" class="text-gray-500 leading-relaxed mb-8 text-lg"></p>
 
-    <div id="cartSidebar" class="fixed right-0 top-0 h-full w-[85%] md:w-80 bg-white shadow-2xl z-[1000] translate-x-full transition-transform duration-300 p-6 flex flex-col">
-        <div class="flex justify-between items-center border-b pb-4">
-            <h2 class="text-xl font-black text-blue-900 uppercase">Your <span class="text-orange-500">Cart</span></h2>
-            <button onclick="toggleCart()" class="text-3xl text-gray-300 hover:text-red-500 transition">&times;</button>
-        </div>
-        <div id="cartItemsList" class="flex-1 overflow-y-auto py-6">
-            </div>
-        <div class="border-t pt-6">
-            <button onclick="location.href='cart.html'" class="w-full bg-orange-500 text-white py-4 rounded-xl font-bold hover:bg-orange-600 shadow-lg">Checkout Now</button>
-        </div>
-    </div>
-
-    <div id="mobileMenu" class="fixed inset-0 bg-white z-[999] hidden flex-col p-6 animate__animated animate__fadeIn">
-      <div class="flex justify-between items-center mb-10 border-b pb-4">
-        <span class="text-xl font-black text-blue-900 uppercase">Menu</span>
-        <button id="closeMobileMenu" class="text-4xl text-gray-400 hover:text-red-500 transition">&times;</button>
-      </div>
-      <nav class="flex flex-col space-y-6 text-xl font-bold">
-        <a href="index.html" class="border-b pb-4">Home</a>
-        <a href="shop.html" class="border-b pb-4">Products</a>
-        <a href="index.html#about" class="border-b pb-4">About Us</a>
-        <a href="index.html#contact" class="border-b pb-4">Contact Us</a>
-        <a href="login.html" class="border-b pb-4">Login</a>
-        <a href="admin/admin-login.html" class="text-blue-900 bg-blue-50 px-4 py-4 rounded-xl text-center">Admin Portal</a>
-      </nav>
-    </div>
-
-
-    <div class="container mx-auto py-12 px-6">
-      <div
-        id="productDetailContainer"
-        class="bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col md:flex-row animate__animated animate__fadeInUp"
-      >
-        <div
-          class="md:w-1/2 bg-gray-100 p-10 flex items-center justify-center relative group"
-        >
-          <img
-            id="displayImage"
-            src=""
-            alt="Product Image"
-            class="rounded-2xl shadow-lg transition duration-500 group-hover:scale-105 max-h-[500px] object-contain"
-          />
+        <div class="flex items-center space-x-6 mb-10">
+          <span id="pPrice" class="text-4xl font-black text-blue-900"></span>
           <span
-            id="displayStatus"
-            class="absolute top-6 left-6 bg-blue-900 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-widest"
-          >
-            Industrial Grade
-          </span>
+            id="pDiscount"
+            class="bg-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse"
+          ></span>
         </div>
 
-        <div class="md:w-1/2 p-12 flex flex-col justify-center">
-          <nav
-            class="text-xs text-gray-400 font-bold uppercase tracking-widest mb-4"
-          >
-            Home / Shop /
-            <span id="displayCategory" class="text-orange-500">Category</span>
-          </nav>
-
-          <h1
-            id="displayName"
-            class="text-4xl font-black text-blue-900 mb-4 uppercase tracking-tight"
-          >
-            Product Name
-          </h1>
-
-          <div class="flex items-center mb-6 text-yellow-400">
-            <i class="fas fa-star"></i><i class="fas fa-star"></i
-            ><i class="fas fa-star"></i><i class="fas fa-star"></i
-            ><i class="fas fa-star"></i>
-            <span class="ml-3 text-gray-400 font-bold text-sm"
-              >(Verified Industrial Item)</span
-            >
-          </div>
-
-          <p
-            id="displayDescription"
-            class="text-gray-500 leading-relaxed mb-8 text-lg border-l-4 border-orange-500 pl-6"
-          >
-            Description loading...
-          </p>
-
-          <div
-            class="text-4xl font-black text-blue-900 mb-8 flex items-baseline gap-2"
-          >
-            <span id="displayPrice">₹0.00</span>
-            <span
-              class="text-sm text-gray-400 font-normal tracking-normal uppercase"
-              >/ Unit</span
-            >
-          </div>
-
-          <div class="flex items-center gap-4 mb-10">
-            <div
-              class="flex items-center border-2 border-gray-100 rounded-xl overflow-hidden"
-            >
-              <button
-                onclick="changeQty(-1)"
-                class="px-4 py-4 bg-gray-50 hover:bg-gray-100 transition font-bold"
-              >
-                -
-              </button>
-              <input
-                type="number"
-                id="quantityInput"
-                value="1"
-                readonly
-                class="w-16 text-center font-bold outline-none bg-white"
-              />
-              <button
-                onclick="changeQty(1)"
-                class="px-4 py-4 bg-gray-50 hover:bg-gray-100 transition font-bold"
-              >
-                +
-              </button>
-            </div>
-            <button
-              id="addToCartBtn"
-              class="flex-1 bg-blue-900 text-white py-4 rounded-xl font-bold hover:bg-orange-500 transition shadow-xl transform active:scale-95"
-            >
-              <i class="fas fa-cart-plus mr-2"></i> Add to Cart
-            </button>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4 border-t pt-8">
-            <div class="flex items-center text-sm font-bold text-gray-600">
-              <i class="fas fa-truck-fast text-orange-500 mr-3 text-lg"></i>
-              Door-Step Delivery
-            </div>
-            <div class="flex items-center text-sm font-bold text-gray-600">
-              <i class="fas fa-shield-halved text-orange-500 mr-3 text-lg"></i>
-              Warranty
-            </div>
-            <div class="flex items-center text-sm font-bold text-gray-600">
-              <i class="fas fa-certificate text-orange-500 mr-3 text-lg"></i>
-              ISI Certified
-            </div>
-            <div class="flex items-center text-sm font-bold text-gray-600">
-              <i
-                class="fas fa-hand-holding-dollar text-orange-500 mr-3 text-lg"
-              ></i>
-              Wholesale Price
-            </div>
-          </div>
-        </div>
+        <button
+          id="addBtn"
+          class="w-full bg-blue-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-orange-500 transition shadow-xl flex items-center justify-center"
+        >
+          <i class="fas fa-cart-plus mr-3"></i> Add to Mishra Cart
+        </button>
       </div>
     </div>
 
-    <script src="assets/js/cart.js"></script>
     <script>
-      document.addEventListener("DOMContentLoaded", () => {
-        // Fetch the ID saved when you clicked the card in shop.html
-        const currentId = localStorage.getItem("current_view_id");
-        const products =
-          JSON.parse(localStorage.getItem("Mishra_Products")) || [];
+      async function loadProductDetails() {
+        // 1. Get ID from the URL (?id=...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get("id");
 
-        // Find the specific product
-        const product = products.find((p) => p.id === currentId);
+        if (!productId) return (window.location.href = "shop.html");
 
-        if (product) {
-          // Update UI elements
-          document.getElementById("displayName").innerText = product.name;
-          document.getElementById("displayPrice").innerText =
-            "₹" + product.price.toLocaleString();
-          document.getElementById("displayDescription").innerText =
-            product.description;
-          document.getElementById("displayCategory").innerText =
-            product.category;
-          document.getElementById("displayImage").src = product.image;
-          document.title = `${product.name} | Mishra Industries`;
+        try {
+          // 2. Fetch specific product from your backend
+          const response = await fetch(
+            `http://localhost:5000/api/products/${productId}`,
+          );
+          const product = await response.json();
 
-          // Configure Add to Cart button
-          document.getElementById("addToCartBtn").onclick = () => {
-            const qty = parseInt(
-              document.getElementById("quantityInput").value,
-            );
-            for (let i = 0; i < qty; i++) {
-              addToCart(product.name, product.price);
-            }
-            alert(`${qty} units of ${product.name} added to cart!`);
+          // 3. Update the Page
+          document.getElementById("pName").innerText = product.name;
+          document.getElementById("pDesc").innerText = product.description;
+          document.getElementById("pCat").innerText = product.category;
+          document.getElementById("pPrice").innerText =
+            `₹${product.price.toLocaleString()}`;
+          document.getElementById("pImg").src =
+            `http://localhost:5000${product.image}`;
+
+          if (product.discount > 0) {
+            document.getElementById("pDiscount").innerText =
+              `${product.discount}% OFF`;
+          } else {
+            document.getElementById("pDiscount").style.display = "none";
+          }
+
+          // 4. Set up Add to Cart button
+          document.getElementById("addBtn").onclick = () => {
+            // This reuses your existing addToCart logic
+            const cart = JSON.parse(localStorage.getItem("Mishra_Cart")) || [];
+            cart.push({ name: product.name, price: product.price });
+            localStorage.setItem("Mishra_Cart", JSON.stringify(cart));
+            alert("Added to Cart!");
           };
-        } else {
-          // If no product is found, send back to shop
-          window.location.href = "shop.html";
+        } catch (err) {
+          console.error("Failed to load details", err);
         }
-      });
-
-      function changeQty(amt) {
-        const input = document.getElementById("quantityInput");
-        let val = parseInt(input.value) + amt;
-        if (val < 1) val = 1;
-        input.value = val;
       }
+      loadProductDetails();
     </script>
   </body>
 </html>

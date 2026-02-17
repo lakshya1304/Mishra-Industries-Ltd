@@ -1,77 +1,97 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Cart | Mishra Industries Limited</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-gray-50 min-h-screen">
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+  </head>
+  <body class="bg-gray-50 min-h-screen">
     <nav class="bg-white shadow-sm p-4 mb-10">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-blue-900" onclick="location.href='index.html'" style="cursor:pointer">
-                MISHRA <span class="text-orange-500">IND.</span>
-            </h1>
-            <a href="shop.html" class="text-blue-600 font-bold hover:underline">← Continue Shopping</a>
-        </div>
+      <div class="container mx-auto flex justify-between items-center">
+        <h1
+          class="text-2xl font-bold text-blue-900"
+          onclick="location.href = 'index.html'"
+          style="cursor: pointer"
+        >
+          MISHRA <span class="text-orange-500">IND.</span>
+        </h1>
+        <a href="shop.html" class="text-blue-600 font-bold hover:underline"
+          >← Continue Shopping</a
+        >
+      </div>
     </nav>
 
     <div class="container mx-auto px-6">
-        <h2 class="text-3xl font-black text-gray-800 mb-8">Shopping Cart</h2>
-        
-        <div class="flex flex-col lg:flex-row gap-10">
-            <div class="flex-1">
-                <div id="fullCartList" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6">
-                    </div>
-            </div>
+      <h2 class="text-3xl font-black text-gray-800 mb-8">Shopping Cart</h2>
 
-            <div class="lg:w-1/3">
-                <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 sticky top-24">
-                    <h3 class="text-xl font-bold mb-6 border-b pb-4">Order Summary</h3>
-                    <div class="flex justify-between mb-4 font-medium text-gray-600">
-                        <span>Subtotal</span>
-                        <span id="subtotal">₹0.00</span>
-                    </div>
-                    <div class="flex justify-between mb-4 font-medium text-gray-600">
-                        <span>Shipping</span>
-                        <span class="text-green-600 font-bold">FREE</span>
-                    </div>
-                    <div class="flex justify-between text-2xl font-black text-blue-900 mt-6 pt-6 border-t">
-                        <span>Total</span>
-                        <span id="grandTotal">₹0.00</span>
-                    </div>
-                    <button class="w-full bg-orange-500 text-white font-bold py-4 rounded-xl mt-8 hover:bg-orange-600 transition shadow-lg shadow-orange-200">
-                        Proceed to Payment
-                    </button>
-                </div>
-            </div>
+      <div class="flex flex-col lg:flex-row gap-10">
+        <div class="flex-1">
+          <div
+            id="fullCartList"
+            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-6"
+          ></div>
         </div>
+
+        <div class="lg:w-1/3">
+          <div
+            class="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 sticky top-24"
+          >
+            <h3 class="text-xl font-bold mb-6 border-b pb-4">Order Summary</h3>
+            <div class="flex justify-between mb-4 font-medium text-gray-600">
+              <span>Subtotal</span>
+              <span id="subtotal">₹0.00</span>
+            </div>
+            <div class="flex justify-between mb-4 font-medium text-gray-600">
+              <span>Shipping</span>
+              <span class="text-green-600 font-bold">FREE</span>
+            </div>
+            <div class="flex justify-between mb-4 font-medium text-gray-600">
+              <span>GST</span>
+              <span class="text-green-600 font-bold">18%</span>
+            </div>
+            <div
+              class="flex justify-between text-2xl font-black text-blue-900 mt-6 pt-6 border-t"
+            >
+              <span>Total</span>
+              <span id="grandTotal">₹0.00</span>
+            </div>
+            <button
+              class="w-full bg-orange-500 text-white font-bold py-4 rounded-xl mt-8 hover:bg-orange-600 transition shadow-lg shadow-orange-200"
+            >
+              Proceed to Payment
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <script>
-        function renderFullCart() {
-            const cart = JSON.parse(localStorage.getItem('mishra_cart')) || [];
-            const container = document.getElementById('fullCartList');
-            const subtotalEl = document.getElementById('subtotal');
-            const totalEl = document.getElementById('grandTotal');
+      function renderFullCart() {
+        const cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
+        const container = document.getElementById("fullCartList");
+        const subtotalEl = document.getElementById("subtotal");
+        const totalEl = document.getElementById("grandTotal");
 
-            if (cart.length === 0) {
-                container.innerHTML = `
+        if (cart.length === 0) {
+          container.innerHTML = `
                     <div class="text-center py-20">
                         <i class="fas fa-shopping-cart text-5xl text-gray-200 mb-4"></i>
                         <p class="text-gray-400">Your cart is currently empty.</p>
                     </div>`;
-                return;
-            }
+          return;
+        }
 
-            let html = '';
-            let total = 0;
+        let html = "";
+        let total = 0;
 
-            cart.forEach((item, index) => {
-                total += item.price * item.quantity;
-                html += `
+        cart.forEach((item, index) => {
+          total += item.price * item.quantity;
+          html += `
                 <div class="flex items-center justify-between border-b last:border-0 pb-6 mb-6 last:mb-0">
                     <div class="flex items-center space-x-4">
                         <div class="h-20 w-20 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -94,34 +114,34 @@
                         </button>
                     </div>
                 </div>`;
-            });
+        });
 
-            container.innerHTML = html;
-            subtotalEl.innerText = "₹" + total.toLocaleString();
-            totalEl.innerText = "₹" + total.toLocaleString();
+        container.innerHTML = html;
+        subtotalEl.innerText = "₹" + total.toLocaleString();
+        totalEl.innerText = "₹" + total.toLocaleString();
+      }
+
+      function updateQty(name, delta) {
+        let cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
+        const item = cart.find((i) => i.name === name);
+        if (item) {
+          item.quantity += delta;
+          if (item.quantity <= 0) {
+            cart = cart.filter((i) => i.name !== name);
+          }
+          localStorage.setItem("mishra_cart", JSON.stringify(cart));
+          renderFullCart();
         }
+      }
 
-        function updateQty(name, delta) {
-            let cart = JSON.parse(localStorage.getItem('mishra_cart')) || [];
-            const item = cart.find(i => i.name === name);
-            if (item) {
-                item.quantity += delta;
-                if (item.quantity <= 0) {
-                    cart = cart.filter(i => i.name !== name);
-                }
-                localStorage.setItem('mishra_cart', JSON.stringify(cart));
-                renderFullCart();
-            }
-        }
+      function removeItem(name) {
+        let cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
+        cart = cart.filter((i) => i.name !== name);
+        localStorage.setItem("mishra_cart", JSON.stringify(cart));
+        renderFullCart();
+      }
 
-        function removeItem(name) {
-            let cart = JSON.parse(localStorage.getItem('mishra_cart')) || [];
-            cart = cart.filter(i => i.name !== name);
-            localStorage.setItem('mishra_cart', JSON.stringify(cart));
-            renderFullCart();
-        }
-
-        document.addEventListener('DOMContentLoaded', renderFullCart);
+      document.addEventListener("DOMContentLoaded", renderFullCart);
     </script>
-</body>
+  </body>
 </html>
