@@ -13,11 +13,21 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
-    <link rel="stylesheet" href="css/style.css" />
     <style>
-      .filter-checkbox:checked + span {
-        color: #f97316;
-        font-weight: 800;
+      .cart-drawer {
+        transform: translateX(100%);
+        transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .cart-drawer.open {
+        transform: translateX(0);
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .filter-chip.active {
+        background: #1e3a8a;
+        color: white;
+        border-color: #1e3a8a;
       }
       .custom-scrollbar::-webkit-scrollbar {
         width: 5px;
@@ -28,331 +38,273 @@
       }
     </style>
   </head>
-  <body class="bg-gray-50 custom-scrollbar">
-    <div id="cartToast" class="fixed top-[-100px] left-1/2 -translate-x-1/2 z-[2000] transition-all duration-500 w-full max-w-md px-4">
-    <div class="bg-blue-900 text-white rounded-2xl shadow-2xl p-4 flex items-center justify-between border-b-4 border-orange-500">
-        <div class="flex items-center space-x-4">
-            <div class="bg-white/10 p-2 rounded-lg">
-                <i class="fas fa-cart-arrow-down text-orange-500"></i>
-            </div>
-            <div>
-                <p class="text-[10px] font-black uppercase tracking-widest text-orange-400 leading-none mb-1">Added to Cart</p>
-                <p id="toastProductName" class="font-bold text-sm truncate max-w-[180px]">Product Name</p>
-            </div>
-        </div>
-        
-        <button onclick="location.href='cart.html'" class="relative bg-orange-500 hover:bg-white hover:text-orange-500 text-white px-5 py-2 rounded-xl text-xs font-black uppercase transition-all flex items-center">
-            View Cart
-            <span id="toastCartCount" class="ml-2 bg-blue-900 text-white text-[9px] rounded-full h-4 w-4 flex items-center justify-center border border-white">
-                0
-            </span>
-        </button>
-    </div>
-</div>
-<audio id="successSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" preload="auto"></audio>
-                <p class="text-[10px] font-black uppercase tracking-widest text-orange-400 leading-none mb-1">Added to Cart</p>
-                <p id="toastProductName" class="font-bold text-sm truncate max-w-[200px]">Product Name</p>
-            </div>
-        </div>
-        <button onclick="location.href='cart.html'" class="bg-orange-500 hover:bg-white hover:text-orange-500 text-white px-4 py-2 rounded-xl text-xs font-black uppercase transition-colors">
-            View Cart
-        </button>
-    </div>
-</div>
-    <nav
-      class="glass-nav sticky top-0 z-[100] shadow-sm bg-white/95 backdrop-blur-md border-b border-gray-100"
-    >
-      <div class="w-full px-6 py-4 flex justify-between items-center">
+  <body class="bg-slate-50 font-sans custom-scrollbar">
+    <div id="cartDrawer" class="fixed inset-0 z-[3000] invisible">
+      <div
+        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onclick="toggleCart()"
+      ></div>
+      <div
+        class="cart-drawer absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl flex flex-col"
+      >
         <div
-          class="flex items-center space-x-4 cursor-pointer shrink-0"
-          onclick="location.href = 'index.html'"
+          class="p-6 border-b flex justify-between items-center bg-blue-900 text-white"
         >
-          <img
-            src="./images/logo.jpeg"
-            class="h-12 w-12 md:h-14 md:w-14 object-cover rounded-full border-2 border-white shadow-lg"
-          />
-          <div class="flex flex-col leading-none">
-            <span class="text-xl md:text-2xl font-black text-blue-900"
-              >MISHRA</span
-            >
-            <span
-              class="text-[9px] md:text-[11px] font-extrabold tracking-[0.3em] text-orange-500 uppercase mt-1"
-              >INDUSTRIES</span
-            >
+          <h2 class="text-xl font-black uppercase tracking-tighter">
+            Your Basket
+          </h2>
+          <button
+            onclick="toggleCart()"
+            class="text-3xl hover:text-orange-500 transition"
+          >
+            &times;
+          </button>
+        </div>
+        <div id="cartItemsList" class="flex-grow overflow-y-auto p-6 space-y-4">
+          <div
+            class="text-center py-20 text-slate-400 font-bold uppercase text-[10px] tracking-widest"
+          >
+            Cart is empty
           </div>
         </div>
+        <div class="p-6 border-t bg-gray-50">
+          <div class="flex justify-between items-center mb-6">
+    <span class="text-[10px] font-black uppercase text-blue-900 tracking-widest">Subtotal</span>
+    <span id="cartTotal" class="text-xl font-black text-blue-900">₹0</span>
+</div>
+          <button
+            onclick="location.href = 'cart.html'"
+            class="w-full bg-orange-500 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-blue-900 transition-all shadow-lg active:scale-95"
+          >
+            Checkout
+          </button>
+        </div>
+      </div>
+    </div>
 
-        <div class="flex items-center">
+    <nav
+      class="sticky top-0 z-[100] bg-white/95 backdrop-blur-md border-b border-gray-100"
+    >
+      <div class="w-full px-6 py-4 flex flex-col gap-4">
+        <div class="flex justify-between items-center">
           <div
-            class="hidden lg:flex items-center space-x-8 text-sm font-bold text-gray-700 mr-8"
+            class="flex items-center space-x-4 cursor-pointer shrink-0"
+            onclick="location.href = 'index.html'"
+          >
+            <img
+              src="./images/logo.jpeg"
+              class="h-12 w-12 rounded-full border-2 border-orange-500 shadow-md"
+            />
+            <div class="flex flex-col leading-none">
+              <span class="text-xl font-black text-blue-900">MISHRA</span>
+              <span
+                class="text-[9px] font-extrabold tracking-[0.3em] text-orange-500 uppercase"
+                >INDUSTRIES</span
+              >
+            </div>
+          </div>
+
+          <div
+            class="hidden lg:flex items-center space-x-8 text-xs font-black uppercase tracking-widest text-slate-600"
           >
             <a href="index.html" class="hover:text-orange-500 transition"
               >Home</a
             >
-            <a href="shop.html" class="text-orange-500 transition">Products</a>
+            <a href="shop.html" class="text-orange-500">Products</a>
             <a href="index.html#about" class="hover:text-orange-500 transition"
               >About Us</a
             >
             <a
               href="index.html#contact"
               class="hover:text-orange-500 transition"
-              >Contact Us</a
+              >Contact</a
             >
             <a
               href="login.html"
               class="flex items-center hover:text-orange-500 transition"
             >
-              <i class="far fa-user mr-2 text-xs"></i> Login
+              <i class="far fa-user mr-2"></i> Login
             </a>
             <a
               href="admin/site-editor.html"
-              class="bg-blue-50 text-blue-900 px-4 py-2 rounded-lg hover:bg-blue-100 transition"
+              class="bg-blue-50 text-blue-900 px-4 py-2 rounded-xl hover:bg-blue-900 hover:text-white transition"
               >Admin Portal</a
             >
           </div>
 
-          <div class="flex items-center space-x-4">
-            <button
-              onclick="toggleCart()"
-              class="relative group focus:outline-none"
+          <button
+            onclick="toggleCart()"
+            class="relative p-3 bg-blue-50 rounded-2xl text-blue-900 hover:bg-orange-500 hover:text-white transition-all"
+          >
+            <i class="fas fa-shopping-basket text-xl"></i>
+            <span
+              id="cartCount"
+              class="absolute -top-1 -right-1 bg-blue-900 text-white text-[10px] w-5 h-5 rounded-full border-2 border-white flex items-center justify-center font-bold"
+              >0</span
             >
-              <div
-                class="p-2 rounded-full bg-gray-50 group-hover:bg-orange-50 transition"
+          </button>
+        </div>
+
+        <div class="w-full max-w-3xl mx-auto relative group">
+          <div
+            class="relative flex items-center bg-slate-100 rounded-2xl border-2 border-transparent focus-within:border-orange-500 focus-within:bg-white transition-all shadow-sm"
+          >
+            <i class="fas fa-search ml-5 text-slate-400"></i>
+            <input
+              type="text"
+              id="searchInput"
+              oninput="renderShop()"
+              placeholder="Search switches, cables, or brands..."
+              class="w-full bg-transparent px-4 py-3 outline-none font-bold text-slate-700 placeholder:text-slate-400"
+            />
+            <div class="flex items-center pr-4 space-x-4">
+              <button
+                onclick="startVoiceSearch()"
+                class="text-slate-400 hover:text-blue-900 transition"
+                title="Voice Search"
               >
-                <i
-                  class="fas fa-shopping-cart text-xl text-blue-900 group-hover:text-orange-600"
-                ></i>
-              </div>
-              <span
-                id="cartCount"
-                class="absolute -top-1 -right-1 bg-orange-600 text-white text-[10px] rounded-full h-5 w-5 flex items-center justify-center border-2 border-white font-bold"
-                >0</span
+                <i class="fas fa-microphone" id="micIcon"></i>
+              </button>
+              <label
+                class="cursor-pointer text-slate-400 hover:text-blue-900 transition"
+                title="Visual Search"
               >
-            </button>
-            <button
-              id="mobileMenuBtn"
-              class="lg:hidden flex text-2xl text-blue-900"
-            >
-              <i class="fas fa-bars"></i>
-            </button>
+                <i class="fas fa-camera"></i>
+                <input
+                  type="file"
+                  id="photoSearchInput"
+                  accept="image/*"
+                  class="hidden"
+                  onchange="handlePhotoSearch(event)"
+                />
+              </label>
+            </div>
           </div>
         </div>
       </div>
     </nav>
 
-    <div class="bg-white border-b border-gray-100 sticky top-[73px] z-[90]">
-      <div class="container mx-auto px-6 py-6">
+    <div
+      class="bg-white border-b overflow-x-auto whitespace-nowrap px-6 py-4 no-scrollbar"
+    >
+      <div class="mb-8">
+    <h3 class="text-[10px] font-black text-blue-900 uppercase tracking-widest mb-6">Brands</h3>
+    <div class="flex flex-wrap gap-2">
+        <button onclick="filterByBrand('All')" class="filter-chip active px-4 py-2 rounded-full border border-slate-100 text-[10px] font-black uppercase tracking-widest transition-all">All</button>
+        <button onclick="filterByBrand('Siemens')" class="filter-chip px-4 py-2 rounded-full border border-slate-100 text-[10px] font-black uppercase tracking-widest transition-all">Siemens</button>
+        <button onclick="filterByBrand('Anchor')" class="filter-chip px-4 py-2 rounded-full border border-slate-100 text-[10px] font-black uppercase tracking-widest transition-all">Anchor</button>
+        <button onclick="filterByBrand('Havells')" class="filter-chip px-4 py-2 rounded-full border border-slate-100 text-[10px] font-black uppercase tracking-widest transition-all">Havells</button>
+        <button onclick="filterByBrand('Polycab')" class="filter-chip px-4 py-2 rounded-full border border-slate-100 text-[10px] font-black uppercase tracking-widest transition-all">Polycab</button>
+        <button onclick="filterByBrand('L&T')" class="filter-chip px-4 py-2 rounded-full border border-slate-100 text-[10px] font-black uppercase tracking-widest transition-all">L&T</button>
+        <button onclick="filterByBrand('Mishra Atlas')" class="filter-chip px-4 py-2 rounded-full border border-slate-100 text-[10px] font-black uppercase tracking-widest transition-all">Mishra Atlas</button>
+    </div>
+</div>
+
+    <main class="container mx-auto px-6 py-10 flex flex-col lg:flex-row gap-10">
+      <aside
+        class="w-full lg:w-64 space-y-8 animate__animated animate__fadeInLeft"
+      >
         <div
-          class="flex flex-col lg:flex-row justify-between items-center gap-6"
+          class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100"
         >
-          <div class="relative w-full lg:w-1/3 group">
-            <i
-              class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-orange-500 transition-colors"
-            ></i>
-            <input
-              type="text"
-              oninput="handleSearch(event)"
-              placeholder="Search industrial electricals..."
-              class="w-full pl-14 pr-6 py-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-orange-500 focus:shadow-xl transition-all font-bold text-slate-700"
-            />
+          <h3
+            class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-6"
+          >
+            Categories
+          </h3>
+          <div class="space-y-4">
+            <label class="flex items-center space-x-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                value="Switches"
+                class="cat-check w-5 h-5 rounded border-slate-200 text-orange-500 focus:ring-0"
+              />
+              <span
+                class="text-sm font-bold text-slate-600 group-hover:text-blue-900"
+                >Switches</span
+              >
+            </label>
+            <label class="flex items-center space-x-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                value="Cables"
+                class="cat-check w-5 h-5 rounded border-slate-200 text-orange-500 focus:ring-0"
+              />
+              <span
+                class="text-sm font-bold text-slate-600 group-hover:text-blue-900"
+                >Cables</span
+              >
+            </label>
+            <label class="flex items-center space-x-3 cursor-pointer group">
+              <input
+                type="checkbox"
+                value="Lighting"
+                class="cat-check w-5 h-5 rounded border-slate-200 text-orange-500 focus:ring-0"
+              />
+              <span
+                class="text-sm font-bold text-slate-600 group-hover:text-blue-900"
+                >Lighting</span
+              >
+            </label>
           </div>
 
-          <div class="flex flex-wrap justify-center gap-3">
-            <button
-              onclick="filterByCategory('All')"
-              class="category-btn px-8 py-3 bg-blue-900 text-white rounded-xl font-black text-xs uppercase tracking-widest shadow-lg hover:bg-orange-600 transition transform active:scale-95"
+          <div class="mt-10 pt-8 border-t border-slate-50">
+            <h3
+              class="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-6"
             >
-              All
-            </button>
-            <button
-              onclick="filterByCategory('Switches')"
-              class="category-btn px-6 py-3 bg-white text-slate-500 border-2 border-gray-50 rounded-xl font-black text-xs uppercase tracking-widest hover:border-orange-500 hover:text-orange-500 transition shadow-sm"
+              Price Range (₹)
+            </h3>
+            <input
+              type="range"
+              id="priceRange"
+              min="0"
+              max="100000"
+              value="100000"
+              class="w-full accent-orange-500"
+            />
+            <div
+              class="flex justify-between mt-4 text-[11px] font-black text-blue-900"
             >
-              Switches
-            </button>
-            <button
-              onclick="filterByCategory('Cables')"
-              class="category-btn px-6 py-3 bg-white text-slate-500 border-2 border-gray-50 rounded-xl font-black text-xs uppercase tracking-widest hover:border-orange-500 hover:text-orange-500 transition shadow-sm"
-            >
-              Cables
-            </button>
-            <button
-              onclick="filterByCategory('Switchgear')"
-              class="category-btn px-6 py-3 bg-white text-slate-500 border-2 border-gray-50 rounded-xl font-black text-xs uppercase tracking-widest hover:border-orange-500 hover:text-orange-500 transition shadow-sm"
-            >
-              Switchgear
-            </button>
-            <button
-              onclick="filterByCategory('Lighting')"
-              class="category-btn px-6 py-3 bg-white text-slate-500 border-2 border-gray-50 rounded-xl font-black text-xs uppercase tracking-widest hover:border-orange-500 hover:text-orange-500 transition shadow-sm"
-            >
-              Lighting
-            </button>
+              <span>₹0</span>
+              <span id="priceDisplay" class="bg-blue-50 px-2 py-1 rounded"
+                >₹1,00,000</span
+              >
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </aside>
 
-    <div class="container mx-auto px-6 py-8">
-      <div class="flex flex-col lg:flex-row gap-8">
-        <aside class="w-full lg:w-1/4 animate__animated animate__fadeInLeft">
-          <div
-            class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 sticky top-48"
+      <section class="flex-grow">
+        <div class="flex justify-between items-center mb-8">
+          <h2
+            id="productCount"
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
           >
-            <div class="flex justify-between items-center mb-6 border-b pb-4">
-              <h2 class="text-xl font-black text-blue-900 uppercase">
-                Filters
-              </h2>
-              <button
-                onclick="clearAllFilters()"
-                class="text-[10px] font-black text-orange-500 uppercase hover:underline"
-              >
-                Clear All
-              </button>
-            </div>
-
-            <div class="mb-8">
-              <h3
-                class="font-black text-slate-400 mb-4 uppercase text-[10px] tracking-[0.2em]"
-              >
-                Quick Categories
-              </h3>
-              <div class="space-y-4" id="sidebarCategoryList">
-                <label
-                  class="flex items-center text-gray-600 hover:text-orange-500 cursor-pointer group"
-                >
-                  <input
-                    type="checkbox"
-                    class="filter-checkbox w-5 h-5 rounded-lg border-gray-200 text-orange-500 focus:ring-orange-500 mr-3 transition-all"
-                  />
-                  <span
-                    class="font-bold text-sm transition-transform group-hover:translate-x-1"
-                    >Switches</span
-                  >
-                </label>
-                <label
-                  class="flex items-center text-gray-600 hover:text-orange-500 cursor-pointer group"
-                >
-                  <input
-                    type="checkbox"
-                    class="filter-checkbox w-5 h-5 rounded-lg border-gray-200 text-orange-500 focus:ring-orange-500 mr-3 transition-all"
-                  />
-                  <span
-                    class="font-bold text-sm transition-transform group-hover:translate-x-1"
-                    >Cables</span
-                  >
-                </label>
-                <label
-                  class="flex items-center text-gray-600 hover:text-orange-500 cursor-pointer group"
-                >
-                  <input
-                    type="checkbox"
-                    class="filter-checkbox w-5 h-5 rounded-lg border-gray-200 text-orange-500 focus:ring-orange-500 mr-3 transition-all"
-                  />
-                  <span
-                    class="font-bold text-sm transition-transform group-hover:translate-x-1"
-                    >Switchgear</span
-                  >
-                </label>
-                <label
-                  class="flex items-center text-gray-600 hover:text-orange-500 cursor-pointer group"
-                >
-                  <input
-                    type="checkbox"
-                    class="filter-checkbox w-5 h-5 rounded-lg border-gray-200 text-orange-500 focus:ring-orange-500 mr-3 transition-all"
-                  />
-                  <span
-                    class="font-bold text-sm transition-transform group-hover:translate-x-1"
-                    >Lighting</span
-                  >
-                </label>
-              </div>
-            </div>
-
-            <div class="mb-8 border-t border-slate-50 pt-6">
-              <h3
-                class="font-black text-slate-400 mb-4 uppercase text-[10px] tracking-[0.2em]"
-              >
-                Max Price (₹)
-              </h3>
-              <input
-                type="range"
-                id="priceRange"
-                min="0"
-                max="50000"
-                value="50000"
-                oninput="updatePriceLabel(this.value)"
-                class="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-orange-500"
-              />
-              <div
-                class="flex justify-between text-[10px] text-slate-400 mt-3 font-black"
-              >
-                <span>₹0</span>
-                <span
-                  id="priceValue"
-                  class="text-blue-900 bg-blue-50 px-2 py-1 rounded"
-                  >₹50,000</span
-                >
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        <main class="w-full lg:w-3/4">
-          <div
-            class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4"
+            Inventory Scanning...
+          </h2>
+          <select
+            id="sortSelect"
+            class="bg-transparent border-b-2 border-blue-900 font-bold text-[10px] p-1 outline-none uppercase"
           >
-            <p
-              id="productCount"
-              class="text-slate-400 font-bold text-sm uppercase tracking-widest"
-            >
-              Scanning Mishra Inventory...
-            </p>
-            <div class="flex items-center space-x-2">
-              <span class="text-[10px] font-black text-slate-400 uppercase"
-                >Sort:</span
-              >
-              <select
-                onchange="handleSort(this.value)"
-                class="bg-white border border-gray-200 text-xs font-bold rounded-xl px-4 py-2 outline-none focus:border-orange-500 shadow-sm transition-all"
-              >
-                <option value="newest">Newest First</option>
-                <option value="low">Price: Low to High</option>
-                <option value="high">Price: High to Low</option>
-              </select>
-            </div>
-          </div>
-
-          <div
-            id="productGrid"
-            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
-          ></div>
-        </main>
-      </div>
-    </div>
+            <option value="newest">Newest First</option>
+            <option value="low">Price: Low to High</option>
+            <option value="high">Price: High to Low</option>
+          </select>
+        </div>
+        <div
+          id="productGrid"
+          class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8"
+        ></div>
+      </section>
+    </main>
 
     <script src="js/cart.js"></script>
     <script src="js/shop.js"></script>
     <script>
-      function updatePriceLabel(val) {
-        document.getElementById("priceValue").innerText =
-          `₹${parseInt(val).toLocaleString()}`;
-        // Trigger shop filtering
-        if (typeof renderShop === "function") renderShop();
-      }
-
-      function clearAllFilters() {
-        document
-          .querySelectorAll(".filter-checkbox")
-          .forEach((cb) => (cb.checked = false));
-        document.getElementById("priceRange").value = 50000;
-        updatePriceLabel(50000);
-        renderShop("All");
-      }
-
-      function handleSort(criteria) {
-        // Sort logic is handled inside shop.js during renderShop
-        if (typeof renderShop === "function") renderShop();
+      function toggleCart() {
+        const drawer = document.getElementById("cartDrawer");
+        drawer.classList.toggle("invisible");
+        drawer.querySelector(".cart-drawer").classList.toggle("open");
       }
     </script>
   </body>

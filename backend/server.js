@@ -1,19 +1,16 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const mongoose = require("mongoose");
-const path = require("path"); // ADDED: Fixed the 'path is not defined' error
-
-// 1. Load Environment Variables
+let db = require("./config/db.js");
+const path = require("path");
+let morgan=require("morgan")
+// 1. Load Environment Variables (MUST BE FIRST)
 dotenv.config();
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Mishra Industries Database Connected Successfully"))
-  .catch(err => console.log("❌ Connection Error:", err.message));
 // 2. Initialize Express
 const app = express();
-
-// 3. Global Middleware (MOVED UP: Must be before routes)
+app.use(morgan("dev"))
+// 3. Global Middleware
 app.use(
   cors({
     origin: "*",
@@ -26,21 +23,17 @@ app.use(express.json());
 // 4. Static Folder for Images
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// process.env.NODE_ENV="prod"
 // Debugging
 console.log("-----------------------------------------");
-console.log("Connecting to:", process.env.MONGO_URI);
+console.log(
+  "Connecting to:",
+  process.env.NODE_ENV == "dev" ? process.env.MONGO_URI : "some db",
+);
 console.log("-----------------------------------------");
 
-// 5. Database Connection Logic
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() =>
-    console.log("✅ Mishra Industries Database Connected Successfully"),
-  )
-  .catch((err) => {
-    console.error("❌ MongoDB Connection Error:", err.message);
-    process.exit(1);
-  });
+// 5. Database Connection Logic (Cleaned for Atlas)
+db();
 
 // 6. API Routes Integration
 app.use("/api/auth", require("./routes/authRoutes"));
@@ -61,6 +54,11 @@ app.use((err, req, res, next) => {
   });
 });
 
-require('dotenv').config(); 
+let PORT = process.env.PORT || 5000;
 
-module.exports = app;
+app.listen(PORT, () => {
+  console.log(`Server fired up on ${PORT}`);
+});
+
+
+//envf, status-map:cjs-ejs'''

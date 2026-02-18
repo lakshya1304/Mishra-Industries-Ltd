@@ -32,24 +32,21 @@
       class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col"
     >
       <div class="flex items-center space-x-3 mb-12">
-        <div class="bg-orange-500 p-2 rounded-lg">
-          <i class="fas fa-bolt text-xl text-white"></i>
-        </div>
         <h2 class="text-2xl font-bold tracking-tighter">
-          MISHRA <span class="text-orange-500">PRO</span>
+          MISHRA <span class="text-orange-500">INDUSTRIES</span>
         </h2>
       </div>
 
       <nav class="space-y-2 flex-1">
         <a
           href="#"
-          class="flex items-center space-x-3 p-4 bg-orange-500/10 text-orange-500 rounded-xl font-bold transition"
+          class="flex items-center space-x-3 p-3 bg-orange-500/10 text-orange-500 rounded-xl font-bold transition"
         >
           <i class="fas fa-layer-group"></i> <span>Site Editor</span>
         </a>
         <a
           href="stock-dashboard.html"
-          class="flex items-center space-x-3 p-4 hover:bg-slate-800 rounded-xl transition text-slate-400"
+          class="flex items-center space-x-3 p-3 hover:bg-slate-800 rounded-xl transition text-slate-400"
         >
           <i class="fas fa-boxes"></i> <span>Inventory</span>
         </a>
@@ -57,7 +54,7 @@
 
       <a
         href="../index.html"
-        class="flex items-center space-x-3 p-4 text-slate-500 hover:text-red-400 transition border-t border-slate-800"
+        class="flex items-center space-x-3 p-3 text-slate-500 hover:text-red-400 transition border-t border-slate-800"
       >
         <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
       </a>
@@ -100,6 +97,11 @@
               <th
                 class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest"
               >
+                Brand
+              </th>
+              <th
+                class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest"
+              >
                 Pricing
               </th>
               <th
@@ -123,9 +125,7 @@
       id="productModal"
       class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[100] backdrop-blur-md transition-all"
     >
-      <div
-        class="bg-white w-full max-w-xl rounded-3xl shadow-2xl p-10 animate__animated animate__zoomIn animate__faster"
-      >
+      <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 animate__animated animate__zoomIn animate__faster">
         <div class="flex justify-between items-center mb-8">
           <h2
             id="modalTitle"
@@ -141,14 +141,14 @@
           </button>
         </div>
 
-        <form id="productForm" class="space-y-6">
+        <form id="productForm" class="space-y-4">
           <div class="relative group">
             <label class="block text-sm font-bold text-slate-700 mb-2"
               >Product Image</label
             >
             <div
               id="imagePreviewContainer"
-              class="hidden mb-4 relative h-40 w-full rounded-2xl overflow-hidden border"
+              class="hidden mb-4 relative h-32 w-full rounded-2xl overflow-hidden border"
             >
               <img
                 id="imagePreview"
@@ -165,7 +165,7 @@
             </div>
             <label
               id="uploadLabel"
-              class="flex flex-col items-center justify-center w-full h-40 border-2 border-slate-200 border-dashed rounded-3xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition"
+              class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-200 border-dashed rounded-3xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition"
             >
               <div class="flex flex-col items-center justify-center pt-5 pb-6">
                 <i class="fas fa-image text-slate-400 text-3xl mb-3"></i>
@@ -192,7 +192,7 @@
                 type="text"
                 id="prodName"
                 placeholder="e.g. 10A Toggle Switch"
-                class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
+                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
               />
             </div>
             <div>
@@ -203,7 +203,7 @@
                 type="number"
                 id="prodPrice"
                 placeholder="0.00"
-                class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
+                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
               />
             </div>
             <div>
@@ -214,31 +214,49 @@
                 type="number"
                 id="prodDiscount"
                 value="0"
-                class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
+                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
               />
             </div>
-            <div class="col-span-2">
-              <label class="block text-sm font-bold text-slate-700 mb-2"
-                >Category</label
-              >
-              <select
-                id="prodCategory"
-                class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
-              >
-                <option>Switches</option>
-                <option>Cables</option>
-                <option>Switchgear</option>
-                <option>Safety Gear</option>
-              </select>
+            <div class="grid grid-cols-2 gap-4 col-span-2">
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2"
+                  >Category</label
+                >
+                <select
+                  id="prodCategory"
+                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
+                >
+                  <option>Switches</option>
+                  <option>Cables</option>
+                  <option>Lightining</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2"
+                  >Company</label
+                >
+                <select
+                  id="prodCompany"
+                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
+                >
+                  <option value="">Select Brand</option>
+                  <option>Siemens</option>
+                  <option>Anchor</option>
+                  <option>Havells</option>
+                  <option>Polycab</option>
+                  <option>L&T</option>
+                  <option>Mishra Atlas</option>
+                </select>
+              </div>
             </div>
             <div class="col-span-2">
               <label class="block text-sm font-bold text-slate-700 mb-2"
                 >Description</label
-              >
+               >
               <textarea
                 id="prodDesc"
                 placeholder="Technical specifications..."
-                class="w-full bg-slate-50 border border-slate-200 p-4 rounded-xl h-24 outline-none focus:border-orange-500 focus:bg-white transition"
+                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl h-24 outline-none focus:border-orange-500 focus:bg-white transition"
               ></textarea>
             </div>
           </div>
@@ -253,7 +271,7 @@
         </form>
       </div>
     </div>
-    <script>
+    <script module>
       const API_URL = "http://localhost:5000/api/products";
       let isEditing = false;
       let currentEditId = null;
@@ -295,6 +313,7 @@
         isEditing = false;
         currentEditId = null;
         document.getElementById("modalTitle").innerText = "Add New Product";
+        document.getElementById("prodCompany").value = "";
       }
 
       async function handleProductForm() {
@@ -308,6 +327,10 @@
         formData.append(
           "category",
           document.getElementById("prodCategory").value,
+        );
+        formData.append(
+          "company",
+          document.getElementById("prodCompany").value,
         );
         formData.append(
           "description",
@@ -325,7 +348,6 @@
         }
 
         try {
-          // Changed to match the /edit/:id and /add backend routes
           const url =
             isEditing ? `${API_URL}/edit/${currentEditId}` : `${API_URL}/add`;
           const method = isEditing ? "PUT" : "POST";
@@ -355,29 +377,30 @@
 
           products.forEach((product) => {
             tableBody.innerHTML += `
-                        <tr class="group hover:bg-slate-50 transition">
-                            <td class="p-6">
-                                <div class="flex items-center space-x-4">
-                                    <img src="http://localhost:5000${product.image}" onerror="this.src='../images/logo.jpeg'" class="w-14 h-14 object-cover rounded-xl border border-slate-100 shadow-sm">
-                                    <span class="font-bold text-slate-700">${product.name}</span>
-                                </div>
-                            </td>
-                            <td class="p-6 text-slate-500 font-medium">${product.category}</td>
-                            <td class="p-6 font-black text-slate-800">₹${product.price.toLocaleString()}</td>
-                            <td class="p-6">
-                                <span class="bg-orange-100 text-orange-600 text-[10px] font-black px-3 py-1 rounded-full">
-                                    ${product.discount}% OFF
-                                </span>
-                            </td>
-                            <td class="p-6 text-right space-x-2">
-                                <button onclick="prepareEdit('${product._id}')" class="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button onclick="deleteProduct('${product._id}')" class="p-3 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </td>
-                        </tr>`;
+                    <tr class="group hover:bg-slate-50 transition">
+                        <td class="p-6">
+                            <div class="flex items-center space-x-4">
+                                <img src="http://localhost:5000${product.image}" onerror="this.src='../images/logo.jpeg'" class="w-14 h-14 object-cover rounded-xl border border-slate-100 shadow-sm">
+                                <span class="font-bold text-slate-700">${product.name}</span>
+                            </div>
+                        </td>
+                        <td class="p-6 text-slate-500 font-medium">${product.category}</td>
+                        <td class="p-6 text-slate-500 font-medium">${product.company || "Unknown"}</td>
+                        <td class="p-6 font-black text-slate-800">₹${product.price.toLocaleString()}</td>
+                        <td class="p-6">
+                            <span class="bg-orange-100 text-orange-600 text-[10px] font-black px-3 py-1 rounded-full">
+                                ${product.discount}% OFF
+                            </span>
+                        </td>
+                        <td class="p-6 text-right space-x-2">
+                            <button onclick="prepareEdit('${product._id}')" class="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button onclick="deleteProduct('${product._id}')" class="p-3 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>`;
           });
         } catch (err) {
           console.error("Fetch failed", err);
@@ -386,7 +409,6 @@
 
       async function prepareEdit(id) {
         try {
-          // Fetch the single product directly to ensure data freshless
           const response = await fetch(`${API_URL}/${id}`);
           const product = await response.json();
 
@@ -399,13 +421,13 @@
             document.getElementById("prodDiscount").value =
               product.discount || 0;
             document.getElementById("prodCategory").value = product.category;
+            document.getElementById("prodCompany").value =
+              product.company || "";
             document.getElementById("prodDesc").value = product.description;
 
-            // Show current image preview
             document.getElementById("imagePreview").src =
               `http://localhost:5000${product.image}`;
-            document
-              .getElementById("imagePreviewContainer")
+            document.getElementById("imagePreviewContainer")
               .classList.remove("hidden");
             document.getElementById("uploadLabel").classList.add("hidden");
 
@@ -419,7 +441,6 @@
       async function deleteProduct(id) {
         if (confirm("Permanently delete this product from database?")) {
           try {
-            // Updated to fetch the specific DELETE route on your backend
             const response = await fetch(`${API_URL}/delete/${id}`, {
               method: "DELETE",
             });

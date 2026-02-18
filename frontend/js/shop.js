@@ -1,183 +1,192 @@
-// Centralized Rendering Engine - Modern & Backend Connected
-async function renderShop(filterCategory = "All", searchQuery = "") {
+let currentBrand = "All";
+let currentCategory = null; // Added to support category tracking
+const API_BASE = "http://localhost:5000";
+
+async function renderShop() {
   const grid = document.getElementById("productGrid");
   const countDisplay = document.getElementById("productCount");
-  if (!grid) return;
+  const priceRange = document.getElementById("priceRange");
+  const priceDisplay = document.getElementById("priceDisplay");
+  const searchInput = document.getElementById("searchInput");
 
-  // Loader Animation
+  // 1. Initial Loading State
   grid.innerHTML = `
-        <div class="col-span-full py-20 flex flex-col items-center justify-center space-y-4">
-            <div class="w-12 h-12 border-4 border-blue-900 border-t-orange-500 rounded-full animate-spin"></div>
-            <p class="text-slate-400 font-bold uppercase tracking-widest animate-pulse">Syncing Mishra Inventory...</p>
+        <div class="col-span-full h-96 flex flex-col items-center justify-center space-y-4">
+            <div class="w-12 h-12 border-4 border-slate-100 border-t-orange-500 rounded-full animate-spin"></div>
+            <p class="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] animate-pulse">Syncing Mishra Atlas</p>
         </div>`;
 
   try {
-    // 1. Fetch live data from MongoDB
-    const response = await fetch("http://localhost:5000/api/products/all");
+    // 2. Fetch live inventory from MongoDB Atlas
+    const response = await fetch(`${API_BASE}/api/products/all`);
     const products = await response.json();
 
-    // 2. Get Filter Inputs from shop.html
-    const maxPrice =
-      parseInt(document.getElementById("priceRange").value) || 50000;
-    const sortCriteria = document.querySelector("select").value;
-    const activeSidebarCats = Array.from(
-      document.querySelectorAll(".filter-checkbox:checked"),
-    ).map((cb) => cb.nextElementSibling.innerText.trim().toLowerCase());
+    // 3. Process UI Controls
+    const maxPrice = parseInt(priceRange.value);
+    priceDisplay.innerText = `₹${maxPrice.toLocaleString()}`;
+    const searchTerm = searchInput.value.toLowerCase();
+    const sortValue = document.getElementById("sortSelect").value;
 
-    // 3. Filtering Logic
-    let filtered = products.filter((product) => {
-      const productPrice =
-        product.price - product.price * ((product.discount || 0) / 100);
-      const productCat = product.category.toLowerCase();
+    // Capture Multiple Categories from checkboxes
+    const selectedCategories = Array.from(
+      document.querySelectorAll(".cat-check:checked"),
+    ).map((cb) => cb.value.toLowerCase());
 
-      const matchesSearch = product.name
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase());
-      const matchesPrice = productPrice <= maxPrice;
-      const matchesTopButton =
-        filterCategory === "All" ||
-        productCat.includes(filterCategory.toLowerCase());
-      const matchesSidebar =
-        activeSidebarCats.length === 0 ||
-        activeSidebarCats.some((cat) => productCat.includes(cat));
+    // 4. Unified Filter Logic
+    let filtered = products.filter((p) => {
+      const finalPrice = p.price - (p.price * (p.discount || 0)) / 100;
 
-      return (
-        matchesSearch && matchesPrice && matchesTopButton && matchesSidebar
-      );
+      const matchesSearch =
+        p.name.toLowerCase().includes(searchTerm) ||
+        p.category.toLowerCase().includes(searchTerm);
+
+      // FIXED: Brand matching logic to check the 'company' field from your DB
+      const matchesBrand =
+        currentBrand === "All" ||
+        currentBrand === null ||
+        (p.company && p.company.toLowerCase() === currentBrand.toLowerCase());
+
+      const matchesPrice = finalPrice <= maxPrice;
+
+      const matchesCategory =
+        selectedCategories.length === 0 ||
+        selectedCategories.some((c) => p.category.toLowerCase().includes(c));
+
+      return matchesSearch && matchesBrand && matchesPrice && matchesCategory;
     });
 
-    // 4. Sorting Logic
-    if (sortCriteria === "low") {
-      filtered.sort(
-        (a, b) =>
-          a.price -
-          a.price * (a.discount / 100) -
-          (b.price - b.price * (b.discount / 100)),
-      );
-    } else if (sortCriteria === "high") {
-      filtered.sort(
-        (a, b) =>
-          b.price -
-          b.price * (b.discount / 100) -
-          (a.price - a.price * (a.discount / 100)),
-      );
-    } else {
-      // Newest First (Mongoose default timestamps)
-      filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-    }
+    // 5. Sorting Logic
+    if (sortValue === "low") filtered.sort((a, b) => a.price - b.price);
+    else if (sortValue === "high") filtered.sort((a, b) => b.price - a.price);
+    else filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-    // Update UI Count
-    if (countDisplay)
-      countDisplay.innerText = `Showing ${filtered.length} results under ₹${maxPrice.toLocaleString()}`;
+    countDisplay.innerText = `${filtered.length} Items Found Under ₹${maxPrice.toLocaleString()}`;
 
+    // 6. Clear Loading Message and Render Cards
     grid.innerHTML = "";
-
     if (filtered.length === 0) {
-      grid.innerHTML = `<div class="col-span-full py-20 text-center text-gray-400 font-bold uppercase tracking-widest">No products found matching these filters.</div>`;
+      grid.innerHTML = `<div class="col-span-full h-64 flex flex-col items-center justify-center space-y-4">
+                <i class="fas fa-search text-4xl text-slate-200"></i>
+                <p class="text-slate-300 font-black uppercase tracking-widest text-[10px]">No results match your filters</p>
+            </div>`;
       return;
     }
 
-    // 5. Render Animated Cards
-    filtered.forEach((product, index) => {
-      const originalPrice = product.price;
-      const discountPercent = product.discount || 0;
-      const discountedPrice =
-        originalPrice - originalPrice * (discountPercent / 100);
+    filtered.forEach((product, i) => {
+      const finalPrice =
+        product.price - (product.price * (product.discount || 0)) / 100;
+
+      const imgPath =
+        product.image.startsWith("/") ? product.image : `/${product.image}`;
 
       grid.innerHTML += `
-            <div onclick="viewProductDetails('${product._id}')" 
-                 class="bg-white rounded-3xl overflow-hidden border border-gray-100 hover:shadow-2xl transition-all duration-500 group cursor-pointer relative animate__animated animate__fadeInUp"
-                 style="animation-delay: ${index * 0.05}s">
-                
-                ${
-                  discountPercent > 0 ?
-                    `
-                <div class="absolute top-4 left-4 bg-orange-500 text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg z-10 animate__animated animate__pulse animate__infinite">
-                    ${discountPercent}% OFF
-                </div>`
-                  : ""
-                }
-
-                <div class="h-64 bg-slate-50 flex items-center justify-center p-8 relative overflow-hidden">
-                    <img src="http://localhost:5000${product.image}" 
-                         onerror="this.src='./images/logo.jpeg'"
-                         class="transition-transform duration-700 group-hover:scale-110 object-contain h-full">
-                </div>
-
-                <div class="p-6">
-                    <div class="flex justify-between items-center mb-2">
-                        <p class="text-orange-500 text-[10px] font-black uppercase tracking-widest">${product.category}</p>
-                        <span class="text-[8px] font-black px-2 py-1 bg-blue-50 text-blue-900 rounded-md">
-                            ${product.stock > 0 ? "READY TO SHIP" : "BACKORDER"}
-                        </span>
+                <div onclick="location.href='product-details.html?id=${product._id}'" 
+                     class="group bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-700 animate__animated animate__fadeInUp relative"
+                     style="animation-delay: ${i * 0.05}s">
+                    <div class="h-72 bg-slate-50 p-12 flex items-center justify-center relative overflow-hidden">
+                        <img src="${API_BASE}${imgPath}" 
+                             onerror="this.src='./images/logo.jpeg'"
+                             class="h-full w-full object-contain group-hover:scale-110 transition-transform duration-1000">
+                        ${
+                          product.discount > 0 ?
+                            `
+                        <div class="absolute top-6 left-6 bg-orange-500 text-white text-[9px] font-black px-3 py-1 rounded-full shadow-lg z-10">
+                            -${product.discount}%
+                        </div>`
+                          : ""
+                        }
                     </div>
-                    <h3 class="font-bold text-blue-900 text-lg mb-4 truncate group-hover:text-orange-600 transition-colors">${product.name}</h3>
-                    
-                    <div class="flex items-center justify-between border-t border-slate-50 pt-4">
-                        <div class="flex flex-col">
-                            <span class="text-2xl font-black text-blue-900">₹${discountedPrice.toLocaleString()}</span>
-                            ${discountPercent > 0 ? `<span class="text-[10px] text-gray-400 line-through">₹${originalPrice.toLocaleString()}</span>` : ""}
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-[9px] font-black text-orange-500 uppercase tracking-widest mb-1">${product.company || "Mishra Atlas"}</p>
+                                <h3 class="text-blue-900 font-black text-base leading-tight group-hover:text-orange-600 transition-colors">${product.name}</h3>
+                            </div>
                         </div>
-                        <button onclick="event.stopPropagation(); addToCart('${product.name}', ${discountedPrice})" 
-                                class="bg-blue-900 text-white w-12 h-12 rounded-2xl hover:bg-orange-600 transition-all shadow-lg active:scale-90 flex items-center justify-center">
-                            <i class="fas fa-cart-plus"></i>
-                        </button>
+                        <div class="flex items-center justify-between mt-8 border-t border-slate-50 pt-6">
+                            <div>
+                                <p class="text-2xl font-black text-blue-900">₹${finalPrice.toLocaleString()}</p>
+                                ${product.discount > 0 ? `<p class="text-[10px] text-slate-300 line-through font-bold">₹${product.price.toLocaleString()}</p>` : ""}
+                            </div>
+                            <button onclick="event.stopPropagation(); addToCart('${product.name}', ${finalPrice})" 
+                                    class="bg-blue-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-xl active:scale-90">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
+                        </div>
                     </div>
-                </div>
-            </div>`;
+                </div>`;
     });
   } catch (err) {
-    grid.innerHTML = `<div class="col-span-full text-center py-20 text-red-500 font-black tracking-widest">SERVER OFFLINE</div>`;
+    console.error("Fetch failed:", err);
+    grid.innerHTML = `<div class="col-span-full h-96 flex flex-col items-center justify-center text-red-500 space-y-4">
+            <i class="fas fa-wifi text-3xl"></i>
+            <p class="font-black tracking-widest text-xs uppercase">DATABASE OFFLINE: CHECK ATLAS CONNECTION</p>
+        </div>`;
   }
 }
 
-// Initial Listeners
-document.addEventListener("DOMContentLoaded", () => {
-  renderShop();
+// Voice Recognition Feature
+function startVoiceSearch() {
+  const micIcon = document.getElementById("micIcon");
+  const searchInput = document.getElementById("searchInput");
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) return alert("Browser not supported");
 
-  // Listen to all Filter Checkbox changes
-  document.querySelectorAll(".filter-checkbox").forEach((cb) => {
-    cb.addEventListener("change", () => renderShop());
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-IN";
+  recognition.onstart = () =>
+    micIcon.classList.add("fa-spin", "text-orange-500");
+  recognition.onresult = (e) => {
+    searchInput.value = e.results[0][0].transcript;
+    renderShop();
+  };
+  recognition.onend = () =>
+    micIcon.classList.remove("fa-spin", "text-orange-500");
+  recognition.start();
+}
+
+// Photo Search Feature
+function handlePhotoSearch(event) {
+  const file = event.target.files[0];
+  const searchInput = document.getElementById("searchInput");
+  if (!file) return;
+  searchInput.value = "Analyzing image...";
+  setTimeout(() => {
+    const name = file.name.toLowerCase();
+    if (name.includes("switch")) searchInput.value = "Switch";
+    else if (name.includes("wire") || name.includes("cable"))
+      searchInput.value = "Cable";
+    else searchInput.value = "Electrical";
+    renderShop();
+  }, 1500);
+}
+
+function filterByBrand(brand) {
+  currentBrand = brand === "All" ? "All" : brand;
+
+  document.querySelectorAll(".filter-chip").forEach((btn) => {
+    const isMatch = btn.innerText.trim() === brand;
+    btn.classList.toggle("active", isMatch);
+
+    if (isMatch) {
+      btn.classList.add("bg-blue-900", "text-white");
+      btn.classList.remove("bg-white", "text-slate-500");
+    } else {
+      btn.classList.remove("bg-blue-900", "text-white");
+      btn.classList.add("bg-white", "text-slate-500");
+    }
   });
 
-  // Listen to Price Slider changes
-  document
-    .getElementById("priceRange")
-    .addEventListener("input", () => renderShop());
+  renderShop();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderShop();
+  document.getElementById("priceRange").addEventListener("input", renderShop);
+  document.getElementById("sortSelect").addEventListener("change", renderShop);
+  document.getElementById("searchInput").addEventListener("input", renderShop); // Added missing search trigger
+  document.querySelectorAll(".cat-check").forEach((check) => {
+    check.addEventListener("change", renderShop);
+  });
 });
-
-function addToCart(name, price) {
-  // 1. Your existing cart logic (saving to localStorage/array)
-  let cart = JSON.parse(localStorage.getItem("Mishra_Cart")) || [];
-  cart.push({ name, price, id: Date.now() });
-  localStorage.setItem("Mishra_Cart", JSON.stringify(cart));
-
-  // 2. Update the Navbar Count
-  if (document.getElementById("cartCount")) {
-    document.getElementById("cartCount").innerText = cart.length;
-  }
-
-  // 3. Trigger the Modern Popup
-  showCartToast(name);
-}
-
-function showCartToast(name) {
-    const toast = document.getElementById('cartToast');
-    const toastName = document.getElementById('toastProductName');
-    const toastBadge = document.getElementById('toastCartCount');
-    
-    if(!toast) return;
-
-    // 1. Get the latest count from localStorage
-    const cart = JSON.parse(localStorage.getItem("Mishra_Cart")) || [];
-    if(toastBadge) toastBadge.innerText = cart.length;
-
-    // 2. Set the product name and slide down
-    toastName.innerText = name;
-    toast.style.top = "20px";
-    
-    // 3. Auto-hide
-    setTimeout(() => {
-        toast.style.top = "-100px";
-    }, 3000);
-}

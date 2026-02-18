@@ -13,7 +13,6 @@ router.post('/place', async (req, res) => {
     }
 });
 
-module.exports = router;
 
 // GET: Fetch all orders for the Admin Dashboard
 router.get('/all', async (req, res) => {
@@ -38,3 +37,6 @@ router.put('/status/:id', async (req, res) => {
         res.status(400).json({ error: err.message });
     }
 });
+
+
+module.exports = router;
