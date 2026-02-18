@@ -14,7 +14,7 @@ app.use(morgan("dev"))
 app.use(
   cors({
     // Add your Vercel URL and local testing URL here
-    origin: ["http://127.0.0.1:5500", "https://your-mishra-frontend.vercel.app"], 
+    origin: ["http://127.0.0.1:5500", "https://mishra-industries-ltd.vercel.app"], 
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true, // Recommended if you plan to use cookies or login sessions
