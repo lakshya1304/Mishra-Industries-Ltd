@@ -1,6 +1,6 @@
 let currentBrand = "All";
 let currentCategory = null; // Added to support category tracking
-const API_BASE = "http://localhost:5000";
+const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
 
 async function renderShop() {
   const grid = document.getElementById("productGrid");

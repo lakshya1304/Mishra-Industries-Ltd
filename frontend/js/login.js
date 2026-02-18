@@ -1,6 +1,6 @@
 /**
  * Mishra Industries - Login & Password Recovery Logic
- * Connected to: http://localhost:5000/api/auth
+ * Connected to: https://mishra-industries-ltd-yjfr.onrender.com/api/auth
  */
 
 let currentType = 'customer';
@@ -52,7 +52,7 @@ async function handleLogin() {
     }
 
     try {
-        const response = await fetch('http://localhost:5000/api/auth/login', {
+        const response = await fetch('https://mishra-industries-ltd-yjfr.onrender.com/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -90,7 +90,7 @@ async function sendOTP() {
     }
 
     try {
-        const response = await fetch('http://localhost:5000/api/auth/forgot-password', {
+        const response = await fetch('https://mishra-industries-ltd-yjfr.onrender.com/api/auth/forgot-password', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email })
@@ -124,7 +124,7 @@ async function verifyOTP() {
 
     try {
         // We call a verification endpoint (Create this in backend next)
-        const response = await fetch('http://localhost:5000/api/auth/verify-otp', {
+        const response = await fetch('https://mishra-industries-ltd-yjfr.onrender.com/api/auth/verify-otp', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, otp })

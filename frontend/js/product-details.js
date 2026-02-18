@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:5000";
+const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
 let currentQty = 1;
 
 async function loadProductDetails() {

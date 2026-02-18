@@ -1,6 +1,6 @@
 async function fetchUsers() {
   try {
-    const response = await fetch("http://localhost:5000/api/auth/all-users");
+    const response = await fetch("https://mishra-industries-ltd-yjfr.onrender.com/api/auth/all-users");
     const users = await response.json();
 
     const customerList = document.getElementById("customerList");
@@ -40,7 +40,7 @@ document.addEventListener("DOMContentLoaded", fetchUsers);
 
 async function fetchUsers() {
     try {
-        const response = await fetch('http://localhost:5000/api/auth/all-users');
+        const response = await fetch('https://mishra-industries-ltd-yjfr.onrender.com/api/auth/all-users');
         const users = await response.json();
 
         const customerList = document.getElementById('customerList');

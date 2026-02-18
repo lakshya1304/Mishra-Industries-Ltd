@@ -13,9 +13,11 @@ app.use(morgan("dev"))
 // 3. Global Middleware
 app.use(
   cors({
-    origin: "*",
+    // Add your Vercel URL and local testing URL here
+    origin: ["http://127.0.0.1:5500", "https://your-mishra-frontend.vercel.app"], 
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // Recommended if you plan to use cookies or login sessions
   }),
 );
 app.use(express.json());
