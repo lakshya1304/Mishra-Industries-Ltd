@@ -76,16 +76,19 @@ async function renderShop() {
       const finalPrice =
         product.price - (product.price * (product.discount || 0)) / 100;
 
-      const imgPath =
+      // UPDATED IMAGE LOGIC: Handles both Cloudinary full URLs and local Render paths
+      const isFullUrl = product.image.startsWith("http");
+      const cleanPath =
         product.image.startsWith("/") ? product.image : `/${product.image}`;
+      const finalImgSrc = isFullUrl ? product.image : `${API_BASE}${cleanPath}`;
 
       grid.innerHTML += `
                 <div onclick="location.href='product-details.html?id=${product._id}'" 
                      class="group bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-700 animate__animated animate__fadeInUp relative"
                      style="animation-delay: ${i * 0.05}s">
                     <div class="h-72 bg-slate-50 p-12 flex items-center justify-center relative overflow-hidden">
-                        <img src="${API_BASE}${imgPath}" 
-                             onerror="this.src='../uploads"
+                        <img src="${finalImgSrc}" 
+                             onerror="this.src='./images/logo.jpeg'"
                              class="h-full w-full object-contain group-hover:scale-110 transition-transform duration-1000">
                         ${
                           product.discount > 0 ?
@@ -164,7 +167,7 @@ function handlePhotoSearch(event) {
 
 function filterByBrand(brand) {
   // If 'All' is selected, set currentBrand to null so it doesn't filter by company
-  currentBrand = (brand === "All") ? null : brand;
+  currentBrand = brand === "All" ? null : brand;
 
   // Update UI button styles
   document.querySelectorAll(".filter-chip").forEach((btn) => {
@@ -184,6 +187,7 @@ function filterByBrand(brand) {
   // Re-render the shop with the new brand filter applied
   renderShop();
 }
+
 document.addEventListener("DOMContentLoaded", () => {
   renderShop();
   document.getElementById("priceRange").addEventListener("input", renderShop);
