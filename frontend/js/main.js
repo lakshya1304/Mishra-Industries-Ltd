@@ -218,10 +218,11 @@ function updateNavbarProfile() {
 
 // Run this automatically when any page (index, shop, etc.) loads
 document.addEventListener('DOMContentLoaded', updateNavbarProfile);
-
 const hamburger = document.getElementById("hamburger");
-  const navLinks = document.getElementById("navLinks");
+const navLinks = document.getElementById("navLinks");
 
-  hamburger.addEventListener("click", () => {
-    navLinks.classList.toggle("hidden");
-  });
+  if (hamburger && navLinks) {
+hamburger.addEventListener("click", () => {
+  navLinks.classList.toggle("active");
+});
+}

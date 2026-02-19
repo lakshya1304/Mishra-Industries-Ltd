@@ -19,9 +19,8 @@
             <div>
                 <label class="block text-sm font-bold text-gray-700 mb-2">Select Admin Role</label>
                 <select id="adminRole" class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-900 transition-all font-bold text-sm">
-    <option value="super">Super Admin (Site Editor)</option>
-    <option value="stock">Stock Manager (Dashboard)</option>
-    <option value="user-manager">User Manager (Directory)</option> </select>
+                    <option value="Select">Select</option>
+                    <option value="super">Super Admin</option></select>
             </div>
 
             <div>
@@ -38,7 +37,6 @@
                 Enter Dashboard
             </button>
         </form>
-
         <div class="bg-gray-50 p-4 text-center border-t">
             <a href="../index.html" class="text-sm text-gray-500 hover:text-blue-800">← Back to Main Website</a>
         </div>
@@ -51,19 +49,13 @@
         // 2. Logic to redirect based on specific administrative roles
         if (role === 'super') {
             // Super Admin: Full site customization
-            window.location.href = 'site-editor.html';
-        } else if (role === 'stock') {
-            // Stock Manager: Inventory and Anchor Switch updates
-            window.location.href = 'stock-dashboard.html';
-        } else if (role === 'user-manager') {
-            // User Manager: Directory of Customers and Retailers
-            window.location.href = 'users.html';
-        } else {
+            window.location.href = 'site-editor.html';}
+        
+            else {
             // Fallback for unexpected values
             alert("Invalid Role Selected. Please contact the system administrator.");
         }
     }
 </script>
-
 </body>
 </html>
