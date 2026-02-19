@@ -85,7 +85,7 @@ async function renderShop() {
                      style="animation-delay: ${i * 0.05}s">
                     <div class="h-72 bg-slate-50 p-12 flex items-center justify-center relative overflow-hidden">
                         <img src="${API_BASE}${imgPath}" 
-                             onerror="this.src='./images/logo.jpeg'"
+                             onerror="this.src='../uploads"
                              class="h-full w-full object-contain group-hover:scale-110 transition-transform duration-1000">
                         ${
                           product.discount > 0 ?
@@ -163,9 +163,12 @@ function handlePhotoSearch(event) {
 }
 
 function filterByBrand(brand) {
-  currentBrand = brand === "All" ? "All" : brand;
+  // If 'All' is selected, set currentBrand to null so it doesn't filter by company
+  currentBrand = (brand === "All") ? null : brand;
 
+  // Update UI button styles
   document.querySelectorAll(".filter-chip").forEach((btn) => {
+    // Check for exact match with the button text
     const isMatch = btn.innerText.trim() === brand;
     btn.classList.toggle("active", isMatch);
 
@@ -178,9 +181,9 @@ function filterByBrand(brand) {
     }
   });
 
+  // Re-render the shop with the new brand filter applied
   renderShop();
 }
-
 document.addEventListener("DOMContentLoaded", () => {
   renderShop();
   document.getElementById("priceRange").addEventListener("input", renderShop);
