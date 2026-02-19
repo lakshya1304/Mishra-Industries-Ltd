@@ -2,7 +2,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 let db = require("./config/db.js");
-const path = require("path");
 let morgan=require("morgan")
 // 1. Load Environment Variables (MUST BE FIRST)
 dotenv.config();
@@ -23,8 +22,10 @@ app.use(
 app.use(express.json());
 
 // 4. Static Folder for Images
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+const path = require('path');
 
+// This line is the most important fix
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // process.env.NODE_ENV="prod"
 // Debugging
 console.log("-----------------------------------------");

@@ -80,8 +80,7 @@ async function renderShop() {
       const isFullUrl = product.image.startsWith("http");
       const cleanPath =
         product.image.startsWith("/") ? product.image : `/${product.image}`;
-      const finalImgSrc = isFullUrl ? product.image : `${API_BASE}${cleanPath}`;
-
+        const finalSrc = product.image.startsWith("http") ? product.image : `${API_BASE}${product.image}`;
       grid.innerHTML += `
                 <div onclick="location.href='product-details.html?id=${product._id}'" 
                      class="group bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-700 animate__animated animate__fadeInUp relative"
