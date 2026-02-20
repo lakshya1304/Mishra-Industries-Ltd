@@ -1,36 +1,29 @@
 const express = require("express");
 const productRouter = express.Router();
 const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const path = require("path");
 const Product = require("../models/Product");
 
-// 1. Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// 2. Set up Cloudinary Storage for Multer
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: "mishra_products", // Folder name in your Cloudinary dashboard
-    upload_preset: "mishra_preset", // Link to your Cloudinary Upload Preset
-    allowed_formats: ["jpg", "png", "jpeg"],
+// 1. Configure Local Disk Storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
 const upload = multer({ storage: storage });
 
-// 3. CREATE: Add New Product
+// 2. CREATE: Add New Product
 productRouter.post("/add", upload.single("image"), async (req, res) => {
   try {
     const productData = {
       ...req.body,
-      // Cloudinary returns the full URL in req.file.path
-      image: req.file ? req.file.path : "/uploads/default.jpg",
+      // Saves a local path like "/uploads/123456789.jpg"
+      image:
+        req.file ? `/uploads/${req.file.filename}` : "/uploads/default.jpg",
     };
     const product = new Product(productData);
     await product.save();
@@ -40,7 +33,7 @@ productRouter.post("/add", upload.single("image"), async (req, res) => {
   }
 });
 
-// 4. READ: All Products
+// 3. READ: All Products
 productRouter.get("/all", async (req, res) => {
   try {
     const { category, company } = req.query;
@@ -55,7 +48,7 @@ productRouter.get("/all", async (req, res) => {
   }
 });
 
-// 5. READ: Single Product
+// 4. READ: Single Product
 productRouter.get("/:id", async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
@@ -66,12 +59,12 @@ productRouter.get("/:id", async (req, res) => {
   }
 });
 
-// 6. UPDATE: Edit Product
+// 5. UPDATE: Edit Product
 productRouter.put("/edit/:id", upload.single("image"), async (req, res) => {
   try {
     const updateData = { ...req.body };
     if (req.file) {
-      updateData.image = req.file.path; // New Cloudinary URL
+      updateData.image = `/uploads/${req.file.filename}`;
     }
 
     const updatedProduct = await Product.findByIdAndUpdate(
@@ -88,7 +81,7 @@ productRouter.put("/edit/:id", upload.single("image"), async (req, res) => {
   }
 });
 
-// 7. DELETE: Remove Product
+// 6. DELETE: Remove Product
 productRouter.delete("/delete/:id", async (req, res) => {
   try {
     const deletedProduct = await Product.findByIdAndDelete(req.params.id);
