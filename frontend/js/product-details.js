@@ -21,9 +21,18 @@ async function loadProductDetails() {
       product.description ||
       "Premium electrical solution from Mishra Industries.";
 
-    const cleanPath =
-      product.image.startsWith("/") ? product.image : `/${product.image}`;
-    document.getElementById("productImage").src = `${API_BASE}${cleanPath}`;
+    // UPDATED IMAGE LOGIC: Handles Base64 strings (data:) and local Render paths
+    let finalImgSrc;
+    if (product.image && product.image.startsWith("data:")) {
+      // Use Base64 string directly
+      finalImgSrc = product.image;
+    } else {
+      // Fallback for local server paths
+      const cleanPath =
+        product.image.startsWith("/") ? product.image : `/${product.image}`;
+      finalImgSrc = `${API_BASE}${cleanPath}`;
+    }
+    document.getElementById("productImage").src = finalImgSrc;
 
     // 2. Pricing and Discount
     const discount = product.discount || 0;
@@ -73,8 +82,14 @@ async function loadProductDetails() {
     cartBtn.onclick = (e) => {
       e.preventDefault();
       if (typeof addToCart === "function") {
-        // Pass quantity once to avoid multiple alerts
-        addToCart(product.name, finalPrice, currentQty);
+        // FIXED: Now passing finalPrice, quantity, Base64 image, and original price for the new cart logic
+        addToCart(
+          product.name,
+          finalPrice,
+          currentQty,
+          finalImgSrc,
+          product.price,
+        );
 
         // Visual Button Change instead of Alert pop-ups
         const originalText = cartBtn.innerHTML;

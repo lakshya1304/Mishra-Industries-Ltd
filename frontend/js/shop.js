@@ -76,11 +76,18 @@ async function renderShop() {
       const finalPrice =
         product.price - (product.price * (product.discount || 0)) / 100;
 
-      // UPDATED IMAGE LOGIC: Handles both Cloudinary full URLs and local Render paths
-      const isFullUrl = product.image.startsWith("http");
-      const cleanPath =
-        product.image.startsWith("/") ? product.image : `/${product.image}`;
-        const finalSrc = product.image.startsWith("http") ? product.image : `${API_BASE}${product.image}`;
+      // UPDATED IMAGE LOGIC: Handles Base64 strings (data:) and local Render paths
+      let finalImgSrc;
+      if (product.image && product.image.startsWith("data:")) {
+        // Use Base64 string directly from database
+        finalImgSrc = product.image;
+      } else {
+        // Fallback for local server paths
+        const cleanPath =
+          product.image.startsWith("/") ? product.image : `/${product.image}`;
+        finalImgSrc = `${API_BASE}${cleanPath}`;
+      }
+
       grid.innerHTML += `
                 <div onclick="location.href='product-details.html?id=${product._id}'" 
                      class="group bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-700 animate__animated animate__fadeInUp relative"
@@ -110,7 +117,7 @@ async function renderShop() {
                                 <p class="text-2xl font-black text-blue-900">₹${finalPrice.toLocaleString()}</p>
                                 ${product.discount > 0 ? `<p class="text-[10px] text-slate-300 line-through font-bold">₹${product.price.toLocaleString()}</p>` : ""}
                             </div>
-                            <button onclick="event.stopPropagation(); addToCart('${product.name}', ${finalPrice})" 
+                            <button onclick="event.stopPropagation(); addToCart('${product.name}', ${finalPrice}, 1, '${finalImgSrc}', ${product.price})" 
                                     class="bg-blue-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-xl active:scale-90">
                                 <i class="fas fa-cart-plus"></i>
                             </button>
@@ -196,3 +203,4 @@ document.addEventListener("DOMContentLoaded", () => {
     check.addEventListener("change", renderShop);
   });
 });
+

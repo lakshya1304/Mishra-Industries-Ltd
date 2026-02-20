@@ -6,6 +6,7 @@
     <title>Stock & Revenue Manager | Mishra Industries Limited</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -14,15 +15,60 @@
         <div class="flex items-center space-x-3 mb-12">
             <h2 class="text-2xl font-bold tracking-tighter">MISHRA <span class="text-orange-500">INDUSTRIES</span></h2>
         </div>
-        <nav class="space-y-2 flex-1">
-            <a href="site-editor.html" class="flex items-center space-x-3 p-3 hover:bg-orange-500/10 rounded-xl transition">Site Editor</a>
-            <a href="stock-dashboard.html" class="flex items-center space-x-3 p-3 bg-orange-500/10 text-orange-500 rounded-xl font-bold">Inventory</a>
-            <a href="users.html" class="flex items-center space-x-3 p-3 hover:bg-orange-500/10 rounded-xl transition">User Management</a>
-            <a href="orders.html" class="flex items-center space-x-3 p-3 hover:bg-orange-500/10 rounded-xl transition">Orders</a>
-        </nav>
-        <a href="../index.html" class="flex items-center space-x-3 p-3 text-slate-500 hover:text-red-400 border-t border-slate-800">Logout</a>
-    </aside>
+        <nav class="space-y-3 flex-1">
+        <a
+          href="site-editor.html"
+          class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
+        >
+          <i
+            class="fas fa-layer-group text-slate-500 group-hover:text-orange-500"
+          ></i>
+          <span
+            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+            >Site Editor</span
+          >
+        </a>
+        <a
+          href="stock-dashboard.html"
+          class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
+        >
+          <i
+            class="fas fa-boxes text-slate-500 group-hover:text-orange-500"
+          ></i>
+          <span
+            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+            >Inventory</span
+          >
+        </a>
+        <a
+          href="users.html"
+          class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
+        >
+          <i
+            class="fas fa-users text-slate-500 group-hover:text-orange-500"
+          ></i>
+          <span
+            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+            >Users</span
+          >
+        </a>
+        <a
+          href="orders.html"
+          class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
+        >
+          <i class="fas fa-shopping-cart"></i>
+          <span class="font-bold text-sm tracking-wide">Orders List</span>
+        </a>
+      </nav>
 
+      <a
+        href="../index.html"
+        class="flex items-center space-x-4 p-4 text-slate-500 hover:text-red-400 transition-all border-t border-slate-800"
+      >
+        <i class="fas fa-sign-out-alt"></i>
+        <span class="font-bold text-sm">Logout Console</span>
+      </a>
+    </aside>
     <main class="flex-1 p-12 overflow-y-auto">
         <header class="flex justify-between items-center mb-12 animate__animated animate__fadeIn">
             <div>
@@ -34,9 +80,9 @@
                     <span class="text-gray-400 text-[10px] font-black uppercase tracking-widest block mb-1">Total Stock Value</span>
                     <span id="totalRevenue" class="font-black text-blue-900 text-2xl">₹0</span>
                 </div>
-                <button onclick="window.print()" class="bg-blue-900 text-white px-6 py-4 rounded-3xl font-black text-sm hover:bg-orange-500 transition shadow-xl no-print">
-                    <i class="fas fa-file-pdf mr-2"></i> Report
-                </button>
+                <button onclick="generateExcelReport()" class="bg-blue-900 text-white px-6 py-4 rounded-3xl font-black text-sm hover:bg-orange-500 transition shadow-xl no-print">
+    <i class="fas fa-file-excel mr-2"></i> Excel Report
+</button>
             </div>
         </header>
 
@@ -230,6 +276,32 @@
             document.getElementById('totalRevenue').innerText = "₹" + totalVal.toLocaleString();
             document.getElementById('totalStockCount').innerText = totalItems.toLocaleString();
         }
+        function generateExcelReport() {
+    // 1. Prepare the data for Excel
+    const reportData = allProducts.map(product => ({
+        "Product Name": product.name.toUpperCase(),
+        "Category": product.category,
+        "Company/Brand": product.company || "MISHRA ATLAS",
+        "Stock Level": product.stock,
+        "Unit Price": product.price,
+        "Total Stock Value": product.price * product.stock,
+        "Status": product.stock < 10 ? "CRITICAL LOW" : "HEALTHY",
+        "Report Date": new Date().toLocaleDateString()
+    }));
+
+    // 2. Create a new Workbook and Worksheet
+    const worksheet = XLSX.utils.json_to_sheet(reportData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Inventory");
+
+    // 3. Auto-adjust column widths for readability
+    const max_width = reportData.reduce((w, r) => Math.max(w, r["Product Name"].length), 15);
+    worksheet["!cols"] = [{ wch: max_width }, { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 15 }, { wch: 15 }];
+
+    // 4. Download the file
+    const fileName = `Mishra_Industries_Stock_${new Date().toISOString().split('T')[0]}.xlsx`;
+    XLSX.writeFile(workbook, fileName);
+}
     </script>
 </body>
 </html>
