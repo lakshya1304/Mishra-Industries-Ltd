@@ -4,6 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Super Admin | Site Editor | Mishra Industries</title>
+    <script>
+      (function () {
+        // Retrieve the security tokens from the login process
+        const adminToken = localStorage.getItem("adminToken");
+        const isManualAuth = localStorage.getItem("adminAuthenticated");
+
+        // If neither the database token nor the manual bypass exists, block access
+        if (!adminToken && isManualAuth !== "true") {
+          alert(
+            "⚠️ SECURITY ALERT: Unauthorized Access Detected. Redirecting to Login...",
+          );
+          window.location.href = "admin-login.html";
+        }
+      })();
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
@@ -27,7 +42,7 @@
       }
     </style>
   </head>
-   <body class="bg-slate-50 flex min-h-screen font-sans">
+  <body class="bg-slate-50 flex min-h-screen font-sans">
     <aside
       class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col"
     >
@@ -36,7 +51,7 @@
           MISHRA <span class="text-orange-500">INDUSTRIES</span>
         </h2>
       </div>
- <nav class="space-y-3 flex-1">
+      <nav class="space-y-3 flex-1">
         <a
           href="site-editor.html"
           class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
@@ -82,18 +97,29 @@
         </a>
       </nav>
 
-<div class="mt-10 pt-6 border-t border-slate-100">
-    <a href="settings.html" class="flex items-center space-x-4 p-4 rounded-2xl hover:bg-orange-50 transition-all group">
-        <div class="w-10 h-10 bg-slate-50 text-slate-400 group-hover:bg-orange-100 group-hover:text-orange-600 rounded-xl flex items-center justify-center transition-all">
+      <div class="mt-10 pt-6 border-t border-slate-100">
+        <a
+          href="settings.html"
+          class="flex items-center space-x-4 p-4 rounded-2xl hover:bg-orange-50 transition-all group"
+        >
+          <div
+            class="w-10 h-10 bg-slate-50 text-slate-400 group-hover:bg-orange-100 group-hover:text-orange-600 rounded-xl flex items-center justify-center transition-all"
+          >
             <i class="fas fa-cog"></i>
-        </div>
-        <div>
-            <p class="text-[10px] font-black uppercase text-slate-400 group-hover:text-orange-600 tracking-widest">System Console</p>
-            <p class="text-[9px] font-bold text-slate-300">Backup, Restore & Analytics</p>
-        </div>
-    </a>
-</div>
-      
+          </div>
+          <div>
+            <p
+              class="text-[10px] font-black uppercase text-slate-400 group-hover:text-orange-600 tracking-widest"
+            >
+              System Console
+            </p>
+            <p class="text-[9px] font-bold text-slate-300">
+              Backup, Restore & Analytics
+            </p>
+          </div>
+        </a>
+      </div>
+
       <a
         href="../index.html"
         class="flex items-center space-x-4 p-4 text-slate-500 hover:text-red-400 transition-all border-t border-slate-800"
@@ -106,21 +132,27 @@
     <main class="flex-1 p-12 overflow-y-auto custom-scrollbar">
       <div class="flex justify-between items-end mb-12">
         <div>
-  <h1 class="text-4xl font-black text-slate-800 mb-2">Product Manager</h1>
-  <p class="text-slate-500 font-medium">Manage your digital showroom and product pricing.</p>
-</div>
-<div class="flex-1 max-w-md mx-8">
-  <div class="relative group">
-    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"></i>
-    <input 
-      type="text" 
-      id="tableSearch" 
-      placeholder="Search name, category or brand..." 
-      oninput="loadProducts()"
-      class="w-full bg-white border border-slate-200 pl-12 pr-4 py-3 rounded-2xl outline-none focus:border-orange-500 shadow-sm transition-all"
-    />
-  </div>
-</div>
+          <h1 class="text-4xl font-black text-slate-800 mb-2">
+            Product Manager
+          </h1>
+          <p class="text-slate-500 font-medium">
+            Manage your digital showroom and product pricing.
+          </p>
+        </div>
+        <div class="flex-1 max-w-md mx-8">
+          <div class="relative group">
+            <i
+              class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
+            ></i>
+            <input
+              type="text"
+              id="tableSearch"
+              placeholder="Search name, category or brand..."
+              oninput="loadProducts()"
+              class="w-full bg-white border border-slate-200 pl-12 pr-4 py-3 rounded-2xl outline-none focus:border-orange-500 shadow-sm transition-all"
+            />
+          </div>
+        </div>
         <button
           onclick="toggleModal()"
           class="bg-slate-900 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl transition-all transform hover:-translate-y-1 flex items-center space-x-3"
@@ -325,7 +357,8 @@
       </div>
     </div>
     <script module>
-      const API_URL ="https://mishra-industries-ltd-yjfr.onrender.com/api/products";
+      const API_URL =
+        "https://mishra-industries-ltd-yjfr.onrender.com/api/products";
       let isEditing = false;
       let currentEditId = null;
 
@@ -422,28 +455,32 @@
       }
 
       async function loadProducts() {
-  try {
-    const response = await fetch(`${API_URL}/all`);
-    const products = await response.json();
-    const tableBody = document.getElementById("productTableBody");
-    const searchTerm = document.getElementById("tableSearch").value.toLowerCase(); // Get search term
-    
-    tableBody.innerHTML = "";
+        try {
+          const response = await fetch(`${API_URL}/all`);
+          const products = await response.json();
+          const tableBody = document.getElementById("productTableBody");
+          const searchTerm = document
+            .getElementById("tableSearch")
+            .value.toLowerCase(); // Get search term
 
-    // Filter products based on search
-    const filteredProducts = products.filter(product => 
-      product.name.toLowerCase().includes(searchTerm) || 
-      product.category.toLowerCase().includes(searchTerm) || 
-      (product.company && product.company.toLowerCase().includes(searchTerm))
-    );
+          tableBody.innerHTML = "";
 
-    if (filteredProducts.length === 0) {
-      tableBody.innerHTML = `<tr><td colspan="6" class="p-12 text-center text-slate-400">No products match your search.</td></tr>`;
-      return;
-    }
+          // Filter products based on search
+          const filteredProducts = products.filter(
+            (product) =>
+              product.name.toLowerCase().includes(searchTerm) ||
+              product.category.toLowerCase().includes(searchTerm) ||
+              (product.company &&
+                product.company.toLowerCase().includes(searchTerm)),
+          );
 
-    filteredProducts.forEach((product) => {
-      tableBody.innerHTML += `
+          if (filteredProducts.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="6" class="p-12 text-center text-slate-400">No products match your search.</td></tr>`;
+            return;
+          }
+
+          filteredProducts.forEach((product) => {
+            tableBody.innerHTML += `
         <tr class="group hover:bg-slate-50 transition">
             <td class="p-6">
                 <div class="flex items-center space-x-4">
@@ -468,11 +505,11 @@
                 </button>
             </td>
         </tr>`;
-    });
-  } catch (err) {
-    console.error("Fetch failed", err);
-  }
-}
+          });
+        } catch (err) {
+          console.error("Fetch failed", err);
+        }
+      }
 
       async function prepareEdit(id) {
         try {

@@ -1,51 +1,62 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const path = require("path");
+const morgan = require("morgan");
 let db = require("./config/db.js");
-let morgan=require("morgan")
+
 // 1. Load Environment Variables (MUST BE FIRST)
 dotenv.config();
 
 // 2. Initialize Express
 const app = express();
-app.use(morgan("dev"))
+app.use(morgan("dev"));
+
 // 3. Global Middleware
 app.use(
   cors({
-    // Add your Vercel URL and local testing URL here
-    origin: ["http://127.0.0.1:5500", "https://mishra-industries-ltd.vercel.app"], 
+    // Updated origins to include all possible local and production entry points
+    origin: [
+      "http://127.0.0.1:5500",
+      "http://localhost:5500",
+      "https://mishra-industries-ltd.vercel.app",
+    ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true, // Recommended if you plan to use cookies or login sessions
+    credentials: true,
   }),
 );
-app.use(express.json());
+
+// Body Parser Middleware
+app.use(express.json({ limit: "10mb" })); // Increased limit for Base64 product images
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // 4. Static Folder for Images
-const path = require('path');
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// This line is the most important fix
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-// process.env.NODE_ENV="prod"
-// Debugging
+// Debugging Log
 console.log("-----------------------------------------");
 console.log(
-  "Connecting to:",
-  process.env.NODE_ENV == "dev" ? process.env.MONGO_URI : "some db",
+  "Connecting to Atlas Cluster:",
+  process.env.NODE_ENV === "dev" ? "Local Development" : "Production Node",
 );
 console.log("-----------------------------------------");
 
-// 5. Database Connection Logic (Cleaned for Atlas)
+// 5. Database Connection Logic (Atlas Connected)
 db();
 
 // 6. API Routes Integration
+app.use('/api/admin', require('./routes/adminRoutes'));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 
+const { errorHandler } = require('./middleware/errorMiddleware');
+app.use(errorHandler);
+
 // 7. Root Route for Testing
 app.get("/", (req, res) => {
-  res.send("Mishra Industries API is running...");
+  res.send("Mishra Industries API is running correctly...");
 });
 
 // 8. Error Handling Middleware
@@ -62,6 +73,3 @@ let PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server fired up on ${PORT}`);
 });
-
-
-//envf, status-map:cjs-ejs'''

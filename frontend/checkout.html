@@ -35,7 +35,6 @@
         border-radius: 10px;
       }
 
-      /* Subtle glow for the active section */
       .form-section:focus-within {
         border-color: #1e3a8a;
         box-shadow: 0 10px 30px -10px rgba(30, 58, 138, 0.1);
@@ -51,17 +50,15 @@
         <div
           class="w-32 h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl"
         >
-          <i
-            class="fas fa-check text-5xl text-green-500 animate__animated animate__bounceIn"
-          ></i>
+          <i class="fas fa-spinner fa-spin text-5xl text-blue-900"></i>
         </div>
         <h2 class="text-3xl font-black text-white uppercase tracking-tighter">
-          Order Confirmed
+          Initializing Gateway
         </h2>
         <p
           class="text-blue-200 font-bold text-[10px] uppercase tracking-[0.3em] mt-2"
         >
-          Connecting to Logistics Hub...
+          Connecting to Secure Payment Node...
         </p>
       </div>
     </div>
@@ -93,7 +90,7 @@
               Delivery Details
             </h2>
             <p class="text-slate-400 font-bold text-xs mt-1">
-              Please provide accurate information for ISI-certified shipping.
+              Provide accurate info for ISI-certified shipping.
             </p>
           </div>
 
@@ -121,7 +118,7 @@
                     <input
                       type="text"
                       id="custName"
-                      placeholder="Enter Full Name"
+                      placeholder="Full Name"
                       class="w-full bg-slate-50 border-none pl-14 pr-5 py-4 rounded-2xl outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-900/10 transition-all"
                       required
                     />
@@ -141,7 +138,7 @@
                     <input
                       type="tel"
                       id="custPhone"
-                      placeholder="+91 00000 00000"
+                      placeholder="+91 XXXX"
                       class="w-full bg-slate-50 border-none pl-14 pr-5 py-4 rounded-2xl outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-900/10 transition-all"
                       required
                     />
@@ -162,7 +159,7 @@
                 <div class="input-group space-y-2">
                   <label
                     class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1"
-                    >Full Shipping Address</label
+                    >Shipping Address</label
                   >
                   <div class="relative">
                     <div
@@ -172,7 +169,7 @@
                     </div>
                     <textarea
                       id="custAddress"
-                      placeholder="Street name, Landmark, Building No."
+                      placeholder="Street, Landmark"
                       rows="2"
                       class="w-full bg-slate-50 border-none pl-14 pr-5 py-4 rounded-2xl outline-none font-bold text-slate-700 resize-none focus:ring-2 focus:ring-blue-900/10 transition-all"
                       required
@@ -180,32 +177,20 @@
                   </div>
                 </div>
                 <div class="grid grid-cols-2 gap-6">
-                  <div class="input-group space-y-2">
-                    <label
-                      class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1"
-                      >City</label
-                    >
-                    <input
-                      type="text"
-                      id="custCity"
-                      placeholder="City"
-                      class="w-full bg-slate-50 border-none px-6 py-4 rounded-2xl outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-900/10 transition-all"
-                      required
-                    />
-                  </div>
-                  <div class="input-group space-y-2">
-                    <label
-                      class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1"
-                      >Pin Code</label
-                    >
-                    <input
-                      type="text"
-                      id="custPin"
-                      placeholder="Pincode"
-                      class="w-full bg-slate-50 border-none px-6 py-4 rounded-2xl outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-900/10 transition-all"
-                      required
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    id="custCity"
+                    placeholder="City"
+                    class="w-full bg-slate-50 border-none px-6 py-4 rounded-2xl outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-900/10 transition-all"
+                    required
+                  />
+                  <input
+                    type="text"
+                    id="custPin"
+                    placeholder="Pincode"
+                    class="w-full bg-slate-50 border-none px-6 py-4 rounded-2xl outline-none font-bold text-slate-700 focus:ring-2 focus:ring-blue-900/10 transition-all"
+                    required
+                  />
                 </div>
               </div>
             </div>
@@ -257,110 +242,20 @@
 
             <button
               onclick="placeOrder()"
-              class="w-full bg-orange-500 text-white font-black py-6 rounded-2xl mt-10 hover:bg-orange-600 transition-all shadow-xl shadow-orange-900/20 uppercase tracking-[0.2em] text-[10px] active:scale-95"
+              class="w-full bg-orange-500 text-white font-black py-6 rounded-2xl mt-10 hover:bg-orange-600 transition-all shadow-xl uppercase tracking-[0.2em] text-[10px] active:scale-95"
             >
-              Place Order <i class="fas fa-arrow-right ml-2"></i>
+              Confirm & Pay <i class="fas fa-arrow-right ml-2"></i>
             </button>
             <p
               class="text-center text-[8px] font-bold text-blue-400 mt-6 uppercase tracking-[0.4em]"
             >
-              Mishra Industries Atlas Secure
+              Secure Node: Mishra Industries
             </p>
           </div>
         </div>
       </div>
     </div>
 
-    <script>
-      const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
-
-      function loadCheckoutDetails() {
-        const cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
-        const summary = JSON.parse(
-          localStorage.getItem("mishra_bill_summary"),
-        ) || { subtotal: 0, gst: 0, total: 0 };
-
-        if (cart.length === 0) {
-          location.href = "shop.html";
-          return;
-        }
-
-        document.getElementById("cartCount").innerText = `${cart.length} ITEMS`;
-
-        const container = document.getElementById("orderReviewItems");
-        container.innerHTML = cart
-          .map(
-            (item) => `
-                <div class="flex justify-between items-center text-[11px] font-bold bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
-                    <span>${item.quantity}x ${item.name}</span>
-                    <span>₹${(item.price * item.quantity).toLocaleString()}</span>
-                </div>
-            `,
-          )
-          .join("");
-
-        document.getElementById("displaySubtotal").innerText =
-          `₹${summary.subtotal.toLocaleString()}`;
-        document.getElementById("displayGst").innerText =
-          `₹${summary.gst.toLocaleString()}`;
-        document.getElementById("displayTotal").innerText =
-          `₹${summary.total.toLocaleString()}`;
-      }
-
-      async function placeOrder() {
-        const cart = JSON.parse(localStorage.getItem("mishra_cart"));
-        const summary = JSON.parse(localStorage.getItem("mishra_bill_summary"));
-
-        const orderData = {
-          customerName: document.getElementById("custName").value,
-          phone: document.getElementById("custPhone").value,
-          address: `${document.getElementById("custAddress").value}, ${document.getElementById("custCity").value} - ${document.getElementById("custPin").value}`,
-          items: cart,
-          totalAmount: summary.total,
-          gstAmount: summary.gst,
-        };
-
-        if (
-          !orderData.customerName ||
-          !orderData.phone ||
-          !document.getElementById("custAddress").value
-        ) {
-          return alert("⚠️ Please complete the logistics information.");
-        }
-
-        try {
-          const response = await fetch(`${API_BASE}/api/orders/add`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(orderData),
-          });
-
-          if (response.ok) {
-            document
-              .getElementById("paymentSuccessOverlay")
-              .classList.remove("hidden");
-            localStorage.setItem(
-              "last_order_customer",
-              JSON.stringify({
-                name: orderData.customerName,
-                address: orderData.address,
-              }),
-            );
-            localStorage.removeItem("mishra_cart");
-            setTimeout(() => {
-              location.href = "order-success.html";
-            }, 2500);
-          } else {
-            alert("❌ Connection to Atlas Lost. Check Backend status.");
-          }
-        } catch (err) {
-          alert(
-            "❌ Critical Server Error. Please check your internet connection.",
-          );
-        }
-      }
-
-      document.addEventListener("DOMContentLoaded", loadCheckoutDetails);
-    </script>
+    <script src="js/checkout.js"></script>
   </body>
 </html>

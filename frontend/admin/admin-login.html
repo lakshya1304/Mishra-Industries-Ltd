@@ -1,61 +1,189 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login | Mishra Industries</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Master Access | Mishra Industries</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-</head>
-<body class="bg-slate-900 h-screen flex items-center justify-center p-6">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap");
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
+      .glass-ui {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+      }
+      .input-focus {
+        @apply border-2 border-slate-100 p-4 rounded-2xl outline-none focus:border-blue-900 focus:bg-white transition-all font-bold text-sm bg-slate-50;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-slate-900 min-h-screen flex items-center justify-center p-6 relative overflow-hidden"
+  >
+    <div
+      class="absolute -top-24 -left-24 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl animate-pulse"
+    ></div>
+    <div
+      class="absolute -bottom-24 -right-24 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl animate-pulse"
+    ></div>
 
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden animate__animated animate__zoomIn">
-        <div class="bg-blue-800 p-8 text-center text-white">
-            <h1 class="text-2xl font-black tracking-tight">MISHRA <span class="text-orange-400 text-lg">ADMIN</span></h1>
-            <p class="text-blue-200 text-sm mt-2">Secure Management Portal</p>
+    <div
+      class="glass-ui w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden animate__animated animate__fadeInUp relative z-10"
+    >
+      <div class="bg-blue-900 p-10 text-center text-white relative">
+        <div class="absolute top-4 right-6 flex items-center space-x-2">
+          <span
+            id="connStatus"
+            class="w-2 h-2 bg-orange-500 rounded-full animate-pulse"
+          ></span>
+          <span
+            class="text-[8px] font-black uppercase tracking-widest opacity-50"
+            >Atlas Node</span
+          >
+        </div>
+        <h1 class="text-3xl font-black tracking-tighter uppercase">
+          Mishra <span class="text-orange-500">Admin</span>
+        </h1>
+        <p
+          class="text-blue-300 text-[10px] font-bold uppercase tracking-[0.3em] mt-2"
+        >
+          Secure Management Protocol
+        </p>
+      </div>
+
+      <form id="adminLoginForm" class="p-10 space-y-6">
+        <div class="space-y-2">
+          <label
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2"
+            >Admin Email</label
+          >
+          <div class="relative">
+            <i
+              class="fas fa-envelope absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"
+            ></i>
+            <input
+              type="email"
+              id="adminEmail"
+              placeholder="Enter email"
+              class="input-focus w-full pl-14"
+              required
+            />
+          </div>
         </div>
 
-        <form class="p-8 space-y-6">
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">Select Admin Role</label>
-                <select id="adminRole" class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-900 transition-all font-bold text-sm">
-                    <option value="Select">Select</option>
-                    <option value="super">Super Admin</option></select>
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">Admin Email</label>
-                <input type="email" placeholder="admin@mishra.com" class="w-full border-2 border-gray-100 rounded-lg p-3 outline-none focus:border-blue-600 transition">
-            </div>
-
-            <div>
-                <label class="block text-sm font-bold text-gray-700 mb-2">Security Password</label>
-                <input type="password" placeholder="••••••••" class="w-full border-2 border-gray-100 rounded-lg p-3 outline-none focus:border-blue-600 transition">
-            </div>
-
-            <button type="button" onclick="handleLogin()" class="w-full bg-blue-800 text-white font-bold py-4 rounded-lg hover:bg-orange-500 transition-all duration-300 shadow-lg">
-                Enter Dashboard
-            </button>
-        </form>
-        <div class="bg-gray-50 p-4 text-center border-t">
-            <a href="../index.html" class="text-sm text-gray-500 hover:text-blue-800">← Back to Main Website</a>
+        <div class="space-y-2">
+          <label
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2"
+            >Security Password</label
+          >
+          <div class="relative">
+            <i
+              class="fas fa-key absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"
+            ></i>
+            <input
+              type="password"
+              id="adminPass"
+              placeholder="Enter Password"
+              class="input-focus w-full pl-14"
+              required
+            />
+          </div>
         </div>
+
+        <button
+          type="submit"
+          class="w-full bg-blue-900 text-white font-black py-5 rounded-2xl hover:bg-orange-500 transition-all duration-500 shadow-xl uppercase tracking-widest text-[10px] active:scale-95"
+        >
+          Initialize Dashboard <i class="fas fa-chevron-right ml-2"></i>
+        </button>
+      </form>
+
+      <div class="bg-slate-50/50 p-6 text-center border-t border-slate-100">
+        <a
+          href="../index.html"
+          class="text-[10px] font-black uppercase text-slate-400 hover:text-blue-900 transition-colors"
+        >
+          <i class="fas fa-arrow-left mr-2"></i> Exit to Website
+        </a>
+      </div>
     </div>
-<script>
-    function handleLogin() {
-        // 1. Get the role selected by the admin
-        const role = document.getElementById('adminRole').value;
-        
-        // 2. Logic to redirect based on specific administrative roles
-        if (role === 'super') {
-            // Super Admin: Full site customization
-            window.location.href = 'site-editor.html';}
-        
-            else {
-            // Fallback for unexpected values
-            alert("Invalid Role Selected. Please contact the system administrator.");
+
+    <script>
+      const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
+
+      async function checkAtlasNode() {
+        try {
+          const res = await fetch(`${API_BASE}/`);
+          if (res.ok)
+            document
+              .getElementById("connStatus")
+              .classList.replace("bg-orange-500", "bg-green-500");
+        } catch (e) {
+          console.warn("Atlas Node Offline");
         }
-    }
-</script>
-</body>
+      }
+      checkAtlasNode();
+
+      document
+        .getElementById("adminLoginForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const btn = e.target.querySelector("button");
+          btn.innerHTML =
+            '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+
+          const email = document.getElementById("adminEmail").value;
+          const password = document.getElementById("adminPass").value;
+
+          // MASTER CREDENTIALS FOR BYPASS
+          const MASTER_EMAIL = "admin@mishra.com";
+          const MASTER_PASS = "Mishra@716";
+
+          try {
+            const response = await fetch(`${API_BASE}/api/auth/login`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.isAdmin) {
+              localStorage.setItem("adminToken", data.token);
+              // SUCCESS REDIRECT TO SITE EDITOR
+              window.location.href = "site-editor.html";
+            } else {
+              if (email === MASTER_EMAIL && password === MASTER_PASS) {
+                localStorage.setItem("adminAuthenticated", "true");
+                // BYPASS REDIRECT TO SITE EDITOR
+                window.location.href = "site-editor.html";
+              } else {
+                alert("❌ Access Denied: Invalid Credentials.");
+                btn.innerHTML =
+                  'Initialize Dashboard <i class="fas fa-chevron-right ml-2"></i>';
+              }
+            }
+          } catch (err) {
+            if (email === MASTER_EMAIL && password === MASTER_PASS) {
+              localStorage.setItem("adminAuthenticated", "true");
+              window.location.href = "site-editor.html";
+            } else {
+              alert("❌ Critical Error: Could not reach Atlas.");
+              btn.innerHTML =
+                'Initialize Dashboard <i class="fas fa-chevron-right ml-2"></i>';
+            }
+          }
+        });
+    </script>
+  </body>
 </html>
