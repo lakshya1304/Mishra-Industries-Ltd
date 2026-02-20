@@ -2,15 +2,15 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 
-// POST: Place a new order
-router.post('/place', async (req, res) => {
-    try {
-        const newOrder = new Order(req.body);
-        await newOrder.save();
-        res.status(201).json({ message: "Order Placed Successfully!", orderId: newOrder._id });
-    } catch (err) {
-        res.status(400).json({ error: err.message });
-    }
+// POST: Add new order to Atlas
+router.post("/add", async (req, res) => {
+  try {
+    const newOrder = new Order(req.body);
+    await newOrder.save();
+    res.status(201).json({ success: true, message: "Order saved to Atlas" });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 

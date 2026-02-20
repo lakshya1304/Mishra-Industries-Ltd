@@ -117,10 +117,11 @@ async function renderShop() {
                                 <p class="text-2xl font-black text-blue-900">₹${finalPrice.toLocaleString()}</p>
                                 ${product.discount > 0 ? `<p class="text-[10px] text-slate-300 line-through font-bold">₹${product.price.toLocaleString()}</p>` : ""}
                             </div>
-                            <button onclick="event.stopPropagation(); addToCart('${product.name}', ${finalPrice}, 1, '${finalImgSrc}', ${product.price})" 
-                                    class="bg-blue-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-xl active:scale-90">
-                                <i class="fas fa-cart-plus"></i>
-                            </button>
+                          
+<button onclick="event.stopPropagation(); addToCart('${product.name}', ${finalPrice}, 1, '${finalImgSrc}', ${product.price})" 
+        class="bg-blue-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-xl active:scale-90">
+    <i class="fas fa-cart-plus"></i>
+</button>
                         </div>
                     </div>
                 </div>`;
@@ -204,3 +205,33 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+// 1. Use the "Hardened" key name: mishraCart
+function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
+  let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  const qtyToAdd = parseInt(qty) || 1;
+
+  const existingItem = cart.find((item) => item.name === name);
+
+  if (existingItem) {
+    existingItem.quantity += qtyToAdd;
+  } else {
+    // 2. Add with the EXACT keys the cart.html script expects
+    cart.push({
+      name: name,
+      price: price, // Discounted price
+      originalPrice: originalPrice || price,
+      quantity: qtyToAdd,
+      image: image || "./images/logo.jpeg", // Base64 or path
+    });
+  }
+
+  localStorage.setItem("mishraCart", JSON.stringify(cart));
+
+  // Update the badge if it exists on the page
+  if (document.getElementById("cartCount")) {
+    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById("cartCount").innerText = total;
+  }
+
+  alert(`✅ ${name} added to Mishra Basket!`);
+}

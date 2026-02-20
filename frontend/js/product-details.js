@@ -113,3 +113,34 @@ function updateQty(val) {
 }
 
 document.addEventListener("DOMContentLoaded", loadProductDetails);
+
+// 1. Use the "Hardened" key name: mishraCart
+function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
+    let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+    const qtyToAdd = parseInt(qty) || 1;
+
+    const existingItem = cart.find(item => item.name === name);
+
+    if (existingItem) {
+        existingItem.quantity += qtyToAdd;
+    } else {
+        // 2. Add with the EXACT keys the cart.html script expects
+        cart.push({
+            name: name,
+            price: price,           // Discounted price
+            originalPrice: originalPrice || price, 
+            quantity: qtyToAdd,
+            image: image || './images/logo.jpeg' // Base64 or path
+        });
+    }
+
+    localStorage.setItem("mishraCart", JSON.stringify(cart));
+    
+    // Update the badge if it exists on the page
+    if(document.getElementById("cartCount")) {
+        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById("cartCount").innerText = total;
+    }
+
+    alert(`✅ ${name} added to Mishra Basket!`);
+}
