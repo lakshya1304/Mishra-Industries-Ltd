@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
+const { protect } = require("../middleware/authMiddleware"); // Ensure this path is correct
 
 const {
   registerUser,
@@ -8,8 +9,9 @@ const {
   forgotPassword,
   verifyOTP,
   resetPassword,
-  deleteUser,
-  deleteAllUsers// Make sure this is imported
+  updateProfile,   // Added import
+  deleteUser,      // Added import to fix crash
+  deleteAllUsers,  // Added import to fix crash
 } = require("../controllers/authController");
 
 // Public Routes
@@ -29,8 +31,11 @@ router.get("/all-users", async (req, res) => {
   }
 });
 
-router.delete("/delete-user/:id", deleteUser);
-router.delete("/delete-all-users", deleteAllUsers); 
-// Add updateProfile to your imports
-router.put("/update-profile", protect, updateProfile); //
+// FIXED: Corrected route definitions to prevent "argument handler must be a function" error
+router.delete("/delete-user/:id", deleteUser); // Line 32
+router.delete("/delete-all-users", deleteAllUsers);
+
+// Profile Routes
+router.put("/update-profile", protect, updateProfile); // Fixed with protect middleware
+
 module.exports = router;

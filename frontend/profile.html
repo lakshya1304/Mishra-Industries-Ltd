@@ -350,8 +350,9 @@
           .toUpperCase();
         document.getElementById("dispUserName").innerText = name;
         document.getElementById("profName").value = name;
-        document.getElementById("profEmail").value = user.email || "";
-        document.getElementById("profPhone").value = user.phone || "";
+        // Map these exactly as the backend sends them
+document.getElementById('profEmail').value = user.email || ""; 
+document.getElementById('profPhone').value = user.phone || "";
         document.getElementById("addrStreet").value = user.address || "";
         document.getElementById("addrPin").value = user.pincode || "";
         document.getElementById("addrLocality").value = user.locality || "";
@@ -359,7 +360,52 @@
         document.getElementById("currentTypeLabel").innerText =
           user.accountType.toUpperCase();
       }
+async function executeAutoUpdate() {
+  const pin = document.getElementById("addrPin").value;
+  const phone = document.getElementById("profPhone").value;
 
+  // Validation
+  if (pin && pin.length !== 6) return alert("Error: Pincode must be exactly 6 digits.");
+  if (phone && phone.length < 10) return alert("Error: Enter a valid 10-digit mobile number.");
+
+  // Correct way to get the selected radio value
+  const selectedGender = document.querySelector('input[name="gender"]:checked')?.value;
+
+  const payload = {
+    fullName: document.getElementById("profName").value,
+    phone: phone,
+    gender: selectedGender, // Correctly captures 'male' or 'female'
+    address: document.getElementById("addrStreet").value,
+    pincode: pin,
+    locality: document.getElementById("addrLocality").value,
+    city: document.getElementById("addrCity").value,
+    state: document.getElementById("addrState").value,
+    businessName: document.getElementById("bizName") ? document.getElementById("bizName").value : undefined,
+    gstNumber: document.getElementById("bizGST") ? document.getElementById("bizGST").value.toUpperCase() : undefined,
+  };
+
+  try {
+    const res = await fetch(`${API_URL}/api/auth/update-profile`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${user.token}`, // Secured with Bearer Token
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (res.ok) {
+      localStorage.setItem("mishraUser", JSON.stringify({ ...user, ...payload }));
+      alert("✅ Profile Synced successfully.");
+      location.reload();
+    } else {
+      const error = await res.json();
+      alert(error.message || "Update Failed");
+    }
+  } catch (err) {
+    alert("Network Error: Could not connect to Mishra Cloud.");
+  }
+}
       function toggleMigrationFields() {
         const type = document.getElementById("newAccountType").value;
         const fields = document.getElementById("migrationFields");
