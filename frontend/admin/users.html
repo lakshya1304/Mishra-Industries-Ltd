@@ -1,13 +1,26 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Registered Users | Mishra Industries</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-< <body class="bg-slate-50 flex min-h-screen font-sans">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #1e3a8a;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  
+  <body class="bg-slate-50 flex min-h-screen font-sans custom-scrollbar">
     <aside
       class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col"
     >
@@ -17,7 +30,7 @@
         </h2>
       </div>
 
-       <nav class="space-y-3 flex-1">
+      <nav class="space-y-3 flex-1">
         <a
           href="site-editor.html"
           class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
@@ -44,22 +57,22 @@
         </a>
         <a
           href="users.html"
-          class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
+          class="flex items-center space-x-4 p-4 bg-orange-500/10 rounded-2xl transition-all group"
         >
-          <i
-            class="fas fa-users text-slate-500 group-hover:text-orange-500"
-          ></i>
-          <span
-            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
-            >Users</span
-          >
+          <i class="fas fa-users text-orange-500"></i>
+          <span class="font-bold text-sm tracking-wide text-white">Users</span>
         </a>
         <a
           href="orders.html"
           class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
         >
-          <i class="fas fa-shopping-cart"></i>
-          <span class="font-bold text-sm tracking-wide">Orders List</span>
+          <i
+            class="fas fa-shopping-cart text-slate-500 group-hover:text-orange-500"
+          ></i>
+          <span
+            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+            >Orders List</span
+          >
         </a>
       </nav>
 
@@ -71,40 +84,84 @@
         <span class="font-bold text-sm">Logout Console</span>
       </a>
     </aside>
-    <div class="max-w-7xl mx-auto">
-        <header class="flex justify-between items-center mb-12">
-            <div>
-                <h1 class="text-4xl font-black text-blue-900 uppercase tracking-tighter">Directory</h1>
-                <p class="text-gray-400 font-bold text-xs uppercase tracking-[0.3em]">Mishra Industries User Database</p>
-            </div>
-            <a href="../index.html" class="bg-blue-900 text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-orange-500 transition-all">Back to Home</a>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <section class="bg-white rounded-[2.5rem] p-8 shadow-xl border-t-8 border-blue-900">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center text-xl">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h2 class="text-2xl font-black text-blue-900 uppercase">Customers</h2>
-                </div>
-                <div id="customerList" class="space-y-4">
-                    </div>
-            </section>
-
-            <section class="bg-white rounded-[2.5rem] p-8 shadow-xl border-t-8 border-orange-500">
-                <div class="flex items-center gap-4 mb-8">
-                    <div class="w-12 h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-xl">
-                        <i class="fas fa-store"></i>
-                    </div>
-                    <h2 class="text-2xl font-black text-blue-900 uppercase">Retailers</h2>
-                </div>
-                <div id="retailerList" class="space-y-4">
-                    </div>
-            </section>
+      
+    <main class="flex-1 p-12 overflow-y-auto">
+      <header class="flex justify-between items-center mb-12">
+        <div>
+          <h1
+            class="text-4xl font-black text-blue-900 uppercase tracking-tighter"
+          >
+            Directory
+          </h1>
+          <p class="text-gray-400 font-bold text-xs uppercase tracking-[0.3em]">
+            Mishra Industries User Database
+          </p>
         </div>
-    </div>
+        <button onclick="deleteAllUsers()" class="border-2 border-red-500 text-red-500 px-6 py-3 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">
+            <i class="fas fa-user-slash mr-2"></i> Delete All Users
+        </button>
+        <a
+          href="../index.html"
+          class="bg-blue-900 text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-orange-500 transition-all"
+          >Back to Home</a
+        >
+      </header>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <section
+          class="bg-white rounded-[2.5rem] p-8 shadow-xl border-t-8 border-blue-900"
+        >
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-4">
+              <div
+                class="w-12 h-12 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center text-xl"
+              >
+                <i class="fas fa-users"></i>
+              </div>
+              <h2 class="text-2xl font-black text-blue-900 uppercase">
+                Customers
+              </h2>
+            </div>
+            <span
+              id="customerCount"
+              class="bg-blue-900 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase"
+              >0 Total</span
+            >
+          </div>
+          <div
+            id="customerList"
+            class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"
+          ></div>
+        </section>
+
+        <section
+          class="bg-white rounded-[2.5rem] p-8 shadow-xl border-t-8 border-orange-500"
+        >
+          <div class="flex items-center justify-between mb-8">
+            <div class="flex items-center gap-4">
+              <div
+                class="w-12 h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-xl"
+              >
+                <i class="fas fa-store"></i>
+              </div>
+              <h2 class="text-2xl font-black text-blue-900 uppercase">
+                Retailers
+              </h2>
+            </div>
+            <span
+              id="retailerCount"
+              class="bg-orange-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase"
+              >0 Total</span
+            >
+          </div>
+          <div
+            id="retailerList"
+            class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"
+          ></div>
+        </section>
+      </div>
+    </main>
 
     <script src="../js/user_directory.js"></script>
-</body>
+  </body>
 </html>

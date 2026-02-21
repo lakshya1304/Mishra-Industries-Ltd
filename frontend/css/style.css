@@ -4,6 +4,21 @@
   --accent-orange: #ff8c00;
 }
 
+/* Prevent horizontal overflow globally */
+html,
+body {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Ensure all flex children can shrink properly */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
 /* Smooth Scroll */
 html {
   scroll-behavior: smooth;
@@ -44,216 +59,40 @@ button:active {
   border-radius: 10px;
 }
 
-/* Custom Sidebar Checkbox Style */
-input[type="checkbox"] {
-  accent-color: #ff8c00; /* This makes the tick mark Orange */
-  width: 1.1rem;
-  height: 1.1rem;
-  cursor: pointer;
-}
-
-/* Sidebar Hover Effect */
-aside label:hover {
-  transition: 0.2s;
-  padding-left: 5px;
-}
-/* --- Mishra Industries Floating Label System --- */
-
-/* 1. The Container: Keeps the label positioned relative to the box */
-.relative-input-group {
-  position: relative;
-  margin-bottom: 1.5rem; /* Adds space between your fields */
-}
-
-/* 2. The Input: The actual box where you type */
-.floating-input {
-  width: 100%;
-  padding: 1.25rem 1rem 0.75rem 1rem; /* Extra top padding for the label */
-  background: #f9fafb;
-  border: 1.5px solid #e5e7eb;
-  border-radius: 0.75rem;
-  outline: none;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  color: #1f2937;
-}
-
-/* 3. The Label: The text that will move */
-.floating-label {
-  position: absolute;
-  left: 1rem;
-  top: 1rem; /* Starts inside the box */
-  color: #9ca3af;
-  pointer-events: none; /* Allows you to click "through" the text into the box */
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  font-weight: 500;
-}
-
-/* 4. THE ANIMATION LOGIC:
-   This moves the label UP when you click (focus) or when the box is NOT empty */
-.floating-input:focus ~ .floating-label,
-.floating-input:not(:placeholder-shown) ~ .floating-label {
-  top: -0.7rem;
-  left: 0.8rem;
-  font-size: 0.75rem;
-  color: #003366; /* Mishra Blue */
-  background: white;
-  padding: 0 0.4rem;
-  font-weight: 700;
-  z-index: 10;
-}
-
-.type-option input:checked + .type-label {
-  border-color: #ff8c00 !important; /* Mishra Orange */
-  color: #003366 !important; /* Mishra Blue */
-  background: white !important;
-  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.1);
-}
-
-/* 5. Focus Effect: Changes border color to your brand orange */
-.floating-input:focus {
-  border-color: #ff8c00; /* Mishra Orange */
-  background: white;
-  box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.1);
-}
-/* Account Type Selector Styles */
-.account-type-group {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-}
-
-.type-option {
-  flex: 1;
-  position: relative;
-}
-
-.type-option input {
-  display: none; /* Hide the ugly default button */
-}
-
-.type-label {
-  display: block;
-  text-align: center;
-  padding: 1rem;
-  background: #f9fafb;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.75rem;
-  cursor: pointer;
-  font-weight: 700;
-  font-size: 0.8rem;
-  transition: all 0.3s ease;
-  color: #9ca3af;
-}
-
-/* Color change when selected */
-.type-option input:checked + .type-label {
-  border-color: #ff8c00; /* Mishra Orange */
-  color: #003366; /* Mishra Blue */
-  background: white;
-  box-shadow: 0 4px 12px rgba(255, 140, 0, 0.15);
-}
-
-/* Helper class to hide elements */
-.hidden {
-  display: none !important;
-}
-
-/* Make selected account type stand out */
-.type-option input:checked + .type-label {
-  border-color: #ff8c00 !important; /* Mishra Orange */
-  color: #003366 !important; /* Mishra Blue */
-  background: #fff !important;
-}
-
-@media print {
-  .no-print,
-  aside,
-  button,
-  input,
-  nav {
-    display: none !important;
-  }
-  body {
-    background: white !important;
-    padding: 0 !important;
-  }
-  main {
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-  .rounded-\[2rem\] {
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    border: 1px solid #eee !important;
-  }
-  table {
-    width: 100% !important;
-    border-collapse: collapse !important;
-  }
-  th,
-  td {
-    border: 1px solid #ddd !important;
-    padding: 12px !important;
-  }
-}
-
-@media (max-width: 768px) {
-  nav a {
-    font-size: 1.1rem;
-  }
-}
-html {
-  scroll-behavior: smooth;
-}
-.hover-lift {
-  transition: transform 0.3s ease;
-}
-.hover-lift:hover {
-  transform: translateY(-5px);
-}
-/* Slideshow Styles */
-.slide {
-  display: none;
-  animation: fadeEffect 1.5s;
-}
-@keyframes fadeEffect {
-  from {
-    opacity: 0.4;
-  }
-  to {
-    opacity: 1;
-  }
+/* Make images responsive */
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* --- Mishra Industries Flexbox Layout Engine --- */
 
-/* 1. Main Responsive Container */
 .container-adaptive {
   display: flex;
-  flex-direction: column; /* Stacks by default (Mobile First) */
+  flex-direction: column;
   width: 100%;
+  max-width: 100%;
   padding-left: 1rem;
   padding-right: 1rem;
   margin-left: auto;
   margin-right: auto;
 }
 
-/* 2. Responsive Row: Stacks on mobile, Rows on PC */
 .row-responsive {
   display: flex;
-  flex-direction: column; /* Stacked for mobile */
+  flex-direction: column;
   gap: 1.5rem;
+  width: 100%;
+  max-width: 100%;
 }
 
-/* 3. Automatic Grid for Products */
 .product-grid-adaptive {
   display: grid;
   gap: 1.5rem;
-  grid-template-columns: 1fr; /* Single column for mobile */
+  grid-template-columns: 1fr;
+  width: 100%;
 }
 
-/* 4. Mobile Navigation Stack */
 .nav-mobile-stack {
   display: flex;
   flex-direction: column;
@@ -262,7 +101,7 @@ html {
   gap: 1rem;
 }
 
-/* --- Media Queries for Desktop (768px and up) --- */
+/* Desktop */
 @media (min-width: 768px) {
   .container-adaptive {
     max-width: 1280px;
@@ -271,48 +110,28 @@ html {
   }
 
   .row-responsive {
-    flex-direction: row; /* Side-by-side for PC */
+    flex-direction: row;
     align-items: stretch;
   }
 
-  /* Split layout: 50/50 for login or hero sections */
   .col-half {
     flex: 1;
+    min-width: 0;
   }
 
   .product-grid-adaptive {
-    /* 3 Columns for PC */
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* Extra Large Screens (Laptops) */
+/* Extra Large */
 @media (min-width: 1024px) {
   .product-grid-adaptive {
-    /* 4 Columns for larger screens */
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
-/* --- Utility Helpers --- */
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.flex-between {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
+/* Header */
 .header {
   display: flex;
   justify-content: space-between;
@@ -320,13 +139,17 @@ html {
   padding: 14px 30px;
   background: #0f172a;
   color: #fff;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
 }
 
-/* Logo + Name */
+/* Logo */
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  min-width: 0;
 }
 
 .brand img {
@@ -339,22 +162,26 @@ html {
   font-weight: 700;
 }
 
-/* Nav container */
+/* Nav */
 .nav-area {
   display: flex;
   align-items: center;
+  position: relative;
+  min-width: 0;
 }
 
-/* Desktop nav */
 .nav-links {
   display: flex;
   gap: 25px;
+  transition: all 0.3s ease;
+  min-width: 0;
 }
 
 .nav-links a {
   text-decoration: none;
   color: white;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 /* Hamburger */
@@ -371,25 +198,76 @@ html {
   background: white;
 }
 
-/* Mobile logic */
+/* Mobile */
 @media (max-width: 768px) {
   .hamburger {
     display: flex;
   }
 
+  .hamburger:hover + .nav-links {
+    display: flex;
+  }
+
+  .header {
+    padding: 12px 16px;
+  }
+
   .nav-links {
     position: absolute;
-    top: 70px;
-    right: 0;
-    width: 100%;
-    background: #0f172a;
+    top: 100%;
+    /* Use left: 50% and transform to center the menu perfectly */
+    left: 50%;
+    transform: translateX(-50%); 
+    width: 100vw; /* Spans the full width of the mobile screen */
+    
+    /* Modern UI: Darker gradient and slight transparency */
+    background: linear-gradient(180deg, #0f172a 0%, #000306 100%);
+    backdrop-filter: blur(10px);
+    
     flex-direction: column;
     align-items: center;
     display: none;
-    padding: 20px 0;
+    padding: 10px 0;
+    z-index: 9999;
+    
+    /* Modern UI: Shadow and Rounded bottom corners */
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4);
+    border-bottom: 2px solid var(--accent-orange);
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
   }
 
-  .nav-links.active {
+  /* Improved Hover Trigger */
+  .nav-area:hover .nav-links {
     display: flex;
+    animation: slideDown 0.3s ease-out;
+  }
+
+  /* Modern Link Styling */
+  .nav-links a {
+    width: 90%; /* Keeps text away from screen edges */
+    padding: 18px 0;
+    margin: 0 5%;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    text-align:left;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+  }
+
+  .nav-links a:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--accent-orange);
   }
 }
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

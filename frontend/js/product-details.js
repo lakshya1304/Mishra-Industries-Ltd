@@ -1,5 +1,6 @@
 const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
 let currentQty = 1;
+let currentProduct = null;
 
 async function loadProductDetails() {
   const params = new URLSearchParams(window.location.search);
@@ -12,135 +13,192 @@ async function loadProductDetails() {
 
   try {
     const response = await fetch(`${API_BASE}/api/products/${productId}`);
-    const product = await response.json();
+    if (!response.ok) throw new Error("Product Fetch Failed");
 
-    // 1. Map Data to UI
-    document.getElementById("productName").innerText = product.name;
-    document.getElementById("breadcrumbCategory").innerText = product.category;
+    currentProduct = await response.json();
+
+    // 1. DATA MAPPING (Connected to Site Editor)
+    document.getElementById("productName").innerText = currentProduct.name;
+    document.getElementById("breadcrumbCategory").innerText =
+      currentProduct.category;
+
+    // This pulls the EXACT description you set in the editor
     document.getElementById("productDescription").innerText =
-      product.description ||
-      "Premium electrical solution from Mishra Industries.";
+      currentProduct.description ||
+      "Official premium industrial-grade solution from Mishra Industries.";
 
-    // UPDATED IMAGE LOGIC: Handles Base64 strings (data:) and local Render paths
-    let finalImgSrc;
-    if (product.image && product.image.startsWith("data:")) {
-      // Use Base64 string directly
-      finalImgSrc = product.image;
-    } else {
-      // Fallback for local server paths
-      const cleanPath =
-        product.image.startsWith("/") ? product.image : `/${product.image}`;
-      finalImgSrc = `${API_BASE}${cleanPath}`;
-    }
-    document.getElementById("productImage").src = finalImgSrc;
+    // 2. FIXED IMAGE FETCHING
+    document.getElementById("productImage").src = getCleanImagePath(
+      currentProduct.image,
+    );
 
-    // 2. Pricing and Discount
-    const discount = product.discount || 0;
-    const finalPrice = product.price - product.price * (discount / 100);
+    // 3. PRICING & DISCOUNTS
+    const discount = currentProduct.discount || 0;
+    const finalPrice = Math.floor(
+      currentProduct.price - currentProduct.price * (discount / 100),
+    );
     document.getElementById("productPrice").innerText =
       `₹${finalPrice.toLocaleString()}`;
 
     if (discount > 0) {
       const badge = document.getElementById("discountBadge");
-      badge.innerText = `-${discount}% OFF`;
+      badge.innerText = `${discount}% OFF`;
       badge.classList.remove("hidden");
-      document.getElementById("originalPrice").innerText =
-        `₹${product.price.toLocaleString()}`;
-      document.getElementById("originalPrice").classList.remove("hidden");
+      const origPriceEl = document.getElementById("originalPrice");
+      origPriceEl.innerText = `₹${currentProduct.price.toLocaleString()}`;
+      origPriceEl.classList.remove("hidden");
     }
 
-    // 3. Stock Status
+    // 4. STOCK STATUS
     const stockEl = document.getElementById("stockStatus");
-    const available = product.stock > 0;
+    const available = currentProduct.stock > 0;
     stockEl.innerHTML =
       available ?
         '<i class="fas fa-check-circle mr-2 text-green-500"></i> IN STOCK'
       : '<i class="fas fa-times-circle mr-2 text-red-500"></i> OUT OF STOCK';
-    stockEl.className +=
-      available ? " bg-green-50 text-green-700" : " bg-red-50 text-red-700";
+    stockEl.className = `flex items-center text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md ${available ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`;
 
-    // 4. Specs Table
-    const specs = [
-      { label: "Product Category", value: product.category },
-      { label: "Durability", value: "Industrial Grade" },
-      { label: "Standard", value: "ISI / Mishra Certified" },
-      { label: "Logistics", value: "Standard Surface Dispatch" },
-    ];
-    document.getElementById("specTable").innerHTML = specs
-      .map(
-        (s) => `
-            <div class="spec-row grid grid-cols-2 p-4 border-b border-slate-100 last:border-0">
-                <span class="text-[10px] font-black text-slate-400 uppercase">${s.label}</span>
-                <span class="text-xs font-bold text-blue-900">${s.value}</span>
-            </div>
-        `,
-      )
-      .join("");
+    // 5. DYNAMIC SPECS (Displays Company/Brand from Editor)
+    renderSpecs(currentProduct);
 
-    // 5. Fixed Action: Single Notification Cart
-    const cartBtn = document.getElementById("addToCartBtn");
-    cartBtn.onclick = (e) => {
-      e.preventDefault();
-      if (typeof addToCart === "function") {
-        // FIXED: Now passing finalPrice, quantity, Base64 image, and original price for the new cart logic
-        addToCart(
-          product.name,
-          finalPrice,
-          currentQty,
-          finalImgSrc,
-          product.price,
-        );
+    // 6. RECOMMENDATION ENGINE
+    loadRecommendations(currentProduct.category, currentProduct._id);
 
-        // Visual Button Change instead of Alert pop-ups
-        const originalText = cartBtn.innerHTML;
-        cartBtn.innerHTML = `<i class="fas fa-check"></i> <span>Updated Basket</span>`;
-        cartBtn.classList.replace("bg-[#1e3a8a]", "bg-green-600");
-
-        setTimeout(() => {
-          cartBtn.innerHTML = originalText;
-          cartBtn.classList.replace("bg-green-600", "bg-[#1e3a8a]");
-        }, 2000);
-      }
-    };
+    updateCartBadge();
+    AOS.init(); // Init scroll animations
   } catch (err) {
-    console.error("Critical Fetch Error:", err);
+    console.error("Critical Error:", err);
   }
 }
 
+// IMAGE PATH HANDLER
+function getCleanImagePath(img) {
+  if (!img) return "./images/logo.jpeg";
+  if (img.startsWith("data:") || img.startsWith("http")) return img;
+  const cleanPath = img.startsWith("/") ? img : `/${img}`;
+  return `${API_BASE}${cleanPath}`;
+}
+
+// SPECS GENERATOR
+function renderSpecs(product) {
+  const specs = [
+    { label: "Company / Brand", value: product.company }, // This pulls Anchor, Havells, etc.
+    { label: "Category", value: product.category },
+    { label: "Durability", value: "Industrial Grade" },
+    { label: "Standard", value: "ISI / Mishra Certified" },
+  ];
+  document.getElementById("specTable").innerHTML = specs
+    .map(
+      (s) => `
+        <div class="spec-row grid grid-cols-2 p-5 border-b border-slate-50 last:border-0 hover:bg-slate-100/50 transition-colors">
+            <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">${s.label}</span>
+            <span class="text-xs font-bold text-blue-900">${s.value}</span>
+        </div>
+    `,
+    )
+    .join("");
+}
+
+// RECOMMENDATION ENGINE
+async function loadRecommendations(category, currentId) {
+  try {
+    const response = await fetch(`${API_BASE}/api/products`);
+    const allProducts = await response.json();
+    const recommended = allProducts
+      .filter((p) => p.category === category && p._id !== currentId)
+      .slice(0, 8);
+
+    const slider = document.getElementById("recommendationSlider");
+    slider.innerHTML = recommended
+      .map((p) => {
+        const disc = p.discount || 0;
+        const price = Math.floor(p.price - p.price * (disc / 100));
+        return `
+                <div onclick="location.href='product-details.html?id=${p._id}'" class="min-w-[280px] bg-white rounded-3xl border border-slate-100 p-5 hover:shadow-xl transition-all cursor-pointer group">
+                    <div class="h-40 bg-slate-50 rounded-2xl mb-4 overflow-hidden flex items-center justify-center p-4">
+                        <img src="${getCleanImagePath(p.image)}" class="h-full object-contain group-hover:scale-110 transition-transform duration-500">
+                    </div>
+                    <p class="text-[8px] font-black text-orange-500 uppercase tracking-widest mb-1">${p.category}</p>
+                    <h4 class="text-sm font-black text-blue-900 truncate mb-2">${p.name}</h4>
+                    <p class="text-lg font-black text-blue-900">₹${price.toLocaleString()}</p>
+                </div>
+            `;
+      })
+      .join("");
+  } catch (err) {
+    console.error("Recs Error:", err);
+  }
+}
+
+function scrollSlider(dir) {
+  document
+    .getElementById("recommendationSlider")
+    .scrollBy({ left: dir * 300, behavior: "smooth" });
+}
+
+// CART CONNECTIVITY
 function updateQty(val) {
   currentQty = Math.max(1, currentQty + val);
   document.getElementById("quantityDisplay").innerText = currentQty;
 }
 
-document.addEventListener("DOMContentLoaded", loadProductDetails);
+const addToCartBtn = document.getElementById("addToCartBtn");
+if (addToCartBtn) {
+  addToCartBtn.onclick = () => {
+    if (!currentProduct) return;
+    const discount = currentProduct.discount || 0;
+    const finalPrice = Math.floor(
+      currentProduct.price - currentProduct.price * (discount / 100),
+    );
+    const image = document.getElementById("productImage").src;
 
-// 1. Use the "Hardened" key name: mishraCart
-function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
+    // FIXED: Using "mishraCart" to connect to cart.html
     let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
-    const qtyToAdd = parseInt(qty) || 1;
+    const existing = cart.find((item) => item.name === currentProduct.name);
 
-    const existingItem = cart.find(item => item.name === name);
-
-    if (existingItem) {
-        existingItem.quantity += qtyToAdd;
+    if (existing) {
+      existing.quantity += currentQty;
     } else {
-        // 2. Add with the EXACT keys the cart.html script expects
-        cart.push({
-            name: name,
-            price: price,           // Discounted price
-            originalPrice: originalPrice || price, 
-            quantity: qtyToAdd,
-            image: image || './images/logo.jpeg' // Base64 or path
-        });
+      cart.push({
+        name: currentProduct.name,
+        price: finalPrice,
+        originalPrice: currentProduct.price,
+        quantity: currentQty,
+        image: image,
+      });
     }
 
     localStorage.setItem("mishraCart", JSON.stringify(cart));
-    
-    // Update the badge if it exists on the page
-    if(document.getElementById("cartCount")) {
-        const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-        document.getElementById("cartCount").innerText = total;
-    }
+    updateCartBadge();
+    showToast(currentProduct.name);
 
-    alert(`✅ ${name} added to Mishra Basket!`);
+    // Button State
+    const originalText = addToCartBtn.innerHTML;
+    addToCartBtn.classList.replace("bg-[#1e3a8a]", "bg-green-600");
+    addToCartBtn.innerHTML = `<i class="fas fa-check"></i> <span>Added!</span>`;
+    setTimeout(() => {
+      addToCartBtn.classList.replace("bg-green-600", "bg-[#1e3a8a]");
+      addToCartBtn.innerHTML = originalText;
+    }, 2000);
+  };
 }
+
+function showToast(name) {
+  const toast = document.getElementById("cartToast");
+  document.getElementById("toastProductName").innerText = name;
+  toast.classList.remove("opacity-0", "translate-x-10", "pointer-events-none");
+  setTimeout(
+    () =>
+      toast.classList.add("opacity-0", "translate-x-10", "pointer-events-none"),
+    3000,
+  );
+}
+
+function updateCartBadge() {
+  const cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  const count = cart.reduce((acc, item) => acc + item.quantity, 0);
+  if (document.getElementById("cartCount"))
+    document.getElementById("cartCount").innerText = count;
+}
+
+document.addEventListener("DOMContentLoaded", loadProductDetails);

@@ -285,7 +285,7 @@
         "Stock Level": product.stock,
         "Unit Price": product.price,
         "Total Stock Value": product.price * product.stock,
-        "Status": product.stock < 10 ? "CRITICAL LOW" : "HEALTHY",
+        "Status": product.stock < 25 ? "CRITICAL LOW" : "HEALTHY",
         "Report Date": new Date().toLocaleDateString()
     }));
 

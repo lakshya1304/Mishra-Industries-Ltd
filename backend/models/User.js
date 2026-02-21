@@ -47,6 +47,12 @@ const userSchema = new mongoose.Schema({
       return this.accountType === "retailer";
     },
   },
+  businessName: { type: String },
+gstNumber: { 
+    type: String, 
+    uppercase: true,
+    trim: true 
+},
   resetPasswordOTP: String,
   resetPasswordExpire: Date,
   createdAt: {

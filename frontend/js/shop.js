@@ -173,25 +173,25 @@ function handlePhotoSearch(event) {
 }
 
 function filterByBrand(brand) {
-  // If 'All' is selected, set currentBrand to null so it doesn't filter by company
+  // Update global filter variable
   currentBrand = brand === "All" ? null : brand;
 
-  // Update UI button styles
+  // UI: Update Chip Styles
   document.querySelectorAll(".filter-chip").forEach((btn) => {
-    // Check for exact match with the button text
     const isMatch = btn.innerText.trim() === brand;
-    btn.classList.toggle("active", isMatch);
-
+    
     if (isMatch) {
-      btn.classList.add("bg-blue-900", "text-white");
-      btn.classList.remove("bg-white", "text-slate-500");
+      // Apply Active Styles
+      btn.classList.add("active", "bg-blue-900", "text-white");
+      btn.classList.remove("border-slate-100", "text-slate-600");
     } else {
-      btn.classList.remove("bg-blue-900", "text-white");
-      btn.classList.add("bg-white", "text-slate-500");
+      // Reset to Default Styles
+      btn.classList.remove("active", "bg-blue-900", "text-white");
+      btn.classList.add("border-slate-100", "text-slate-600");
     }
   });
 
-  // Re-render the shop with the new brand filter applied
+  // Re-render shop with new filters
   renderShop();
 }
 

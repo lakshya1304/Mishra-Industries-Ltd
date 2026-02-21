@@ -16,8 +16,15 @@ exports.registerUser = async (req, res) => {
   if (error) return res.status(400).json({ message: error.details[0].message });
 
   try {
-    const { fullName, email, phone, password, accountType, businessName } =
-      req.body;
+    const {
+      fullName,
+      email,
+      phone,
+      password,
+      accountType,
+      businessName,
+      gstNumber,
+    } = req.body;
 
     // Check if phone or email already exists
     const userExists = await User.findOne({ $or: [{ email }, { phone }] });
@@ -27,7 +34,7 @@ exports.registerUser = async (req, res) => {
         .json({ message: "Email or Phone already registered" });
     }
 
-    // Create user in Atlas
+    // Create user in Atlas (Includes gstNumber for Retailers)
     const user = await User.create({
       fullName,
       email,
@@ -35,6 +42,7 @@ exports.registerUser = async (req, res) => {
       password,
       accountType,
       businessName,
+      gstNumber,
     });
 
     // --- AUTOMATED REAL-TIME WELCOME EMAIL ---
@@ -55,6 +63,7 @@ exports.registerUser = async (req, res) => {
       fullName: user.fullName,
       email: user.email,
       accountType: user.accountType,
+      gstNumber: user.gstNumber,
       token: generateToken(user._id),
     });
   } catch (error) {
@@ -96,21 +105,17 @@ exports.loginUser = async (req, res) => {
 // @route   POST /api/auth/forgot-password
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
-  
-  // Only search for registered users to prevent unauthorized email usage
+
   const user = await User.findOne({ email });
 
   if (!user) {
     return res.status(404).json({ message: "No user found with this email" });
   }
 
-  // Generate 6-digit OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-  // --- DEBUG LOGS ---
   console.log(`[OTP GENERATED] Email: ${email} | OTP: ${otp}`);
 
-  // Save OTP to user record (valid for 10 mins)
   user.resetPasswordOTP = otp;
   user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
   await user.save();
@@ -121,7 +126,7 @@ exports.forgotPassword = async (req, res) => {
       subject: "Password Reset OTP - Mishra Industries",
       message: "Your verification code for password reset is:",
       otp: otp,
-      type: "otp" 
+      type: "otp",
     });
 
     console.log(`[MAIL DISPATCHED] Successfully sent to ${user.email}`);
@@ -131,9 +136,12 @@ exports.forgotPassword = async (req, res) => {
     user.resetPasswordOTP = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
-    res.status(500).json({ message: "Email could not be sent. Check backend logs." });
+    res
+      .status(500)
+      .json({ message: "Email could not be sent. Check backend logs." });
   }
 };
+
 // @desc    Verify OTP and Update Password Permanently
 // @route   POST /api/auth/reset-password
 exports.resetPassword = async (req, res) => {
@@ -150,7 +158,6 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
-    // Update password (Schema handles auto-hashing via pre-save hook)
     user.password = newPassword;
     user.resetPasswordOTP = undefined;
     user.resetPasswordExpire = undefined;
@@ -194,5 +201,41 @@ exports.verifyOTP = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Delete user account
+// @route   DELETE /api/auth/delete-user/:id
+exports.deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id; // Pulls the ID from the URL
+    
+    // Attempt to remove from MongoDB Atlas
+    const deletedUser = await User.findByIdAndDelete(userId);
+
+    if (!deletedUser) {
+      return res.status(404).json({ message: "User ID not found in database" });
+    }
+
+    res.status(200).json({ success: true, message: "User permanently removed" });
+  } catch (error) {
+    console.error("Delete Error:", error.message);
+    res.status(500).json({ message: "Server Error: Likely an invalid ID format" });
+  }
+};
+
+// @desc    Delete ALL users
+// @route   DELETE /api/auth/delete-all-users
+exports.deleteAllUsers = async (req, res) => {
+  try {
+    // deleteMany({}) removes every document in the collection
+    const result = await User.deleteMany({});
+    
+    res.status(200).json({ 
+      success: true, 
+      message: `${result.deletedCount} users removed from Mishra Atlas database` 
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error: Could not clear database" });
   }
 };

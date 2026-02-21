@@ -13,6 +13,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
     <style>
       .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
@@ -20,6 +21,13 @@
       .custom-scrollbar::-webkit-scrollbar-thumb {
         background: #1e3a8a;
         border-radius: 10px;
+      }
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
       }
       .spec-row:nth-child(even) {
         background-color: #f8fafc;
@@ -37,7 +45,7 @@
         <div
           class="p-2 rounded-full bg-slate-100 group-hover:bg-orange-500 group-hover:text-white transition-all"
         >
-          <i class="fas fa-arrow-left"></i>
+          <i class="fas fa-arrow-left text-xs"></i>
         </div>
         <span
           class="text-[10px] font-black uppercase tracking-widest text-blue-900"
@@ -49,7 +57,7 @@
         onclick="location.href = 'index.html'"
       >
         <span
-          class="text-xl font-black text-blue-900 tracking-tighter uppercase"
+          class="text-xl font-black text-blue-900 tracking-tighter uppercase leading-none"
           >Mishra</span
         >
         <span
@@ -58,10 +66,12 @@
         >
       </div>
       <div
-        class="relative cursor-pointer"
+        class="relative cursor-pointer group"
         onclick="location.href = 'cart.html'"
       >
-        <i class="fas fa-shopping-basket text-xl text-blue-900"></i>
+        <i
+          class="fas fa-shopping-basket text-xl text-blue-900 group-hover:text-orange-500 transition-colors"
+        ></i>
         <span
           id="cartCount"
           class="absolute -top-2 -right-2 bg-orange-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold"
@@ -69,22 +79,35 @@
         >
       </div>
     </nav>
-<div id="cartToast" class="fixed -top-40 left-1/2 -translate-x-1/2 z-[1000] transition-all duration-700 w-[90%] max-w-md">
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-100 p-5 flex items-center space-x-4">
-        <div class="w-12 h-12 bg-green-50 text-green-500 rounded-2xl flex items-center justify-center text-xl">
-            <i class="fas fa-check-circle"></i>
-        </div>
-        <div class="flex-grow">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Added to Basket</p>
-            <h4 id="toastProductName" class="text-sm font-black text-blue-900 truncate">Product Name</h4>
-        </div>
-        <button onclick="location.href='cart.html'" class="bg-blue-900 text-white px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-orange-500 transition-all">
-            View
-        </button>
-    </div>
-</div>
 
-<audio id="successSound" src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3"></audio>
+    <div
+      id="cartToast"
+      class="fixed top-24 right-6 z-[1000] opacity-0 pointer-events-none translate-x-10 transition-all duration-500"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl border border-slate-100 p-4 flex items-center space-x-4"
+      >
+        <div
+          class="w-10 h-10 bg-green-50 text-green-500 rounded-xl flex items-center justify-center text-lg"
+        >
+          <i class="fas fa-check"></i>
+        </div>
+        <div>
+          <p
+            class="text-[8px] font-black text-slate-400 uppercase tracking-widest"
+          >
+            Added to Basket
+          </p>
+          <h4
+            id="toastProductName"
+            class="text-xs font-black text-blue-900 truncate w-32"
+          >
+            Product Name
+          </h4>
+        </div>
+      </div>
+    </div>
+
     <main class="container mx-auto px-4 md:px-10 py-12">
       <div
         id="productHero"
@@ -92,19 +115,19 @@
       >
         <div class="lg:w-5/12">
           <div
-            class="bg-white rounded-[2rem] border border-slate-100 p-8 sticky top-32 shadow-sm flex items-center justify-center min-h-[500px]"
+            class="bg-white rounded-[2.5rem] border border-slate-100 p-8 sticky top-32 shadow-sm flex items-center justify-center min-h-[500px] overflow-hidden group"
           >
             <div
               id="discountBadge"
-              class="hidden absolute top-6 left-6 bg-red-500 text-white text-[10px] font-black px-4 py-1.5 rounded-lg z-10 shadow-lg"
+              class="hidden absolute top-8 left-8 bg-red-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full z-10 shadow-lg"
             >
-              -0%
+              0% OFF
             </div>
             <img
               id="productImage"
               src=""
-              class="max-h-[450px] w-auto object-contain transition-transform duration-700 hover:scale-105"
-              alt="Product Loading..."
+              class="max-h-[450px] w-auto object-contain transition-transform duration-700 group-hover:scale-105"
+              alt="Product Image"
             />
           </div>
         </div>
@@ -126,14 +149,14 @@
             ></div>
             <span
               class="text-slate-400 text-[10px] font-bold uppercase tracking-widest border-l pl-3"
-              >Mishra Certified Quality</span
+              >Certified Quality</span
             >
           </div>
 
           <div
             class="bg-white rounded-3xl border border-slate-100 p-8 mb-8 shadow-sm"
           >
-            <div class="flex items-baseline space-x-3 mb-4">
+            <div class="flex items-baseline space-x-3 mb-6">
               <span
                 id="productPrice"
                 class="text-4xl font-black text-blue-900"
@@ -142,23 +165,6 @@
                 id="originalPrice"
                 class="text-xl text-slate-300 line-through font-bold hidden"
               ></span>
-            </div>
-
-            <div class="grid grid-cols-2 gap-4 mb-8">
-              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">
-                  Dispatch
-                </p>
-                <p class="text-xs font-bold text-blue-900">
-                  Ships within 24 Hours
-                </p>
-              </div>
-              <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                <p class="text-[9px] font-black text-slate-400 uppercase mb-1">
-                  Delivery
-                </p>
-                <p class="text-xs font-bold text-blue-900">Standard Timeline</p>
-              </div>
             </div>
 
             <div class="flex items-center gap-4">
@@ -222,10 +228,11 @@
         </div>
       </div>
 
-      <div class="grid lg:grid-cols-3 gap-12">
+      <div class="grid lg:grid-cols-3 gap-12 mb-20">
         <div class="lg:col-span-2">
           <div
-            class="bg-white rounded-[2rem] border border-slate-100 p-10 shadow-sm"
+            class="bg-white rounded-[2rem] border border-slate-100 p-10 shadow-sm h-full"
+            data-aos="fade-up"
           >
             <h2
               class="text-xl font-black text-blue-900 uppercase mb-6 border-b pb-4"
@@ -234,13 +241,15 @@
             </h2>
             <div
               id="specTable"
-              class="space-y-0 overflow-hidden rounded-xl border border-slate-100"
+              class="space-y-0 overflow-hidden rounded-xl border border-slate-50"
             ></div>
           </div>
         </div>
         <div class="lg:col-span-1">
           <div
-            class="bg-white rounded-[2rem] border border-slate-100 p-8 shadow-sm"
+            class="bg-white rounded-[2rem] border border-slate-100 p-8 shadow-sm h-full"
+            data-aos="fade-up"
+            data-aos-delay="200"
           >
             <h2 class="text-sm font-black text-blue-900 uppercase mb-6">
               About Product
@@ -252,9 +261,42 @@
           </div>
         </div>
       </div>
+
+      <section class="pt-10 border-t border-slate-100" data-aos="fade-up">
+        <div class="flex items-center justify-between mb-8">
+          <div>
+            <h2 class="text-2xl font-black text-blue-900 uppercase">
+              Recommended Items
+            </h2>
+            <p
+              class="text-[10px] font-black text-orange-500 uppercase tracking-widest mt-1"
+            >
+              Similar Premium Solutions
+            </p>
+          </div>
+          <div class="flex space-x-2">
+            <button
+              onclick="scrollSlider(-1)"
+              class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-blue-900 hover:text-white transition-all"
+            >
+              <i class="fas fa-chevron-left text-xs"></i>
+            </button>
+            <button
+              onclick="scrollSlider(1)"
+              class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center hover:bg-blue-900 hover:text-white transition-all"
+            >
+              <i class="fas fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+        </div>
+        <div
+          id="recommendationSlider"
+          class="flex overflow-x-auto gap-6 pb-8 no-scrollbar scroll-smooth"
+        ></div>
+      </section>
     </main>
 
-    <script src="js/cart.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="js/product-details.js"></script>
   </body>
 </html>

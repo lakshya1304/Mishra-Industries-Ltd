@@ -217,12 +217,11 @@ function updateNavbarProfile() {
 }
 
 // Run this automatically when any page (index, shop, etc.) loads
-document.addEventListener('DOMContentLoaded', updateNavbarProfile);
-const hamburger = document.getElementById("hamburger");
-const navLinks = document.getElementById("navLinks");
+document.addEventListener("DOMContentLoaded", function() {
+  const hamburger = document.getElementById("hamburger");
+  const navLinks = document.getElementById("navLinks");
 
-  if (hamburger && navLinks) {
-hamburger.addEventListener("click", () => {
-  navLinks.classList.toggle("active");
+  hamburger.addEventListener("click", function () {
+    navLinks.classList.toggle("active");
+  });
 });
-}

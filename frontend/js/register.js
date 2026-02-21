@@ -32,10 +32,27 @@ async function handleRegistration() {
   const phone = document.getElementById("regPhone").value;
   const password = document.getElementById("regPass").value;
   const businessName = document.getElementById("regBusiness").value;
+  const gstNumber =
+    document.getElementById("regGST") ?
+      document.getElementById("regGST").value.toUpperCase()
+    : "";
 
   // 2. Simple Validation
   if (!fullName || !email || !password || !phone) {
     return alert("Please fill in all required fields.");
+  }
+
+  // GST Validation for Retailers
+  if (selectedType === "retailer") {
+    if (!businessName) return alert("Business Name is required for Retailers.");
+    if (!gstNumber) return alert("GST Number is required for Retailers.");
+
+    // Official Indian GST Regex Pattern
+    const gstRegex =
+      /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+    if (!gstRegex.test(gstNumber)) {
+      return alert("Please enter a valid 15-digit GST number.");
+    }
   }
 
   // 3. Show Loading Overlay
@@ -55,6 +72,7 @@ async function handleRegistration() {
           password,
           accountType: selectedType,
           businessName: selectedType === "retailer" ? businessName : undefined,
+          gstNumber: selectedType === "retailer" ? gstNumber : undefined, // Fully connected to backend
         }),
       },
     );
@@ -88,21 +106,39 @@ function checkPasswordStrength() {
   const bar = document.getElementById("strengthBar");
   const text = document.getElementById("strengthText");
 
-  let strength = 0;
+  // Visual feedback for individual requirements
+  const requirements = {
+    len: password.length >= 8,
+    up: /[A-Z]/.test(password),
+    low: /[a-z]/.test(password),
+    num: /[0-9]/.test(password),
+    sym: /[@$!%*?&]/.test(password),
+  };
 
-  // Check each requirement
-  if (password.length >= 8) strength += 20;
-  if (/[A-Z]/.test(password)) strength += 20;
-  if (/[a-z]/.test(password)) strength += 20;
-  if (/[0-9]/.test(password)) strength += 20;
-  if (/[@$!%*?&]/.test(password)) strength += 20;
+  // Toggle UI classes for checklist
+  Object.keys(requirements).forEach((req) => {
+    const el = document.getElementById(`req-${req}`);
+    if (el) {
+      el.className =
+        requirements[req] ?
+          "requirement-item met font-black uppercase tracking-tighter"
+        : "requirement-item unmet font-black uppercase tracking-tighter";
+    }
+  });
+
+  let strength = 0;
+  if (requirements.len) strength += 20;
+  if (requirements.up) strength += 20;
+  if (requirements.low) strength += 20;
+  if (requirements.num) strength += 20;
+  if (requirements.sym) strength += 20;
 
   // Update UI based on strength score
   bar.style.width = strength + "%";
 
   if (strength <= 40) {
     bar.className = "h-full transition-all duration-500 bg-red-500";
-    text.innerText = "Strength: Weak (Needs more variety)";
+    text.innerText = "Security Status: At Risk";
     text.style.color = "#ef4444";
   } else if (strength <= 80) {
     bar.className = "h-full transition-all duration-500 bg-orange-500";
