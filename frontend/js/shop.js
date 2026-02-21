@@ -235,3 +235,53 @@ function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
 
   alert(`✅ ${name} added to Mishra Basket!`);
 }
+
+
+function toggleCart() {
+        const drawer = document.getElementById("cartDrawer");
+        drawer.classList.toggle("invisible");
+        drawer.querySelector(".cart-drawer").classList.toggle("open");
+      }
+
+      // Initializing Session Management
+      document.addEventListener('DOMContentLoaded', () => {
+          const user = JSON.parse(localStorage.getItem('mishraUser'));
+          const authContainer = document.getElementById('authContainer');
+
+          if (user && user.fullName) {
+              // Extracting initials
+              const initials = user.fullName.split(' ').map(n => n[0]).join('').toUpperCase();
+              
+              authContainer.innerHTML = `
+                  <div class="user-avatar" onclick="location.href='profile.html'" title="View Profile">
+                      ${initials}
+                  </div>
+              `;
+          }
+      });
+      function toggleCart() {
+        const drawer = document.getElementById("cartDrawer");
+        drawer.classList.toggle("invisible");
+        drawer.querySelector(".cart-drawer").classList.toggle("open");
+      }
+
+      // Session and Navigation Logic
+      document.addEventListener("DOMContentLoaded", () => {
+        const user = JSON.parse(localStorage.getItem("mishraUser"));
+        const authWrapper = document.getElementById("authNavWrapper");
+
+        if (user && user.fullName) {
+          // Extract initials from full name
+          const initials = user.fullName
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase();
+
+          authWrapper.innerHTML = `
+                  <div class="user-avatar" onclick="location.href='profile.html'" title="My Profile">
+                      ${initials}
+                  </div>
+              `;
+        }
+      });

@@ -11,7 +11,6 @@ const generateToken = (id) => {
 // @desc    Register new user
 // @route   POST /api/auth/register
 exports.registerUser = async (req, res) => {
-  // 1. Validate data using Joi
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
@@ -26,7 +25,6 @@ exports.registerUser = async (req, res) => {
       gstNumber,
     } = req.body;
 
-    // Check if phone or email already exists
     const userExists = await User.findOne({ $or: [{ email }, { phone }] });
     if (userExists) {
       return res
@@ -34,7 +32,6 @@ exports.registerUser = async (req, res) => {
         .json({ message: "Email or Phone already registered" });
     }
 
-    // Create user in Atlas (Includes gstNumber for Retailers)
     const user = await User.create({
       fullName,
       email,
@@ -45,7 +42,6 @@ exports.registerUser = async (req, res) => {
       gstNumber,
     });
 
-    // --- AUTOMATED REAL-TIME WELCOME EMAIL ---
     try {
       await sendEmail({
         email: user.email,
@@ -61,7 +57,8 @@ exports.registerUser = async (req, res) => {
     res.status(201).json({
       _id: user._id,
       fullName: user.fullName,
-      email: user.email,
+      email: user.email, // CRITICAL: Included for frontend sync
+      phone: user.phone, // CRITICAL: Included for frontend sync
       accountType: user.accountType,
       gstNumber: user.gstNumber,
       token: generateToken(user._id),
@@ -80,7 +77,6 @@ exports.loginUser = async (req, res) => {
     const user = await User.findOne({ email }).select("+password");
 
     if (user && (await user.matchPassword(password))) {
-      // Strict validation for Account Type
       if (user.accountType !== accountType) {
         return res.status(401).json({
           message: `Access denied: This is a ${user.accountType} account`,
@@ -90,7 +86,17 @@ exports.loginUser = async (req, res) => {
       res.json({
         _id: user._id,
         fullName: user.fullName,
+        email: user.email, // CRITICAL: Frontend needs this
+        phone: user.phone, // CRITICAL: Frontend needs this
+        gender: user.gender,
         accountType: user.accountType,
+        businessName: user.businessName,
+        gstNumber: user.gstNumber,
+        address: user.address,
+        pincode: user.pincode,
+        locality: user.locality,
+        city: user.city,
+        state: user.state,
         token: generateToken(user._id),
       });
     } else {
@@ -105,7 +111,6 @@ exports.loginUser = async (req, res) => {
 // @route   POST /api/auth/forgot-password
 exports.forgotPassword = async (req, res) => {
   const { email } = req.body;
-
   const user = await User.findOne({ email });
 
   if (!user) {
@@ -113,9 +118,6 @@ exports.forgotPassword = async (req, res) => {
   }
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-  console.log(`[OTP GENERATED] Email: ${email} | OTP: ${otp}`);
-
   user.resetPasswordOTP = otp;
   user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
   await user.save();
@@ -128,17 +130,12 @@ exports.forgotPassword = async (req, res) => {
       otp: otp,
       type: "otp",
     });
-
-    console.log(`[MAIL DISPATCHED] Successfully sent to ${user.email}`);
     res.status(200).json({ message: "OTP sent to email" });
   } catch (err) {
-    console.error(`[MAIL ERROR] Failed for ${user.email}:`, err.message);
     user.resetPasswordOTP = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
-    res
-      .status(500)
-      .json({ message: "Email could not be sent. Check backend logs." });
+    res.status(500).json({ message: "Email could not be sent." });
   }
 };
 
@@ -147,26 +144,23 @@ exports.forgotPassword = async (req, res) => {
 exports.resetPassword = async (req, res) => {
   try {
     const { email, otp, newPassword } = req.body;
-
     const user = await User.findOne({
       email,
       resetPasswordOTP: otp,
       resetPasswordExpire: { $gt: Date.now() },
     });
 
-    if (!user) {
+    if (!user)
       return res.status(400).json({ message: "Invalid or expired OTP" });
-    }
 
     user.password = newPassword;
     user.resetPasswordOTP = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
 
-    res.status(200).json({
-      success: true,
-      message: "Password updated permanently. You can now login.",
-    });
+    res
+      .status(200)
+      .json({ success: true, message: "Password updated permanently." });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -204,38 +198,46 @@ exports.verifyOTP = async (req, res) => {
   }
 };
 
-// @desc    Delete user account
-// @route   DELETE /api/auth/delete-user/:id
-exports.deleteUser = async (req, res) => {
+// @desc    Update user profile
+// @route   PUT /api/auth/update-profile
+exports.updateProfile = async (req, res) => {
   try {
-    const userId = req.params.id; // Pulls the ID from the URL
-    
-    // Attempt to remove from MongoDB Atlas
-    const deletedUser = await User.findByIdAndDelete(userId);
+    const user = await User.findById(req.user.id); // From protect middleware
 
-    if (!deletedUser) {
-      return res.status(404).json({ message: "User ID not found in database" });
+    if (user) {
+      // 1. Personal Details Update
+      user.fullName = req.body.fullName || user.fullName;
+      user.phone = req.body.phone || user.phone;
+      user.gender = req.body.gender || user.gender;
+
+      // 2. Address Details Update
+      user.address = req.body.address || user.address;
+      user.pincode = req.body.pincode || user.pincode;
+      user.locality = req.body.locality || user.locality;
+      user.city = req.body.city || user.city;
+      user.state = req.body.state || user.state;
+
+      // 3. Account Type Migration logic
+      if (req.body.accountType) {
+        user.accountType = req.body.accountType;
+      }
+
+      if (user.accountType === "retailer") {
+        user.businessName = req.body.businessName || user.businessName;
+        user.gstNumber = req.body.gstNumber || user.gstNumber;
+      }
+
+      const updatedUser = await user.save();
+
+      // Sending full updated object back to frontend
+      res.json({
+        message: "Profile and Address Updated",
+        user: updatedUser,
+      });
+    } else {
+      res.status(404).json({ message: "User not found" });
     }
-
-    res.status(200).json({ success: true, message: "User permanently removed" });
   } catch (error) {
-    console.error("Delete Error:", error.message);
-    res.status(500).json({ message: "Server Error: Likely an invalid ID format" });
-  }
-};
-
-// @desc    Delete ALL users
-// @route   DELETE /api/auth/delete-all-users
-exports.deleteAllUsers = async (req, res) => {
-  try {
-    // deleteMany({}) removes every document in the collection
-    const result = await User.deleteMany({});
-    
-    res.status(200).json({ 
-      success: true, 
-      message: `${result.deletedCount} users removed from Mishra Atlas database` 
-    });
-  } catch (error) {
-    res.status(500).json({ message: "Server Error: Could not clear database" });
+    res.status(500).json({ message: error.message });
   }
 };

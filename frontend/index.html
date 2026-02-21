@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>
       Mishra Industries Limited | India's Best Online Electrical Store
     </title>
@@ -16,49 +16,98 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <link rel="stylesheet" href="css/style.css" />
-    
+
     <style>
-      
+      /* Avatar Styling */
+      .user-avatar-nav {
+        width: 38px;
+        height: 38px;
+        background: #1e3a8a;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 900;
+        font-size: 12px;
+        border: 2px solid #f97316;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      .user-avatar-nav:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3);
+      }
     </style>
   </head>
   <body class="bg-gray-50 font-sans">
-<header class="header">
-  <!-- Left: Logo + Name -->
-  <div class="flex items-center space-x-4 cursor-pointer shrink-0" onclick="location.href = 'index.html'">
-
-          <img src="images/logo.jpeg" class="h-12 w-12 md:h-14 md:w-14 object-cover rounded-full border-2 border-white shadow-lg" />
-
-          <div class="flex flex-col leading-none">
-
-            <span class="text-xl md:text-2xl font-black text-orange-500">MISHRA</span>
-
-            <span class="text-[9px] md:text-[11px] font-extrabold tracking-[0.3em] text-orange-500 uppercase mt-1">INDUSTRIES</span>
-
-          </div>
-
+    <header class="header">
+      <div
+        class="flex items-center space-x-4 cursor-pointer shrink-0"
+        onclick="location.href = 'index.html'"
+      >
+        <img
+          src="images/logo.jpeg"
+          class="h-12 w-12 md:h-14 md:w-14 object-cover rounded-full border-2 border-white shadow-lg"
+        />
+        <div class="flex flex-col leading-none">
+          <span class="text-xl md:text-2xl font-black text-orange-500"
+            >MISHRA</span
+          >
+          <span
+            class="text-[9px] md:text-[11px] font-extrabold tracking-[0.3em] text-orange-500 uppercase mt-1"
+            >INDUSTRIES</span
+          >
         </div>
-  <!-- Right: Navigation -->
-  <div class="nav-area">
-    <div class="hamburger" id="hamburger">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
+      </div>
 
-    <nav class="nav-links" id="navLinks">
+      <div class="nav-area">
+        <div class="hamburger" id="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
 
-            <a href="index.html" class="flex items-center hover:text-orange-500 transition">Home</a>
-            <a href="shop.html" class="flex items-center hover:text-orange-500 transition">Products</a>
-            <a href="index.html#about" class="flex items-center hover:text-orange-500 transition">About Us</a>
-            <a href="index.html#contact" class="flex items-center hover:text-orange-500 transition">Contact Us</a>
-            <a href="login.html" class="flex items-center hover:text-orange-500" transition">
+        <nav class="nav-links" id="navLinks">
+          <a
+            href="index.html"
+            class="flex items-center hover:text-orange-500 transition"
+            >Home</a
+          >
+          <a
+            href="shop.html"
+            class="flex items-center hover:text-orange-500 transition"
+            >Products</a
+          >
+          <a
+            href="index.html#about"
+            class="flex items-center hover:text-orange-500 transition"
+            >About Us</a
+          >
+          <a
+            href="index.html#contact"
+            class="flex items-center hover:text-orange-500 transition"
+            >Contact Us</a
+          >
+
+          <div id="authNavWrapper" class="flex items-center">
+            <a
+              href="login.html"
+              class="flex items-center hover:text-orange-500 transition"
+            >
               <i class="far fa-user mr-2 text-xs"></i> Login
             </a>
-            <a href="admin/admin-login.html" class="text-white-900 px-4 py-2 rounded-lg hover:text-orange-500 transition">Admin Portal</a>
-    </nav>
-  </div>
+          </div>
 
-</header>
+          <a
+            href="admin/admin-login.html"
+            class="text-white-900 px-4 py-2 rounded-lg hover:text-orange-500 transition"
+            >Admin Portal</a
+          >
+        </nav>
+      </div>
+    </header>
+
     <header
       class="bg-blue-900 text-white py-16 relative overflow-hidden shadow-inner"
     >
@@ -67,7 +116,8 @@
       >
         <div class="md:w-1/2 text-center md:text-left mb-10 md:mb-0">
           <h1 class="text-6xl font-black uppercase tracking-tight mb-4">
-            The Brand of <br> India 
+            The Brand of <br />
+            India
           </h1>
           <p class="text-blue-200 text-xl max-w-xl mb-10">
             India's best online electrical shopping store for industrial and
@@ -99,18 +149,19 @@
             <div
               class="absolute -inset-1 bg-gradient-to-r from-blue-400 to-orange-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"
             ></div>
-            
-            <div id="slideshow" class="relative rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform hover:scale-105 transition duration-500">
-                <img src="./images/1.jpg" class="slide w-100 h-80 object-cover" />
-                <img src="./images/2.jpg" class="slide w-100 h-80 object-cover" />
-                <img src="./images/3.jpg" class="slide w-100 h-80 object-cover" />
-                <img src="./images/4.jpg" class="slide w-100 h-80 object-cover" />
-                <img src="./images/5.jpg" class="slide w-100 h-80 object-cover" />
+            <div
+              id="slideshow"
+              class="relative rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform hover:scale-105 transition duration-500"
+            >
+              <img src="./images/1.jpg" class="slide w-100 h-80 object-cover" />
+              <img src="./images/2.jpg" class="slide w-100 h-80 object-cover" />
+              <img src="./images/3.jpg" class="slide w-100 h-80 object-cover" />
+              <img src="./images/4.jpg" class="slide w-100 h-80 object-cover" />
+              <img src="./images/5.jpg" class="slide w-100 h-80 object-cover" />
             </div>
           </div>
         </div>
       </div>
-
       <div
         class="absolute top-0 right-0 w-96 h-96 bg-blue-800 rounded-full blur-3xl opacity-20 -mr-20 -mt-20"
       ></div>
@@ -217,7 +268,10 @@
             Amazing brands & deals at wholesale prices
           </h3>
           <p class="text-gray-600 text-center max-w-3xl mx-auto mb-12">
-            We are all set to revolutionize the industrial and electrical equipment purchases with technology at the forefront. We make procurement easy for business & hassle-free, with the best prices & on-time deliveries through the power of digitization. We have customized options for all sectors starting from Dealers, Panel Builder, Contractor or Builders, Manufacturer or Industries, OEM’s or even an End Users, which adds value into solution and increasing their growth.
+            We are all set to revolutionize the industrial and electrical
+            equipment purchases with technology at the forefront. We make
+            procurement easy for business & hassle-free, with the best prices &
+            on-time deliveries through the power of digitization.
           </p>
           <div
             class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 text-center"
@@ -256,39 +310,61 @@
         </div>
       </div>
     </section>
-<section class="py-20 bg-white">
+
+    <section class="py-20 bg-white">
       <div class="container mx-auto px-6">
         <div class="grid md:grid-cols-2 gap-8">
-          <div class="flex items-start gap-6 p-10 bg-white border-2 border-green-100 rounded-[2rem] hover:shadow-xl transition-all hover:-translate-y-1">
+          <div
+            class="flex items-start gap-6 p-10 bg-white border-2 border-green-100 rounded-[2rem] hover:shadow-xl transition-all hover:-translate-y-1"
+          >
             <div class="shrink-0">
-              <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center border-2 border-blue-900">
-                  <i class="fas fa-eye text-blue-900 text-2xl animate-pulse"></i>
+              <div
+                class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center border-2 border-blue-900"
+              >
+                <i class="fas fa-eye text-blue-900 text-2xl animate-pulse"></i>
               </div>
             </div>
             <div>
-              <h3 class="text-2xl font-black text-blue-900 uppercase mb-4 tracking-tight">Our Vision</h3>
+              <h3
+                class="text-2xl font-black text-blue-900 uppercase mb-4 tracking-tight"
+              >
+                Our Vision
+              </h3>
               <p class="text-gray-600 leading-relaxed font-medium">
-                To become the region’s most trusted and comprehensive source for premium electrical solutions, recognized as the essential link between global innovation and local development. We aim to define the standard for reliability in the electrical supply store.
+                To become the region’s most trusted source for premium
+                electrical solutions...
               </p>
             </div>
           </div>
-          <div class="flex items-start gap-6 p-10 bg-white border-2 border-green-100 rounded-[2rem] hover:shadow-xl transition-all hover:-translate-y-1">
+          <div
+            class="flex items-start gap-6 p-10 bg-white border-2 border-green-100 rounded-[2rem] hover:shadow-xl transition-all hover:-translate-y-1"
+          >
             <div class="shrink-0">
-               <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center border-2 border-blue-400">
-                  <i class="fas fa-globe-asia text-blue-900 text-2xl animate-pulse"></i>
-               </div>
+              <div
+                class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center border-2 border-blue-400"
+              >
+                <i
+                  class="fas fa-globe-asia text-blue-900 text-2xl animate-pulse"
+                ></i>
+              </div>
             </div>
             <div>
-              <h3 class="text-2xl font-black text-blue-900 uppercase mb-4 tracking-tight">Our Mission</h3>
+              <h3
+                class="text-2xl font-black text-blue-900 uppercase mb-4 tracking-tight"
+              >
+                Our Mission
+              </h3>
               <p class="text-gray-600 leading-relaxed font-medium">
-                At Mishra Industries Limited, our mission is to simplify the procurement process for our clients by offering unparalleled access to a vast range of top-tier branded electrical products under one roof. We are committed to delivering quality, ensuring on-time availability, and providing expert support to power projects of every scale.
+                At Mishra Industries Limited, our mission is to simplify the
+                procurement process...
               </p>
             </div>
           </div>
         </div>
       </div>
     </section>
-<section id="team" class="py-24 bg-white">
+
+    <section id="team" class="py-24 bg-white">
       <div class="container mx-auto px-6">
         <div class="text-center mb-16">
           <h2 class="text-4xl font-black text-blue-900 uppercase mb-4">
@@ -299,38 +375,77 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
           <div class="group flex flex-col items-center text-center">
             <div class="relative mb-6">
-              <div class="absolute -inset-2 bg-gradient-to-r from-blue-900 to-orange-500 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-              <div class="relative w-48 h-48 md:w-56 md:h-56 overflow-hidden rounded-full border-4 border-white shadow-2xl">
-                <img src="./images/MD.jpeg" alt="Sachin Kumar Mishra" class="w-full h-full object-cover object-top hover:scale-110 transition duration-500" />
+              <div
+                class="relative w-48 h-48 md:w-56 md:h-56 overflow-hidden rounded-full border-4 border-white shadow-2xl"
+              >
+                <img
+                  src="./images/MD.jpeg"
+                  alt="Sachin Kumar Mishra"
+                  class="w-full h-full object-cover object-top hover:scale-110 transition duration-500"
+                />
               </div>
             </div>
-            <h3 class="text-xl font-black text-blue-900 uppercase tracking-tight">Sachin Kumar Mishra</h3>
-            <p class="text-orange-500 font-extrabold text-xs uppercase tracking-[0.2em] mt-2">Managing Director</p>
+            <h3
+              class="text-xl font-black text-blue-900 uppercase tracking-tight"
+            >
+              Sachin Kumar Mishra
+            </h3>
+            <p
+              class="text-orange-500 font-extrabold text-xs uppercase tracking-[0.2em] mt-2"
+            >
+              Managing Director
+            </p>
           </div>
           <div class="group flex flex-col items-center text-center">
             <div class="relative mb-6">
-              <div class="absolute -inset-2 bg-gradient-to-r from-blue-900 to-orange-500 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-              <div class="relative w-48 h-48 md:w-56 md:h-56 overflow-hidden rounded-full border-4 border-white shadow-2xl">
-                <img src="./images/Director.jpeg" alt="Subhash Saha" class="w-full h-full object-cover object-top hover:scale-110 transition duration-500" />
+              <div
+                class="relative w-48 h-48 md:w-56 md:h-56 overflow-hidden rounded-full border-4 border-white shadow-2xl"
+              >
+                <img
+                  src="./images/Director.jpeg"
+                  alt="Subhash Saha"
+                  class="w-full h-full object-cover object-top hover:scale-110 transition duration-500"
+                />
               </div>
             </div>
-            <h3 class="text-xl font-black text-blue-900 uppercase tracking-tight">Subhash Saha</h3>
-            <p class="text-orange-500 font-extrabold text-xs uppercase tracking-[0.2em] mt-2">Director</p>
+            <h3
+              class="text-xl font-black text-blue-900 uppercase tracking-tight"
+            >
+              Subhash Saha
+            </h3>
+            <p
+              class="text-orange-500 font-extrabold text-xs uppercase tracking-[0.2em] mt-2"
+            >
+              Director
+            </p>
           </div>
           <div class="group flex flex-col items-center text-center">
             <div class="relative mb-6">
-              <div class="absolute -inset-2 bg-gradient-to-r from-blue-900 to-orange-500 rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-              <div class="relative w-48 h-48 md:w-56 md:h-56 overflow-hidden rounded-full border-4 border-white shadow-2xl">
-                <img src="./images/Director-2.jpeg" alt="Alfiya Parween" class="w-full h-full object-cover object-top hover:scale-110 transition duration-500" />
+              <div
+                class="relative w-48 h-48 md:w-56 md:h-56 overflow-hidden rounded-full border-4 border-white shadow-2xl"
+              >
+                <img
+                  src="./images/Director-2.jpeg"
+                  alt="Alfiya Parween"
+                  class="w-full h-full object-cover object-top hover:scale-110 transition duration-500"
+                />
               </div>
             </div>
-            <h3 class="text-xl font-black text-blue-900 uppercase tracking-tight">Alfiya Parween</h3>
-            <p class="text-orange-500 font-extrabold text-xs uppercase tracking-[0.2em] mt-2">Director</p>
+            <h3
+              class="text-xl font-black text-blue-900 uppercase tracking-tight"
+            >
+              Alfiya Parween
+            </h3>
+            <p
+              class="text-orange-500 font-extrabold text-xs uppercase tracking-[0.2em] mt-2"
+            >
+              Director
+            </p>
           </div>
         </div>
       </div>
     </section>
-    <section id="contact" class="py-24 bg-gray-50 border-t border-gray-200">
+
     <section id="contact" class="py-24 bg-gray-50 border-t border-gray-200">
       <div class="container mx-auto px-6">
         <div class="text-center mb-16">
@@ -350,7 +465,7 @@
                   Our Location
                 </h4>
                 <p class="text-gray-600 font-bold">
-                  Purulia Road, Tatisilwai, Ranchi, Jharkhand:835103 </p>
+                  Purulia Road, Tatisilwai, Ranchi, Jharkhand:835103
                 </p>
               </div>
             </div>
@@ -380,30 +495,36 @@
             </div>
           </div>
           <div
-            class="lg:col-span-2 bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-gray-100">
+            class="lg:col-span-2 bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl border border-gray-100"
+          >
             <form class="grid md:grid-cols-2 gap-8">
               <div class="space-y-2">
                 <label
                   class="text-[10px] font-black text-blue-900 uppercase tracking-widest ml-1"
-                  >Your Name</label>
+                  >Your Name</label
+                >
                 <input
                   type="text"
                   placeholder="Full Name"
-                  class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-orange-500 transition-all font-bold text-sm"/>
+                  class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-orange-500 transition-all font-bold text-sm"
+                />
               </div>
               <div class="space-y-2">
                 <label
                   class="text-[10px] font-black text-blue-900 uppercase tracking-widest ml-1"
-                  >Email Address</label>
+                  >Email Address</label
+                >
                 <input
                   type="email"
                   placeholder="email@example.com"
-                  class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-orange-500 transition-all font-bold text-sm"/>
+                  class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-orange-500 transition-all font-bold text-sm"
+                />
               </div>
               <div class="md:col-span-2 space-y-2">
                 <label
                   class="text-[10px] font-black text-blue-900 uppercase tracking-widest ml-1"
-                  >Your Message</label>
+                  >Your Message</label
+                >
                 <input
                   placeholder="How can we help you?"
                   class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-orange-500 transition-all font-bold text-sm"
@@ -411,7 +532,8 @@
               </div>
               <button
                 type="submit"
-                class="md:col-span-2 bg-blue-900 text-white font-black py-5 rounded-2xl hover:bg-orange-500 transition-all shadow-xl uppercase tracking-widest text-sm transform active:scale-95">
+                class="md:col-span-2 bg-blue-900 text-white font-black py-5 rounded-2xl hover:bg-orange-500 transition-all shadow-xl uppercase tracking-widest text-sm transform active:scale-95"
+              >
                 Send Message
               </button>
             </form>
@@ -419,7 +541,8 @@
         </div>
       </div>
     </section>
-        <script src="js/main.js"></script>
+
+    <script src="js/main.js"></script>
     <script src="js/cart.js"></script>
-  </body>
+    </body>
 </html>

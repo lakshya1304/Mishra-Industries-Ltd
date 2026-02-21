@@ -71,9 +71,11 @@ async function handleLogin() {
     const data = await response.json();
 
     if (response.ok) {
-      localStorage.setItem("Mishra_Session", JSON.stringify(data));
-      alert(`Welcome back, ${data.fullName}!`);
-      window.location.href = "index.html";
+      // Corrected Key to 'mishraUser' to sync with Index/Shop navigation
+      localStorage.setItem("mishraUser", JSON.stringify(data));
+
+      // Removed alert for a faster, more modern redirect experience
+      window.location.href = "shop.html";
     } else {
       alert(data.message || "Invalid Credentials");
     }
@@ -169,7 +171,6 @@ async function handleResetPassword() {
   }
 
   try {
-    // Calling reset-password to update MongoDB permanently
     const response = await fetch(
       "https://mishra-industries-ltd-yjfr.onrender.com/api/auth/reset-password",
       {

@@ -31,5 +31,6 @@ router.get("/all-users", async (req, res) => {
 
 router.delete("/delete-user/:id", deleteUser);
 router.delete("/delete-all-users", deleteAllUsers); 
-
+// Add updateProfile to your imports
+router.put("/update-profile", protect, updateProfile); //
 module.exports = router;

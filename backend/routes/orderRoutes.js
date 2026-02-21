@@ -90,5 +90,15 @@ router.get("/stats/total-sales", async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+// GET /api/orders/user-orders
+router.get("/user-orders", protect, async (req, res) => {
+  try {
+    // Only finds orders matching req.user.id (from JWT)
+    const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    res.status(500).json({ message: "Order Sync Failed" });
+  }
+});
 
 module.exports = router;

@@ -20,12 +20,6 @@ function toggleType(type) {
 }
 
 async function handleRegistration() {
-  // UI Elements for Animation
-  const overlay = document.getElementById("regOverlay");
-  const successContent = document.getElementById("successContent");
-  const loader = document.querySelector(".animate-spin");
-  const loadingText = overlay.querySelector("h2");
-
   // 1. Grab values from your floating-label inputs
   const fullName = document.getElementById("regName").value;
   const email = document.getElementById("regEmail").value;
@@ -47,7 +41,6 @@ async function handleRegistration() {
     if (!businessName) return alert("Business Name is required for Retailers.");
     if (!gstNumber) return alert("GST Number is required for Retailers.");
 
-    // Official Indian GST Regex Pattern
     const gstRegex =
       /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
     if (!gstRegex.test(gstNumber)) {
@@ -55,11 +48,8 @@ async function handleRegistration() {
     }
   }
 
-  // 3. Show Loading Overlay
-  overlay.classList.remove("hidden");
-
   try {
-    // 4. Send POST request to your Backend
+    // 3. Send POST request to your Backend
     const response = await fetch(
       "https://mishra-industries-ltd-yjfr.onrender.com/api/auth/register",
       {
@@ -72,7 +62,7 @@ async function handleRegistration() {
           password,
           accountType: selectedType,
           businessName: selectedType === "retailer" ? businessName : undefined,
-          gstNumber: selectedType === "retailer" ? gstNumber : undefined, // Fully connected to backend
+          gstNumber: selectedType === "retailer" ? gstNumber : undefined,
         }),
       },
     );
@@ -80,23 +70,16 @@ async function handleRegistration() {
     const data = await response.json();
 
     if (response.ok) {
-      // 5. Success Animation Logic
-      if (loader) loader.classList.add("hidden");
-      if (loadingText) loadingText.classList.add("hidden");
-      successContent.classList.remove("hidden");
+      // 4. PERSISTENT LOGIN: Save user data to localStorage immediately
+      localStorage.setItem("mishraUser", JSON.stringify(data));
 
-      // Redirect after 3 seconds to let them see the success message
-      setTimeout(() => {
-        window.location.href = "login.html";
-      }, 3000);
+      // 5. INSTANT REDIRECT: Go straight to shop without loading overlay
+      window.location.href = "shop.html";
     } else {
-      // Hide overlay if backend returns an error (e.g., Joi validation fails)
-      overlay.classList.add("hidden");
       alert(data.message || "Registration failed");
     }
   } catch (err) {
     console.error("Connection Error:", err);
-    overlay.classList.add("hidden");
     alert("Cannot connect to server. Ensure backend is running.");
   }
 }
@@ -106,7 +89,6 @@ function checkPasswordStrength() {
   const bar = document.getElementById("strengthBar");
   const text = document.getElementById("strengthText");
 
-  // Visual feedback for individual requirements
   const requirements = {
     len: password.length >= 8,
     up: /[A-Z]/.test(password),
@@ -115,7 +97,6 @@ function checkPasswordStrength() {
     sym: /[@$!%*?&]/.test(password),
   };
 
-  // Toggle UI classes for checklist
   Object.keys(requirements).forEach((req) => {
     const el = document.getElementById(`req-${req}`);
     if (el) {
@@ -133,7 +114,6 @@ function checkPasswordStrength() {
   if (requirements.num) strength += 20;
   if (requirements.sym) strength += 20;
 
-  // Update UI based on strength score
   bar.style.width = strength + "%";
 
   if (strength <= 40) {

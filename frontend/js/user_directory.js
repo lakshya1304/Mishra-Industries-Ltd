@@ -134,3 +134,5 @@ async function deleteAllUsers() {
 document.addEventListener("DOMContentLoaded", fetchUsers);
 // Optional: Auto-refresh every 30 seconds instead of 5 to save bandwidth
 setInterval(fetchUsers, 30000);
+
+

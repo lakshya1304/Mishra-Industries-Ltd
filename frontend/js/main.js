@@ -225,3 +225,22 @@ document.addEventListener("DOMContentLoaded", function() {
     navLinks.classList.toggle("active");
   });
 });
+
+// Navigation Session Logic
+      document.addEventListener("DOMContentLoaded", () => {
+        const user = JSON.parse(localStorage.getItem("mishraUser"));
+        const wrapper = document.getElementById("authNavWrapper");
+
+        if (user && user.fullName) {
+          const initials = user.fullName
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase();
+          wrapper.innerHTML = `
+                  <div class="user-avatar-nav" onclick="location.href='profile.html'" title="My Profile">
+                      ${initials}
+                  </div>
+              `;
+        }
+      });
