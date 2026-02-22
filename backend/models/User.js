@@ -15,16 +15,20 @@ const userSchema = new mongoose.Schema({
       "Please add a valid email",
     ],
   },
+  stdCode: {
+    type: String,
+    required: [true, "Please add an STD code"],
+  },
   phone: {
     type: String,
     required: [true, "Please add a phone number"],
     unique: true,
-    match: [/^[6-9]\d{9}$/, "Please add a valid 10-digit Indian phone number"],
+    // Flexible validation for international phone digits
+    match: [/^[0-9]{7,12}$/, "Please add a valid phone number (7-12 digits)"],
   },
   password: {
     type: String,
     required: [true, "Please add a password"],
-    // Strict Validation: 1 Upper, 1 Lower, 1 Num, 1 Special, Min 8
     validate: {
       validator: function (v) {
         return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
@@ -47,12 +51,19 @@ const userSchema = new mongoose.Schema({
       return this.accountType === "retailer";
     },
   },
-  businessName: { type: String },
-gstNumber: { 
-    type: String, 
+  gstNumber: {
+    type: String,
     uppercase: true,
-    trim: true 
-},
+    trim: true,
+  },
+  address: String,
+  pincode: String,
+  locality: String,
+  city: String,
+  profilePic: String,
+  gstFile: String,
+  panFile: String,
+  msmeFile: String,
   resetPasswordOTP: String,
   resetPasswordExpire: Date,
   createdAt: {
@@ -61,7 +72,7 @@ gstNumber: {
   },
 });
 
-// ENCRYPTION: Hash password before saving
+// Hash password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();

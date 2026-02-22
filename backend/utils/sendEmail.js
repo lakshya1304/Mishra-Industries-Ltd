@@ -76,10 +76,10 @@ const sendEmail = async (options) => {
   // 4. Send the mail
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log("✅ Email dispatched to:", options.email);
+    console.log("Email dispatched to:", options.email);
     return info;
   } catch (error) {
-    console.error("❌ Nodemailer Error:", error.message);
+    console.error("Nodemailer Error:", error.message);
     throw error;
   }
 };

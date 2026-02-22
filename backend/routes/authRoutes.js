@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const path = require("node:ath");
+const fs = require("node:fs");
 const { protect } = require("../middleware/authMiddleware");
 
 const {
@@ -19,8 +19,6 @@ const {
 } = require("../controllers/authController");
 
 // ================== MULTER CONFIGURATION ==================
-
-// Ensure upload directory exists
 const uploadDir = "uploads/";
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
@@ -31,7 +29,6 @@ const storage = multer.diskStorage({
     cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    // Unique filename: fieldname + timestamp + extension
     cb(
       null,
       `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`,
@@ -39,14 +36,12 @@ const storage = multer.diskStorage({
   },
 });
 
-// File filter to allow only images and PDFs
 const fileFilter = (req, file, cb) => {
   const allowedTypes = /jpeg|jpg|png|pdf/;
   const extname = allowedTypes.test(
     path.extname(file.originalname).toLowerCase(),
   );
   const mimetype = allowedTypes.test(file.mimetype);
-
   if (extname && mimetype) {
     return cb(null, true);
   } else {
@@ -56,11 +51,10 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: fileFilter,
 });
 
-// Defining the fields for upload
 const cpUpload = upload.fields([
   { name: "profilePic", maxCount: 1 },
   { name: "gstFile", maxCount: 1 },
@@ -69,20 +63,16 @@ const cpUpload = upload.fields([
 ]);
 
 // ================== ROUTES ==================
-
-// Public Routes
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-otp", verifyOTP);
 router.post("/reset-password", resetPassword);
 
-// Profile & Security Routes (With Multer Middleware)
 router.get("/profile", protect, getProfile);
-router.put("/update-profile", protect, cpUpload, updateProfile); // 'cpUpload' handles files
+router.put("/update-profile", protect, cpUpload, updateProfile);
 router.put("/change-password", protect, changePassword);
 
-// Management Routes
 router.get("/all-users", async (req, res) => {
   try {
     const User = require("../models/User");

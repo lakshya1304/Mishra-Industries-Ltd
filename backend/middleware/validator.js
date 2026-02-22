@@ -4,8 +4,18 @@ const registerValidation = (data) => {
   const schema = Joi.object({
     fullName: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
-    // UPDATED: Supports '+' followed by 1-4 digit country code and 10 digit number
-    
+
+    // Explicitly allowing the two separate fields sent by frontend
+    stdCode: Joi.string().required().messages({
+      "any.required": "Country code is required",
+    }),
+    phone: Joi.string()
+      .pattern(/^[0-9]{7,12}$/)
+      .required()
+      .messages({
+        "string.pattern.base": "Phone must be 7-12 digits",
+      }),
+
     password: Joi.string()
       .min(8)
       .pattern(
