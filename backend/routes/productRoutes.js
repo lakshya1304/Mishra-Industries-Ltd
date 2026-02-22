@@ -2,22 +2,30 @@ const express = require("express");
 const productRouter = express.Router();
 const multer = require("multer");
 const path = require("path");
-const fs = require("fs"); // Added to handle file reading and deletion
+const fs = require("fs");
 const Product = require("../models/Product");
 
-// 1. Configure Local Disk Storage
+// 1. Configure Local Disk Storage for temporary processing
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "uploads/");
+    // Ensure the folder exists before saving
+    const dir = "uploads/";
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    cb(null, dir);
   },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
 
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit to prevent timeout
+});
 
-// 2. CREATE: Add New Product (Updated for Base64)
+// 2. CREATE: Add New Product (Updated for Base64 Sync)
 productRouter.post("/add", upload.single("image"), async (req, res) => {
   try {
     let finalImageData = "/uploads/default.jpg";
@@ -25,7 +33,7 @@ productRouter.post("/add", upload.single("image"), async (req, res) => {
     if (req.file) {
       // 1. Read the file from the temporary 'uploads' folder
       const bitmap = fs.readFileSync(req.file.path);
-      // 2. Convert it to a Base64 string
+      // 2. Convert it to a Base64 string for database storage
       const base64String = Buffer.from(bitmap).toString("base64");
       finalImageData = `data:${req.file.mimetype};base64,${base64String}`;
 
@@ -37,6 +45,7 @@ productRouter.post("/add", upload.single("image"), async (req, res) => {
       ...req.body,
       image: finalImageData,
     };
+
     const product = new Product(productData);
     await product.save();
     res.status(201).json(product);
@@ -71,17 +80,18 @@ productRouter.get("/:id", async (req, res) => {
   }
 });
 
-// 5. UPDATE: Edit Product (Updated for Base64)
+// 5. UPDATE: Edit Product (Base64 Sync)
 productRouter.put("/edit/:id", upload.single("image"), async (req, res) => {
   try {
     const updateData = { ...req.body };
+
     if (req.file) {
       // 1. Convert new image to Base64
       const bitmap = fs.readFileSync(req.file.path);
       const base64String = Buffer.from(bitmap).toString("base64");
       updateData.image = `data:${req.file.mimetype};base64,${base64String}`;
 
-      // 2. Cleanup local file
+      // 2. Cleanup local file immediately
       fs.unlinkSync(req.file.path);
     }
 
@@ -116,7 +126,10 @@ productRouter.get("/backup/export", async (req, res) => {
   try {
     const products = await Product.find({});
     res.setHeader("Content-Type", "application/json");
-    res.setHeader("Content-Disposition", "attachment; filename=mishra_atlas_backup.json");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=mishra_atlas_backup.json",
+    );
     res.json({
       exportedAt: new Date(),
       totalProducts: products.length,
@@ -128,16 +141,12 @@ productRouter.get("/backup/export", async (req, res) => {
 });
 
 // 8. RESTORE: Import products from a JSON file
-// Note: This expects a raw JSON body containing the array of products
 productRouter.post("/backup/import", async (req, res) => {
   try {
     const { data } = req.body;
     if (!data || !Array.isArray(data)) {
       return res.status(400).json({ error: "Invalid backup file format" });
     }
-
-    // Optional: Clears existing products before restoring
-    // await Product.deleteMany({}); 
 
     const restoredProducts = await Product.insertMany(data);
     res.status(201).json({
@@ -155,7 +164,7 @@ productRouter.delete("/danger/delete-all", async (req, res) => {
     const result = await Product.deleteMany({});
     res.json({
       message: "All products have been deleted successfully",
-      count: result.deletedCount
+      count: result.deletedCount,
     });
   } catch (err) {
     res.status(500).json({ error: "Wipe failed: " + err.message });

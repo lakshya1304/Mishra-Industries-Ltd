@@ -223,37 +223,46 @@
           Brands
         </h3>
         <div class="flex flex-nowrap gap-2">
-          <button
-            onclick="filterByBrand('All')"
-            class="filter-chip active bg-blue-900 text-white px-5 py-2 rounded-full border border-transparent text-[10px] font-black uppercase tracking-widest transition-all"
-          >
-            All
-          </button>
-          <button
-            onclick="filterByBrand('Siemens')"
-            class="filter-chip border-slate-100 text-slate-600 px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
-          >
-            Siemens
-          </button>
-          <button
-            onclick="filterByBrand('Anchor')"
-            class="filter-chip border-slate-100 text-slate-600 px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
-          >
-            Anchor
-          </button>
-          <button
-            onclick="filterByBrand('Havells')"
-            class="filter-chip border-slate-100 text-slate-600 px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
-          >
-            Havells
-          </button>
-          <button
-            onclick="filterByBrand('Polycab')"
-            class="filter-chip border-slate-100 text-slate-600 px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
-          >
-            Polycab
-          </button>
-        </div>
+  <button
+    data-brand="All"
+    onclick="filterByBrand(this)"
+    class="filter-chip bg-blue-900 text-white active px-5 py-2 rounded-full border border-transparent text-[10px] font-black uppercase tracking-widest transition-all"
+  >
+    All
+  </button>
+
+  <button
+    data-brand="Siemens"
+    onclick="filterByBrand(this)"
+    class="filter-chip border-slate-100 text-slate-600 px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
+  >
+    Siemens
+  </button>
+
+  <button
+    data-brand="Anchor"
+    onclick="filterByBrand(this)"
+    class="filter-chip border-slate-100 text-slate-600 px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
+  >
+    Anchor
+  </button>
+
+  <button
+    data-brand="Havells"
+    onclick="filterByBrand(this)"
+    class="filter-chip border-slate-100 text-slate-600 px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
+  >
+    Havells
+  </button>
+
+  <button
+    data-brand="Polycab"
+    onclick="filterByBrand(this)"
+    class="filter-chip border-slate-100 text-slate-600 px-5 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest transition-all"
+  >
+    Polycab
+  </button>
+</div>
       </div>
     </div>
 
@@ -315,8 +324,8 @@
               type="range"
               id="priceRange"
               min="0"
-              max="100000"
-              value="100000"
+              max="10000"
+              value="10000"
               class="w-full accent-orange-500"
             />
             <div

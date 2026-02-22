@@ -60,6 +60,37 @@
         z-index: 1000;
         box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.05);
       }
+      #profilePicPreview {
+        object-fit: cover;
+        border: 4px solid white;
+        width: 64px;
+        height: 64px;
+        border-radius: 9999px;
+      }
+      .doc-upload-label {
+        border: 2px dashed #cbd5e1;
+        border-radius: 12px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .doc-upload-label:hover {
+        border-color: var(--mishra-orange);
+        background: #fff7ed;
+      }
+      .validation-text {
+        font-size: 10px;
+        font-weight: 700;
+        color: #64748b;
+        margin-top: 4px;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
     </style>
   </head>
   <body class="antialiased text-slate-800 pb-32">
@@ -79,20 +110,6 @@
             >INDUSTRIES</span
           >
         </div>
-        <div
-          class="hidden lg:flex items-center space-x-8 text-[11px] font-black uppercase tracking-widest"
-        >
-          <a href="index.html" class="hover:text-orange-400 transition">Home</a>
-          <a href="shop.html" class="hover:text-orange-400 transition"
-            >Products</a
-          >
-          <a href="index.html#about" class="hover:text-orange-400 transition"
-            >Legacy</a
-          >
-          <a href="index.html#contact" class="hover:text-orange-400 transition"
-            >Contact</a
-          >
-        </div>
       </div>
       <button
         onclick="handleLogout()"
@@ -109,12 +126,38 @@
         <div
           class="bg-white p-5 flex items-center space-x-4 shadow-sm rounded-sm animate__animated animate__fadeInLeft"
         >
-          <div
-            id="userAvatar"
-            class="w-12 h-12 bg-blue-900 text-white rounded-full flex items-center justify-center font-bold text-xl uppercase shadow-lg"
-          ></div>
+          <div class="relative group">
+            <img
+              id="profilePicPreview"
+              src="https://via.placeholder.com/150"
+              class="shadow-lg border-2 border-blue-900"
+            />
+            <label
+              for="profilePicInput"
+              class="absolute bottom-0 right-0 bg-orange-500 text-white w-6 h-6 rounded-full flex items-center justify-center cursor-pointer hover:bg-blue-900 transition-all border-2 border-white"
+            >
+              <i class="fas fa-camera text-[10px]"></i>
+            </label>
+            <input
+              type="file"
+              id="profilePicInput"
+              class="hidden"
+              accept="image/*"
+              onchange="previewProfilePic(event)"
+            />
+            <button
+              id="removePicBtn"
+              onclick="deleteProfilePic()"
+              class="hidden absolute -top-2 -left-2 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center shadow-md border border-white"
+            >
+              <i class="fas fa-times text-[8px]"></i>
+            </button>
+          </div>
           <div>
-            <p class="text-[10px] text-slate-500 font-bold uppercase">
+            <p
+              class="text-[10px] text-slate-500 font-bold uppercase"
+              id="accountBadge"
+            >
               Mishra Member
             </p>
             <h2
@@ -129,11 +172,6 @@
         <div
           class="bg-white shadow-sm rounded-sm overflow-hidden animate__animated animate__fadeInLeft"
         >
-          <div
-            class="p-4 border-b flex items-center text-blue-900 font-black text-xs uppercase tracking-widest"
-          >
-            <i class="fas fa-user-circle mr-4"></i> Profile Details
-          </div>
           <nav
             class="flex flex-col text-[11px] font-bold uppercase tracking-widest text-slate-400"
           >
@@ -141,7 +179,7 @@
               onclick="switchTab('profile-sec', this)"
               class="sidebar-item active py-4 pl-12 text-left"
             >
-              Personal & Address
+              Personal & Profile
             </button>
             <button
               onclick="switchTab('orders-sec', this)"
@@ -150,10 +188,10 @@
               My Orders
             </button>
             <button
-              onclick="switchTab('account-type-sec', this)"
+              onclick="switchTab('security-sec', this)"
               class="sidebar-item py-4 pl-12 text-left hover:bg-slate-50"
             >
-              Change Account Type
+              Security (Password)
             </button>
             <button
               onclick="location.href = 'shop.html'"
@@ -199,10 +237,112 @@
                 placeholder="Email"
               />
             </div>
-            <h3
-              class="text-lg font-black text-blue-900 uppercase tracking-tight mb-8"
+
+            <div
+              id="retailerFields"
+              class="hidden animate__animated animate__fadeIn"
             >
-              Shipping Address
+              <h3
+                class="text-lg font-black text-orange-500 uppercase tracking-tight mb-8 border-t pt-8"
+              >
+                Business Documentation
+              </h3>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                <input
+                  type="text"
+                  id="bizName"
+                  class="smart-input"
+                  placeholder="Business Name"
+                />
+                <input
+                  type="text"
+                  id="bizGST"
+                  class="smart-input uppercase"
+                  placeholder="GSTIN Number"
+                />
+                <input
+                  type="text"
+                  id="bizPAN"
+                  class="smart-input uppercase"
+                  placeholder="PAN Number"
+                />
+                <input
+                  type="text"
+                  id="bizMSME"
+                  class="smart-input uppercase"
+                  placeholder="MSME Number"
+                />
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="space-y-2 text-center">
+                  <label class="text-[10px] font-black uppercase text-slate-400"
+                    >GST Certificate</label
+                  >
+                  <label class="doc-upload-label" for="docGST">
+                    <i class="fas fa-file-pdf text-2xl text-slate-300 mb-2"></i>
+                    <span
+                      class="text-[10px] font-bold text-slate-500 truncate w-full"
+                      id="nameGST"
+                      >Upload PDF/Image</span
+                    >
+                  </label>
+                  <input
+                    type="file"
+                    id="docGST"
+                    class="hidden"
+                    accept=".pdf,image/*"
+                    onchange="updateDocName('GST')"
+                  />
+                </div>
+                <div class="space-y-2 text-center">
+                  <label class="text-[10px] font-black uppercase text-slate-400"
+                    >PAN Card</label
+                  >
+                  <label class="doc-upload-label" for="docPAN">
+                    <i class="fas fa-id-card text-2xl text-slate-300 mb-2"></i>
+                    <span
+                      class="text-[10px] font-bold text-slate-500 truncate w-full"
+                      id="namePAN"
+                      >Upload Image</span
+                    >
+                  </label>
+                  <input
+                    type="file"
+                    id="docPAN"
+                    class="hidden"
+                    accept=".pdf,image/*"
+                    onchange="updateDocName('PAN')"
+                  />
+                </div>
+                <div class="space-y-2 text-center">
+                  <label class="text-[10px] font-black uppercase text-slate-400"
+                    >MSME Proof</label
+                  >
+                  <label class="doc-upload-label" for="docMSME">
+                    <i
+                      class="fas fa-certificate text-2xl text-slate-300 mb-2"
+                    ></i>
+                    <span
+                      class="text-[10px] font-bold text-slate-500 truncate w-full"
+                      id="nameMSME"
+                      >Upload PDF</span
+                    >
+                  </label>
+                  <input
+                    type="file"
+                    id="docMSME"
+                    class="hidden"
+                    accept=".pdf,image/*"
+                    onchange="updateDocName('MSME')"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <h3
+              class="text-lg font-black text-blue-900 uppercase tracking-tight mb-8 border-t pt-8"
+            >
+              Shipping Hub Address
             </h3>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
               <textarea
@@ -245,60 +385,81 @@
         </div>
 
         <div
-          id="account-type-sec"
+          id="security-sec"
           class="section-panel animate__animated animate__fadeIn"
         >
           <h3
             class="text-lg font-black text-blue-900 uppercase tracking-tight mb-8"
           >
-            Account Migration
+            Account Security
           </h3>
-          <div class="max-w-md space-y-6">
-            <p
-              class="text-xs font-bold text-slate-500 uppercase tracking-widest"
-            >
-              Current Type:
-              <span id="currentTypeLabel" class="text-orange-500"
-                >Customer</span
-              >
-            </p>
-            <div class="space-y-4">
+          <form id="passwordForm" class="max-w-md space-y-6">
+            <div class="space-y-2">
               <label class="text-[10px] font-black uppercase text-slate-400"
-                >Select New Account Type</label
+                >Current Password</label
               >
-              <select
-                id="newAccountType"
-                onchange="toggleMigrationFields()"
-                class="smart-input"
-              >
-                <option value="customer">Customer (Individual)</option>
-                <option value="retailer">Retailer (Business Account)</option>
-              </select>
-            </div>
-            <div
-              id="migrationFields"
-              class="hidden space-y-4 animate__animated animate__fadeIn"
-            >
               <input
-                type="text"
-                id="upgBizName"
-                placeholder="Legal Business Name"
+                type="password"
+                id="oldPassword"
                 class="smart-input"
+                placeholder="••••••••"
+                required
               />
+            </div>
+            <div class="space-y-2">
+              <label class="text-[10px] font-black uppercase text-slate-400"
+                >New Password</label
+              >
               <input
-                type="text"
-                id="upgGST"
-                placeholder="15-Digit GST Number"
-                class="smart-input uppercase"
+                type="password"
+                id="newPassword"
+                class="smart-input"
+                placeholder="Create new key"
+                required
+              />
+              <div class="space-y-1 mt-3">
+                <p class="validation-text">
+                  <i class="fas fa-info-circle text-blue-500"></i> Minimum 8
+                  characters
+                </p>
+                <p class="validation-text">
+                  <i class="fas fa-info-circle text-blue-500"></i> At least one
+                  uppercase letter (A-Z)
+                </p>
+                <p class="validation-text">
+                  <i class="fas fa-info-circle text-blue-500"></i> At least one
+                  lowercase letter (a-z)
+                </p>
+                <p class="validation-text">
+                  <i class="fas fa-info-circle text-blue-500"></i> At least one
+                  number (0-9)
+                </p>
+                <p class="validation-text">
+                  <i class="fas fa-info-circle text-blue-500"></i> At least one
+                  special character (@$!%*?&)
+                </p>
+              </div>
+            </div>
+            <div class="space-y-2 pt-4">
+              <label class="text-[10px] font-black uppercase text-slate-400"
+                >Confirm Password</label
+              >
+              <input
+                type="password"
+                id="confirmPassword"
+                class="smart-input"
+                placeholder="Verify new key"
+                required
               />
             </div>
             <button
-              onclick="processMigration()"
+              type="button"
+              onclick="handlePasswordChange()"
               class="w-full bg-blue-900 text-white font-black py-4 rounded-lg uppercase text-xs tracking-widest shadow-xl hover:bg-orange-500 transition-all"
             >
-              Confirm Account Migration
+              Update Access Key
             </button>
-          </div>
+          </form>
         </div>
 
         <div
@@ -307,7 +468,7 @@
         >
           <div class="max-w-7xl mx-auto flex items-center justify-between">
             <p class="text-sm font-bold text-slate-600 italic">
-              Unsaved changes detected in your Mishra Portal.
+              Unsaved changes detected.
             </p>
             <div class="flex gap-4">
               <button
@@ -319,6 +480,7 @@
               </button>
               <button
                 type="button"
+                id="saveBtn"
                 onclick="executeAutoUpdate()"
                 class="bg-[#fb641b] text-white px-10 py-3 rounded-sm font-black text-[10px] uppercase shadow-lg"
               >
@@ -332,149 +494,239 @@
 
     <script>
       const API_URL = "https://mishra-industries-ltd-yjfr.onrender.com";
-      const user = JSON.parse(localStorage.getItem("mishraUser"));
+      let user = JSON.parse(localStorage.getItem("mishraUser"));
 
-      if (!user) window.location.href = "login.html";
+      if (!user || !user.token) {
+        localStorage.removeItem("mishraUser");
+        window.location.href = "login.html";
+      }
 
       document.addEventListener("DOMContentLoaded", () => {
-        autoFillFields();
+        fetchProfileData();
         fetchOrders();
       });
 
-      function autoFillFields() {
+      async function fetchProfileData() {
+        try {
+          const res = await fetch(`${API_URL}/api/auth/profile`, {
+            headers: { Authorization: `Bearer ${user.token}` },
+          });
+          const data = await res.json();
+          if (res.ok) {
+            user = { ...user, ...data.user };
+            localStorage.setItem("mishraUser", JSON.stringify(user));
+            initProfile();
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      function initProfile() {
         const name = user.fullName || user.name || "User";
-        document.getElementById("userAvatar").innerText = name
-          .split(" ")
-          .map((n) => n[0])
-          .join("")
-          .toUpperCase();
+        const previewImg = document.getElementById("profilePicPreview");
+        const removeBtn = document.getElementById("removePicBtn");
+
+        if (user.profilePic) {
+          previewImg.src =
+            user.profilePic.startsWith("http") ?
+              user.profilePic
+            : `${API_URL}${user.profilePic}`;
+          removeBtn.classList.remove("hidden");
+        } else {
+          previewImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1e3a8a&color=fff&size=150`;
+          removeBtn.classList.add("hidden");
+        }
+
         document.getElementById("dispUserName").innerText = name;
         document.getElementById("profName").value = name;
-        // Map these exactly as the backend sends them
-document.getElementById('profEmail').value = user.email || ""; 
-document.getElementById('profPhone').value = user.phone || "";
+        document.getElementById("profEmail").value = user.email || "";
+        document.getElementById("profPhone").value = user.phone || "";
         document.getElementById("addrStreet").value = user.address || "";
         document.getElementById("addrPin").value = user.pincode || "";
         document.getElementById("addrLocality").value = user.locality || "";
         document.getElementById("addrCity").value = user.city || "";
-        document.getElementById("currentTypeLabel").innerText =
-          user.accountType.toUpperCase();
-      }
-async function executeAutoUpdate() {
-  const pin = document.getElementById("addrPin").value;
-  const phone = document.getElementById("profPhone").value;
 
-  // Validation
-  if (pin && pin.length !== 6) return alert("Error: Pincode must be exactly 6 digits.");
-  if (phone && phone.length < 10) return alert("Error: Enter a valid 10-digit mobile number.");
-
-  // Correct way to get the selected radio value
-  const selectedGender = document.querySelector('input[name="gender"]:checked')?.value;
-
-  const payload = {
-    fullName: document.getElementById("profName").value,
-    phone: phone,
-    gender: selectedGender, // Correctly captures 'male' or 'female'
-    address: document.getElementById("addrStreet").value,
-    pincode: pin,
-    locality: document.getElementById("addrLocality").value,
-    city: document.getElementById("addrCity").value,
-    state: document.getElementById("addrState").value,
-    businessName: document.getElementById("bizName") ? document.getElementById("bizName").value : undefined,
-    gstNumber: document.getElementById("bizGST") ? document.getElementById("bizGST").value.toUpperCase() : undefined,
-  };
-
-  try {
-    const res = await fetch(`${API_URL}/api/auth/update-profile`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${user.token}`, // Secured with Bearer Token
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (res.ok) {
-      localStorage.setItem("mishraUser", JSON.stringify({ ...user, ...payload }));
-      alert("✅ Profile Synced successfully.");
-      location.reload();
-    } else {
-      const error = await res.json();
-      alert(error.message || "Update Failed");
-    }
-  } catch (err) {
-    alert("Network Error: Could not connect to Mishra Cloud.");
-  }
-}
-      function toggleMigrationFields() {
-        const type = document.getElementById("newAccountType").value;
-        const fields = document.getElementById("migrationFields");
-        type === "retailer" ?
-          fields.classList.remove("hidden")
-        : fields.classList.add("hidden");
+        if (user.accountType === "retailer") {
+          document.getElementById("retailerFields").classList.remove("hidden");
+          document.getElementById("accountBadge").innerText = "Elite Retailer";
+          document.getElementById("bizName").value = user.businessName || "";
+          document.getElementById("bizGST").value = user.gstNumber || "";
+          document.getElementById("bizPAN").value = user.panNumber || "";
+          document.getElementById("bizMSME").value = user.msmeNumber || "";
+          if (user.gstFile)
+            document.getElementById("nameGST").innerText = "File Verified";
+          if (user.panFile)
+            document.getElementById("namePAN").innerText = "File Verified";
+          if (user.msmeFile)
+            document.getElementById("nameMSME").innerText = "File Verified";
+        }
       }
 
-      async function processMigration() {
-        const newType = document.getElementById("newAccountType").value;
-        const biz = document.getElementById("upgBizName").value;
-        const gst = document.getElementById("upgGST").value;
+      function updateDocName(type) {
+        const file = document.getElementById(`doc${type}`).files[0];
+        if (file) {
+          document.getElementById(`name${type}`).innerText = file.name;
+          showSaveBanner();
+        }
+      }
 
-        if (newType === "retailer" && (!biz || !gst))
-          return alert(
-            "Business Name & GST are required for Retailer accounts.",
-          );
+      function previewProfilePic(event) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            document.getElementById("profilePicPreview").src = e.target.result;
+            document.getElementById("removePicBtn").classList.remove("hidden");
+            showSaveBanner();
+          };
+          reader.readAsDataURL(file);
+        }
+      }
 
-        const payload = {
-          accountType: newType,
-          businessName: biz,
-          gstNumber: gst,
-        };
-
-        const res = await fetch(`${API_URL}/api/auth/update-profile`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (res.ok) {
-          localStorage.setItem(
-            "mishraUser",
-            JSON.stringify({ ...user, ...payload }),
-          );
-          alert("✅ Account Type Updated Successfully!");
-          location.reload();
+      async function deleteProfilePic() {
+        if (!confirm("Permanently remove your profile photo?")) return;
+        try {
+          const res = await fetch(`${API_URL}/api/auth/update-profile`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
+            body: JSON.stringify({ removeProfilePic: true }),
+          });
+          if (res.ok) location.reload();
+        } catch (err) {
+          showToast("Action Failed", "error");
         }
       }
 
       async function executeAutoUpdate() {
-        const payload = {
-          fullName: document.getElementById("profName").value,
-          phone: document.getElementById("profPhone").value,
-          address: document.getElementById("addrStreet").value,
-          pincode: document.getElementById("addrPin").value,
-          locality: document.getElementById("addrLocality").value,
-          city: document.getElementById("addrCity").value,
-        };
+        const saveBtn = document.getElementById("saveBtn");
+        saveBtn.disabled = true;
+        saveBtn.innerText = "Processing...";
 
-        const res = await fetch(`${API_URL}/api/auth/update-profile`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${user.token}`,
-          },
-          body: JSON.stringify(payload),
-        });
+        const formData = new FormData();
+        formData.append(
+          "fullName",
+          document.getElementById("profName").value.trim(),
+        );
+        formData.append(
+          "phone",
+          document.getElementById("profPhone").value.trim(),
+        );
+        formData.append(
+          "address",
+          document.getElementById("addrStreet").value.trim(),
+        );
+        formData.append(
+          "pincode",
+          document.getElementById("addrPin").value.trim(),
+        );
+        formData.append(
+          "locality",
+          document.getElementById("addrLocality").value.trim(),
+        );
+        formData.append(
+          "city",
+          document.getElementById("addrCity").value.trim(),
+        );
 
-        if (res.ok) {
-          localStorage.setItem(
-            "mishraUser",
-            JSON.stringify({ ...user, ...payload }),
+        if (user.accountType === "retailer") {
+          formData.append(
+            "businessName",
+            document.getElementById("bizName").value.trim(),
           );
-          alert("✅ Profile Synced successfully.");
-          location.reload();
+          formData.append(
+            "gstNumber",
+            document.getElementById("bizGST").value.trim(),
+          );
+          formData.append(
+            "panNumber",
+            document.getElementById("bizPAN").value.trim(),
+          );
+          formData.append(
+            "msmeNumber",
+            document.getElementById("bizMSME").value.trim(),
+          );
+          if (document.getElementById("docGST").files[0])
+            formData.append(
+              "gstFile",
+              document.getElementById("docGST").files[0],
+            );
+          if (document.getElementById("docPAN").files[0])
+            formData.append(
+              "panFile",
+              document.getElementById("docPAN").files[0],
+            );
+          if (document.getElementById("docMSME").files[0])
+            formData.append(
+              "msmeFile",
+              document.getElementById("docMSME").files[0],
+            );
+        }
+
+        const picInput = document.getElementById("profilePicInput");
+        if (picInput.files[0]) formData.append("profilePic", picInput.files[0]);
+
+        try {
+          const res = await fetch(`${API_URL}/api/auth/update-profile`, {
+            method: "PUT",
+            headers: { Authorization: `Bearer ${user.token}` },
+            body: formData,
+          });
+          const data = await res.json();
+          if (res.ok) {
+            user = { ...user, ...data.user };
+            localStorage.setItem("mishraUser", JSON.stringify(user));
+            showToast("Atlas Synced Successfully", "success");
+            setTimeout(() => location.reload(), 1000);
+          }
+        } catch (err) {
+          showToast("Sync Error", "error");
+        } finally {
+          saveBtn.disabled = false;
+          saveBtn.innerText = "Save Changes";
+        }
+      }
+
+      async function handlePasswordChange() {
+        const oldPass = document.getElementById("oldPassword").value;
+        const newPass = document.getElementById("newPassword").value;
+        const confPass = document.getElementById("confirmPassword").value;
+
+        // Advanced Validation
+        const passRegex =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
+        if (!passRegex.test(newPass)) {
+          return showToast("Password does not meet security criteria", "error");
+        }
+        if (newPass !== confPass) {
+          return showToast("Passwords do not match", "error");
+        }
+
+        try {
+          const res = await fetch(`${API_URL}/api/auth/change-password`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
+            body: JSON.stringify({
+              oldPassword: oldPass,
+              newPassword: newPass,
+            }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            showToast("Security Key Updated", "success");
+            document.getElementById("passwordForm").reset();
+          } else {
+            showToast(data.message, "error");
+          }
+        } catch (err) {
+          showToast("Error", "error");
         }
       }
 
@@ -485,34 +737,41 @@ async function executeAutoUpdate() {
             headers: { Authorization: `Bearer ${user.token}` },
           });
           const orders = await res.json();
-          if (orders.length === 0)
+          if (!orders.length) {
             container.innerHTML =
-              "<p class='text-center py-20 text-slate-400 font-bold'>No orders found.</p>";
-          else {
-            container.innerHTML = orders
-              .map(
-                (o) => `
-                    <div class="bg-white p-6 border rounded-xl flex justify-between items-center group hover:shadow-md transition-all">
-                        <div>
-                            <p class="text-[9px] font-black text-slate-400 uppercase">ID: #${o._id.slice(-8)}</p>
-                            <h4 class="font-black text-blue-900">₹${o.totalPrice}</h4>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <span class="px-4 py-2 bg-orange-50 text-orange-600 rounded-full text-[10px] font-black uppercase">${o.status}</span>
-                            <button onclick="location.href='shop.html'" class="px-6 py-2 border-2 border-blue-900 text-blue-900 rounded font-black text-[10px] uppercase hover:bg-blue-900 hover:text-white transition-all">Buy Again</button>
-                        </div>
-                    </div>`,
-              )
-              .join("");
+              "<p class='text-center py-20 text-slate-400 font-bold'>No transaction records found.</p>";
+            return;
           }
-        } catch (e) {
-          container.innerHTML = "Server connection error.";
+          container.innerHTML = orders
+            .map(
+              (order) => `
+            <div class="border rounded-xl p-6 flex justify-between items-center hover:shadow-md transition bg-slate-50">
+                <div>
+                    <p class="text-[10px] font-black text-slate-400 uppercase">Order #${order._id.slice(-6)}</p>
+                    <h4 class="text-lg font-black text-blue-900">₹${order.totalAmount.toLocaleString("en-IN")}</h4>
+                    <p class="text-xs text-slate-500">${new Date(order.createdAt).toLocaleDateString()}</p>
+                </div>
+                <span class="px-4 py-2 text-xs font-black uppercase rounded-full ${order.status === "Delivered" ? "bg-green-100 text-green-600" : "bg-orange-100 text-orange-600"}">${order.status}</span>
+            </div>`,
+            )
+            .join("");
+        } catch (err) {
+          console.error(err);
         }
+      }
+
+      function showToast(message, type) {
+        const toast = document.createElement("div");
+        toast.className = `fixed top-6 right-6 px-6 py-4 rounded-lg shadow-xl text-sm font-bold z-[5000] ${type === "success" ? "bg-green-500" : "bg-red-500"} text-white animate__animated animate__fadeInRight`;
+        toast.innerText = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
       }
 
       function showSaveBanner() {
         document.getElementById("saveBanner").classList.remove("hidden");
       }
+
       function switchTab(id, btn) {
         document
           .querySelectorAll(".section-panel")
@@ -523,6 +782,7 @@ async function executeAutoUpdate() {
           .forEach((l) => l.classList.remove("active"));
         btn.classList.add("active");
       }
+
       function handleLogout() {
         localStorage.removeItem("mishraUser");
         window.location.href = "index.html";

@@ -1,5 +1,5 @@
 let currentBrand = "All";
-let currentCategory = null; // Added to support category tracking
+let currentCategory = null;
 const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
 
 async function renderShop() {
@@ -9,7 +9,6 @@ async function renderShop() {
   const priceDisplay = document.getElementById("priceDisplay");
   const searchInput = document.getElementById("searchInput");
 
-  // 1. Initial Loading State
   grid.innerHTML = `
         <div class="col-span-full h-96 flex flex-col items-center justify-center space-y-4">
             <div class="w-12 h-12 border-4 border-slate-100 border-t-orange-500 rounded-full animate-spin"></div>
@@ -17,22 +16,18 @@ async function renderShop() {
         </div>`;
 
   try {
-    // 2. Fetch live inventory from MongoDB Atlas
     const response = await fetch(`${API_BASE}/api/products/all`);
     const products = await response.json();
 
-    // 3. Process UI Controls
     const maxPrice = parseInt(priceRange.value);
     priceDisplay.innerText = `₹${maxPrice.toLocaleString()}`;
     const searchTerm = searchInput.value.toLowerCase();
     const sortValue = document.getElementById("sortSelect").value;
 
-    // Capture Multiple Categories from checkboxes
     const selectedCategories = Array.from(
       document.querySelectorAll(".cat-check:checked"),
     ).map((cb) => cb.value.toLowerCase());
 
-    // 4. Unified Filter Logic
     let filtered = products.filter((p) => {
       const finalPrice = p.price - (p.price * (p.discount || 0)) / 100;
 
@@ -40,10 +35,8 @@ async function renderShop() {
         p.name.toLowerCase().includes(searchTerm) ||
         p.category.toLowerCase().includes(searchTerm);
 
-      // FIXED: Brand matching logic to check the 'company' field from your DB
       const matchesBrand =
         currentBrand === "All" ||
-        currentBrand === null ||
         (p.company && p.company.toLowerCase() === currentBrand.toLowerCase());
 
       const matchesPrice = finalPrice <= maxPrice;
@@ -55,14 +48,12 @@ async function renderShop() {
       return matchesSearch && matchesBrand && matchesPrice && matchesCategory;
     });
 
-    // 5. Sorting Logic
     if (sortValue === "low") filtered.sort((a, b) => a.price - b.price);
     else if (sortValue === "high") filtered.sort((a, b) => b.price - a.price);
     else filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
     countDisplay.innerText = `${filtered.length} Items Found Under ₹${maxPrice.toLocaleString()}`;
 
-    // 6. Clear Loading Message and Render Cards
     grid.innerHTML = "";
     if (filtered.length === 0) {
       grid.innerHTML = `<div class="col-span-full h-64 flex flex-col items-center justify-center space-y-4">
@@ -75,18 +66,10 @@ async function renderShop() {
     filtered.forEach((product, i) => {
       const finalPrice =
         product.price - (product.price * (product.discount || 0)) / 100;
-
-      // UPDATED IMAGE LOGIC: Handles Base64 strings (data:) and local Render paths
-      let finalImgSrc;
-      if (product.image && product.image.startsWith("data:")) {
-        // Use Base64 string directly from database
-        finalImgSrc = product.image;
-      } else {
-        // Fallback for local server paths
-        const cleanPath =
-          product.image.startsWith("/") ? product.image : `/${product.image}`;
-        finalImgSrc = `${API_BASE}${cleanPath}`;
-      }
+      let finalImgSrc =
+        product.image && product.image.startsWith("data:") ?
+          product.image
+        : `${API_BASE}${product.image.startsWith("/") ? product.image : "/" + product.image}`;
 
       grid.innerHTML += `
                 <div onclick="location.href='product-details.html?id=${product._id}'" 
@@ -96,14 +79,7 @@ async function renderShop() {
                         <img src="${finalImgSrc}" 
                              onerror="this.src='./images/logo.jpeg'"
                              class="h-full w-full object-contain group-hover:scale-110 transition-transform duration-1000">
-                        ${
-                          product.discount > 0 ?
-                            `
-                        <div class="absolute top-6 left-6 bg-orange-500 text-white text-[9px] font-black px-3 py-1 rounded-full shadow-lg z-10">
-                            -${product.discount}%
-                        </div>`
-                          : ""
-                        }
+                        ${product.discount > 0 ? `<div class="absolute top-6 left-6 bg-orange-500 text-white text-[9px] font-black px-3 py-1 rounded-full shadow-lg z-10">-${product.discount}%</div>` : ""}
                     </div>
                     <div class="p-8">
                         <div class="flex justify-between items-start mb-4">
@@ -117,25 +93,35 @@ async function renderShop() {
                                 <p class="text-2xl font-black text-blue-900">₹${finalPrice.toLocaleString()}</p>
                                 ${product.discount > 0 ? `<p class="text-[10px] text-slate-300 line-through font-bold">₹${product.price.toLocaleString()}</p>` : ""}
                             </div>
-                          
-<button onclick="event.stopPropagation(); addToCart('${product.name}', ${finalPrice}, 1, '${finalImgSrc}', ${product.price})" 
-        class="bg-blue-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-xl active:scale-90">
-    <i class="fas fa-cart-plus"></i>
-</button>
+                            <button onclick="event.stopPropagation(); addToCart('${product.name}', ${finalPrice}, 1, '${finalImgSrc}', ${product.price})" 
+                                    class="bg-blue-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-xl active:scale-90">
+                                <i class="fas fa-cart-plus"></i>
+                            </button>
                         </div>
                     </div>
                 </div>`;
     });
   } catch (err) {
     console.error("Fetch failed:", err);
-    grid.innerHTML = `<div class="col-span-full h-96 flex flex-col items-center justify-center text-red-500 space-y-4">
-            <i class="fas fa-wifi text-3xl"></i>
-            <p class="font-black tracking-widest text-xs uppercase">DATABASE OFFLINE: CHECK ATLAS CONNECTION</p>
-        </div>`;
   }
 }
 
-// Voice Recognition Feature
+// FIXED: Robust filterByBrand function with active blue background logic
+function filterByBrand(button) {
+  currentBrand = button.dataset.brand;
+
+  const chips = document.querySelectorAll(".filter-chip");
+
+  chips.forEach((chip) => {
+    chip.classList.remove("bg-blue-900", "text-white", "active");
+    chip.classList.add("text-slate-600", "border-slate-100");
+  });
+
+  button.classList.remove("text-slate-600", "border-slate-100");
+  button.classList.add("bg-blue-900", "text-white", "active");
+
+  renderShop();
+}
 function startVoiceSearch() {
   const micIcon = document.getElementById("micIcon");
   const searchInput = document.getElementById("searchInput");
@@ -156,7 +142,6 @@ function startVoiceSearch() {
   recognition.start();
 }
 
-// Photo Search Feature
 function handlePhotoSearch(event) {
   const file = event.target.files[0];
   const searchInput = document.getElementById("searchInput");
@@ -164,124 +149,156 @@ function handlePhotoSearch(event) {
   searchInput.value = "Analyzing image...";
   setTimeout(() => {
     const name = file.name.toLowerCase();
-    if (name.includes("switch")) searchInput.value = "Switch";
-    else if (name.includes("wire") || name.includes("cable"))
-      searchInput.value = "Cable";
-    else searchInput.value = "Electrical";
+    searchInput.value =
+      name.includes("switch") ? "Switch"
+      : name.includes("wire") || name.includes("cable") ? "Cable"
+      : "Electrical";
     renderShop();
   }, 1500);
-}
-
-function filterByBrand(brand) {
-  // Update global filter variable
-  currentBrand = brand === "All" ? null : brand;
-
-  // UI: Update Chip Styles
-  document.querySelectorAll(".filter-chip").forEach((btn) => {
-    const isMatch = btn.innerText.trim() === brand;
-    
-    if (isMatch) {
-      // Apply Active Styles
-      btn.classList.add("active", "bg-blue-900", "text-white");
-      btn.classList.remove("border-slate-100", "text-slate-600");
-    } else {
-      // Reset to Default Styles
-      btn.classList.remove("active", "bg-blue-900", "text-white");
-      btn.classList.add("border-slate-100", "text-slate-600");
-    }
-  });
-
-  // Re-render shop with new filters
-  renderShop();
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   renderShop();
   document.getElementById("priceRange").addEventListener("input", renderShop);
   document.getElementById("sortSelect").addEventListener("change", renderShop);
-  document.getElementById("searchInput").addEventListener("input", renderShop); // Added missing search trigger
+  document.getElementById("searchInput").addEventListener("input", renderShop);
   document.querySelectorAll(".cat-check").forEach((check) => {
     check.addEventListener("change", renderShop);
   });
+
+  const user = JSON.parse(localStorage.getItem("mishraUser"));
+  const authWrapper = document.getElementById("authNavWrapper");
+  if (user && user.fullName) {
+    const initials = user.fullName
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase();
+    authWrapper.innerHTML = `<div class="user-avatar" onclick="location.href='profile.html'" title="My Profile">${initials}</div>`;
+  }
 });
 
-// 1. Use the "Hardened" key name: mishraCart
 function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
   let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
-  const qtyToAdd = parseInt(qty) || 1;
-
   const existingItem = cart.find((item) => item.name === name);
 
   if (existingItem) {
-    existingItem.quantity += qtyToAdd;
+    existingItem.quantity += parseInt(qty);
   } else {
-    // 2. Add with the EXACT keys the cart.html script expects
     cart.push({
       name: name,
-      price: price, // Discounted price
+      price: price,
       originalPrice: originalPrice || price,
-      quantity: qtyToAdd,
-      image: image || "./images/logo.jpeg", // Base64 or path
+      quantity: parseInt(qty),
+      image: image || "./images/logo.jpeg",
     });
   }
 
   localStorage.setItem("mishraCart", JSON.stringify(cart));
-
-  // Update the badge if it exists on the page
   if (document.getElementById("cartCount")) {
-    const total = cart.reduce((sum, item) => sum + item.quantity, 0);
-    document.getElementById("cartCount").innerText = total;
+    document.getElementById("cartCount").innerText = cart.reduce(
+      (sum, item) => sum + item.quantity,
+      0,
+    );
   }
-
-  alert(`✅ ${name} added to Mishra Basket!`);
+ updateCartDrawer();
+toggleCart();
 }
 
-
 function toggleCart() {
-        const drawer = document.getElementById("cartDrawer");
-        drawer.classList.toggle("invisible");
-        drawer.querySelector(".cart-drawer").classList.toggle("open");
-      }
+  const drawer = document.getElementById("cartDrawer");
+  drawer.classList.toggle("invisible");
+  drawer.querySelector(".cart-drawer").classList.toggle("open");
+  updateCartDrawer();
+}
 
-      // Initializing Session Management
-      document.addEventListener('DOMContentLoaded', () => {
-          const user = JSON.parse(localStorage.getItem('mishraUser'));
-          const authContainer = document.getElementById('authContainer');
+function updateCartDrawer() {
+  const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
 
-          if (user && user.fullName) {
-              // Extracting initials
-              const initials = user.fullName.split(' ').map(n => n[0]).join('').toUpperCase();
-              
-              authContainer.innerHTML = `
-                  <div class="user-avatar" onclick="location.href='profile.html'" title="View Profile">
-                      ${initials}
-                  </div>
-              `;
-          }
-      });
-      function toggleCart() {
-        const drawer = document.getElementById("cartDrawer");
-        drawer.classList.toggle("invisible");
-        drawer.querySelector(".cart-drawer").classList.toggle("open");
-      }
+  const cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  const cartList = document.getElementById("cartItemsList");
+  const cartTotal = document.getElementById("cartTotal");
+  const cartCount = document.getElementById("cartCount");
 
-      // Session and Navigation Logic
-      document.addEventListener("DOMContentLoaded", () => {
-        const user = JSON.parse(localStorage.getItem("mishraUser"));
-        const authWrapper = document.getElementById("authNavWrapper");
+  cartList.innerHTML = "";
 
-        if (user && user.fullName) {
-          // Extract initials from full name
-          const initials = user.fullName
-            .split(" ")
-            .map((n) => n[0])
-            .join("")
-            .toUpperCase();
+  if (cart.length === 0) {
+    cartList.innerHTML = `
+      <div class="text-center py-20 text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+        Cart is empty
+      </div>`;
+    cartTotal.innerText = "₹0";
+    cartCount.innerText = "0";
+    return;
+  }
 
-          authWrapper.innerHTML = `
-                  <div class="user-avatar" onclick="location.href='profile.html'" title="My Profile">
-                      ${initials}
-                  </div>
-              `;
-        }
-      });
+  let total = 0;
+  let totalQty = 0;
+
+  cart.forEach((item, index) => {
+
+    // FIX IMAGE PATH
+    let imgSrc = item.image;
+    if (!imgSrc.startsWith("http") && !imgSrc.startsWith("data:")) {
+      imgSrc = API_BASE + (imgSrc.startsWith("/") ? imgSrc : "/" + imgSrc);
+    }
+
+    const itemTotal = item.price * item.quantity;
+    total += itemTotal;
+    totalQty += item.quantity;
+
+    cartList.innerHTML += `
+      <div class="flex items-center space-x-4 border-b pb-4">
+        
+        <img src="${imgSrc}" 
+             onerror="this.src='./images/logo.jpeg'"
+             class="w-16 h-16 object-contain rounded-xl bg-slate-50">
+
+        <div class="flex-1">
+          <h4 class="font-bold text-sm text-blue-900">${item.name}</h4>
+
+          <div class="flex items-center space-x-2 mt-2">
+            <button onclick="changeQuantity(${index}, -1)"
+              class="w-6 h-6 bg-slate-200 rounded flex items-center justify-center font-bold">-</button>
+
+            <span class="text-sm font-bold">${item.quantity}</span>
+
+            <button onclick="changeQuantity(${index}, 1)"
+              class="w-6 h-6 bg-slate-200 rounded flex items-center justify-center font-bold">+</button>
+          </div>
+
+          <p class="font-black text-blue-900 mt-2">
+            ₹${itemTotal.toLocaleString()}
+          </p>
+        </div>
+
+        <button onclick="removeFromCart(${index})"
+          class="text-red-500 font-bold text-xl hover:scale-110 transition">
+          &times;
+        </button>
+      </div>`;
+  });
+
+  cartTotal.innerText = `₹${total.toLocaleString()}`;
+  cartCount.innerText = totalQty;
+}
+
+function changeQuantity(index, change) {
+  let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+
+  cart[index].quantity += change;
+
+  if (cart[index].quantity <= 0) {
+    cart.splice(index, 1);
+  }
+
+  localStorage.setItem("mishraCart", JSON.stringify(cart));
+  updateCartDrawer();
+}
+
+function removeFromCart(index) {
+  let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  cart.splice(index, 1);
+  localStorage.setItem("mishraCart", JSON.stringify(cart));
+  updateCartDrawer();
+}

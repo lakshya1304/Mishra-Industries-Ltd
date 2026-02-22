@@ -7,6 +7,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"
+    />
+    <link
+      rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     />
     <link
@@ -25,7 +29,6 @@
       .hidden {
         display: none;
       }
-
       .floating-label-group {
         position: relative;
       }
@@ -38,7 +41,6 @@
         background-color: white;
         padding: 0 0.5rem;
       }
-
       .requirement-item {
         font-size: 0.65rem;
         transition: all 0.3s;
@@ -51,6 +53,18 @@
       }
       .requirement-item i {
         margin-right: 4px;
+      }
+
+      /* International Input Styling */
+      .iti {
+        width: 100%;
+        display: block;
+      }
+      .iti__flag-container {
+        padding: 2px;
+      }
+      .floating-input-phone {
+        padding-left: 90px !important;
       }
     </style>
   </head>
@@ -144,7 +158,6 @@
               >Business Name</label
             >
           </div>
-
           <div class="floating-label-group">
             <input
               type="text"
@@ -156,40 +169,21 @@
             />
             <label
               class="floating-label absolute top-5 left-5 text-orange-400 font-bold transition-all pointer-events-none uppercase tracking-widest text-xs"
-              >GST Number (15 Digits)</label
+              >GST Number</label
             >
           </div>
         </div>
 
-        <div class="relative">
-          <div
-            class="flex items-center w-full bg-white border-2 border-gray-100 rounded-2xl focus-within:border-blue-900 transition-all"
-          >
-            <div
-              class="flex items-center gap-2 px-4 py-5 border-r border-gray-100 bg-gray-50/50 min-w-[85px] shrink-0"
-            >
-              <img
-                src="https://flagcdn.com/w20/in.png"
-                width="20"
-                alt="India"
-                class="rounded-sm shadow-sm"
-              />
-              <span class="text-blue-900 font-black text-sm tracking-tighter"
-                >+91</span
-              >
-            </div>
-            <input
-              type="tel"
-              id="regPhone"
-              placeholder="Phone Number"
-              maxlength="10"
-              class="w-full p-5 bg-transparent outline-none font-bold text-sm text-blue-900 placeholder:text-gray-300"
-            />
-          </div>
+        <div class="relative md:col-span-1">
+          <input
+            type="tel"
+            id="regPhone"
+            class="floating-input-phone w-full p-5 bg-white border-2 border-gray-100 rounded-2xl outline-none focus:border-blue-900 transition-all font-bold text-sm"
+          />
           <p
             class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-2 ml-4"
           >
-            Indian Standard Contact
+            Global Standard Contact (Select Country)
           </p>
         </div>
 
@@ -201,7 +195,6 @@
             oninput="checkPasswordStrength()"
             class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-900 transition-all font-bold text-sm"
           />
-
           <div class="mt-3 px-2">
             <div class="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
               <div
@@ -209,7 +202,6 @@
                 class="h-full w-0 transition-all duration-500 bg-red-500"
               ></div>
             </div>
-
             <div class="flex flex-wrap gap-x-4 gap-y-1 mt-3">
               <span
                 id="req-len"
@@ -261,31 +253,7 @@
       </footer>
     </div>
 
-    <div
-      id="regOverlay"
-      class="fixed inset-0 bg-blue-900/90 backdrop-blur-md z-[999] hidden flex flex-col items-center justify-center text-center p-6"
-    >
-      <div
-        class="w-24 h-24 border-8 border-blue-200 border-t-orange-500 rounded-full animate-spin mb-8"
-      ></div>
-      <h2
-        class="text-white text-3xl font-black uppercase tracking-tighter animate__animated animate__pulse animate__infinite"
-      >
-        Establishing Account
-      </h2>
-      <div
-        id="successContent"
-        class="hidden animate__animated animate__fadeInUp"
-      >
-        <div
-          class="w-20 h-20 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 text-3xl"
-        >
-          <i class="fas fa-check"></i>
-        </div>
-        <h3 class="text-white text-2xl font-black uppercase">Success!</h3>
-      </div>
-    </div>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
     <script src="js/register.js"></script>
   </body>
 </html>

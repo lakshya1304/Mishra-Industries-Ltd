@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/Order");
+// CRITICAL FIX: Added the missing protect import
+const { protect } = require("../middleware/authMiddleware");
 
 /**
  * POST: Add new verified order to Atlas
@@ -73,28 +75,32 @@ router.get("/stats/total-sales", async (req, res) => {
         $group: {
           _id: null,
           totalRevenue: { $sum: "$totalAmount" },
-          totalOrders: { $count: {} }
-        }
-      }
+          totalOrders: { $count: {} },
+        },
+      },
     ]);
 
     // If no orders exist yet, return zeros instead of empty array
-    const result = stats.length > 0 ? stats[0] : { totalRevenue: 0, totalOrders: 0 };
+    const result =
+      stats.length > 0 ? stats[0] : { totalRevenue: 0, totalOrders: 0 };
 
     res.json({
       success: true,
       totalRevenue: result.totalRevenue,
-      totalOrders: result.totalOrders
+      totalOrders: result.totalOrders,
     });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
+
 // GET /api/orders/user-orders
 router.get("/user-orders", protect, async (req, res) => {
   try {
     // Only finds orders matching req.user.id (from JWT)
-    const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
+    const orders = await Order.find({ user: req.user.id }).sort({
+      createdAt: -1,
+    });
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: "Order Sync Failed" });

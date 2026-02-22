@@ -1,21 +1,40 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stock & Revenue Manager | Mishra Industries Limited</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-</head>
-<body class="bg-slate-50 flex min-h-screen font-sans">
-    <aside class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col">
-        <div class="flex items-center space-x-3 mb-12">
-            <h2 class="text-2xl font-bold tracking-tighter">MISHRA <span class="text-orange-500">INDUSTRIES</span></h2>
-        </div>
-        <nav class="space-y-3 flex-1">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <style>
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #1e3a8a;
+        border-radius: 10px;
+      }
+    </style>
+  </head>
+  <body class="bg-slate-50 flex min-h-screen font-sans custom-scrollbar">
+    <aside
+      class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col"
+    >
+      <div class="flex items-center space-x-3 mb-12">
+        <h2 class="text-2xl font-bold tracking-tighter">
+          MISHRA <span class="text-orange-500">INDUSTRIES</span>
+        </h2>
+      </div>
+      <nav class="space-y-3 flex-1">
         <a
           href="site-editor.html"
           class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
@@ -30,13 +49,10 @@
         </a>
         <a
           href="stock-dashboard.html"
-          class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
+          class="flex items-center space-x-4 p-4 bg-orange-500/10 rounded-2xl transition-all group"
         >
-          <i
-            class="fas fa-boxes text-slate-500 group-hover:text-orange-500"
-          ></i>
-          <span
-            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+          <i class="fas fa-boxes text-orange-500"></i>
+          <span class="font-bold text-sm tracking-wide text-white"
             >Inventory</span
           >
         </a>
@@ -56,8 +72,13 @@
           href="orders.html"
           class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
         >
-          <i class="fas fa-shopping-cart"></i>
-          <span class="font-bold text-sm tracking-wide ">Orders List</span>
+          <i
+            class="fas fa-shopping-cart text-slate-500 group-hover:text-orange-500"
+          ></i>
+          <span
+            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+            >Orders List</span
+          >
         </a>
       </nav>
 
@@ -69,239 +90,424 @@
         <span class="font-bold text-sm">Logout Console</span>
       </a>
     </aside>
+
     <main class="flex-1 p-12 overflow-y-auto">
-        <header class="flex justify-between items-center mb-12 animate__animated animate__fadeIn">
-            <div>
-                <h1 class="text-4xl font-black text-slate-800 uppercase tracking-tight">Revenue & Inventory</h1>
-                <p class="text-slate-400 font-bold text-sm mt-1 uppercase tracking-widest">Live Control Center</p>
-            </div>
-            <div class="flex gap-4">
-                <div class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-gray-100 text-center">
-                    <span class="text-gray-400 text-[10px] font-black uppercase tracking-widest block mb-1">Total Stock Value</span>
-                    <span id="totalRevenue" class="font-black text-blue-900 text-2xl">₹0</span>
-                </div>
-                <button onclick="generateExcelReport()" class="bg-blue-900 text-white px-6 py-4 rounded-3xl font-black text-sm hover:bg-orange-500 transition shadow-xl no-print">
-    <i class="fas fa-file-excel mr-2"></i> Excel Report
-</button>
-            </div>
-        </header>
+      <header
+        class="flex justify-between items-center mb-12 animate__animated animate__fadeIn"
+      >
+        <div>
+          <h1
+            class="text-4xl font-black text-slate-800 uppercase tracking-tight"
+          >
+            Revenue & Inventory
+          </h1>
+          <p
+            class="text-slate-400 font-bold text-sm mt-1 uppercase tracking-widest"
+          >
+            Live Control Center
+          </p>
+        </div>
+        <div class="flex gap-4">
+          <div
+            class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-gray-100 text-center"
+          >
+            <span
+              class="text-gray-400 text-[10px] font-black uppercase tracking-widest block mb-1"
+              >Total Stock Value</span
+            >
+            <span id="totalRevenue" class="font-black text-blue-900 text-2xl"
+              >₹0</span
+            >
+          </div>
+          <button
+            onclick="generateExcelReport()"
+            class="bg-blue-900 text-white px-6 py-4 rounded-3xl font-black text-sm hover:bg-orange-500 transition shadow-xl no-print"
+          >
+            <i class="fas fa-file-excel mr-2"></i> Excel Report
+          </button>
+        </div>
+      </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-            <div class="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-xl border border-gray-50 animate__animated animate__fadeInUp">
-                <h3 class="text-xl font-black text-slate-800 mb-6 uppercase tracking-tight">Stock Value by Category</h3>
-                <canvas id="revenueChart" height="150"></canvas>
-            </div>
-            
-            <div class="space-y-6 animate__animated animate__fadeInRight">
-                <div class="bg-orange-500 p-8 rounded-[2rem] text-white shadow-xl">
-                    <h4 class="text-sm font-bold opacity-80 uppercase tracking-widest mb-1">Items in Stock</h4>
-                    <p id="totalStockCount" class="text-4xl font-black">0</p>
-                </div>
-                <div class="bg-white p-8 rounded-[2rem] border border-red-100 shadow-sm">
-                    <h4 class="text-red-500 font-black uppercase text-[10px] tracking-widest mb-4">Critical Stock Alerts</h4>
-                    <div id="alertList" class="space-y-3"></div>
-                </div>
-            </div>
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+        <div
+          class="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-xl border border-gray-50"
+        >
+          <h3
+            class="text-xl font-black text-slate-800 mb-6 uppercase tracking-tight"
+          >
+            Stock Value by Category
+          </h3>
+          <canvas id="revenueChart" height="150"></canvas>
         </div>
 
-        <div class="mb-8 animate__animated animate__fadeInUp" style="animation-delay: 0.2s">
-            <div class="relative group max-w-2xl mx-auto">
-                <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"></i>
-                <input 
-                    type="text" 
-                    id="tableSearch" 
-                    placeholder="Search name, category or brand..." 
-                    oninput="renderStockTable()"
-                    class="w-full bg-white border-2 border-slate-100 pl-16 pr-4 py-5 rounded-[2rem] outline-none focus:border-orange-500 shadow-xl transition-all text-lg font-medium"
-                />
-            </div>
+        <div class="space-y-6">
+          <div class="bg-orange-500 p-8 rounded-[2rem] text-white shadow-xl">
+            <h4
+              class="text-sm font-bold opacity-80 uppercase tracking-widest mb-1"
+            >
+              Items in Stock
+            </h4>
+            <p id="totalStockCount" class="text-4xl font-black">0</p>
+          </div>
+          <div
+            class="bg-white p-8 rounded-[2rem] border border-red-100 shadow-sm"
+          >
+            <h4
+              class="text-red-500 font-black uppercase text-[10px] tracking-widest mb-4"
+            >
+              Critical Stock Alerts
+            </h4>
+            <div id="alertList" class="space-y-3"></div>
+          </div>
         </div>
+      </div>
 
-        <div class="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden animate__animated animate__fadeInUp" style="animation-delay: 0.3s">
-            <table class="w-full text-left">
-                <thead class="bg-slate-50 border-b">
-                    <tr class="text-xs font-black text-slate-400 uppercase tracking-widest">
-                        <th class="p-8">Product Details</th>
-                        <th class="p-8">Current Inventory</th>
-                        <th class="p-8 text-right">Update Levels</th>
-                    </tr>
-                </thead>
-                <tbody id="stockTableBody"></tbody>
-            </table>
-        </div>
+      <div class="mb-8 relative group max-w-2xl mx-auto">
+        <i
+          class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
+        ></i>
+        <input
+          type="text"
+          id="tableSearch"
+          placeholder="Search product name or brand..."
+          oninput="renderStockTable()"
+          class="w-full bg-white border-2 border-slate-100 pl-16 pr-4 py-5 rounded-[2rem] outline-none focus:border-orange-500 shadow-xl transition-all text-lg font-medium"
+        />
+      </div>
+
+      <div
+        class="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden"
+      >
+        <table class="w-full text-left">
+          <thead class="bg-slate-50 border-b">
+            <tr
+              class="text-xs font-black text-slate-400 uppercase tracking-widest"
+            >
+              <th class="p-8">Product Details</th>
+              <th class="p-8">Current Inventory</th>
+              <th class="p-8 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="stockTableBody"></tbody>
+        </table>
+      </div>
     </main>
 
+    <div
+      id="editModal"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[999] hidden items-center justify-center p-6"
+    >
+      <div
+        class="bg-white w-full max-w-lg rounded-[2.5rem] p-10 animate__animated animate__zoomIn"
+      >
+        <h2
+          class="text-3xl font-black text-blue-900 mb-6 uppercase tracking-tighter"
+        >
+          Edit Product
+        </h2>
+        <form id="editForm" class="space-y-4">
+          <input type="hidden" id="editId" />
+          <div>
+            <label class="text-[10px] font-black uppercase text-gray-400 ml-4"
+              >Product Name</label
+            >
+            <input
+              type="text"
+              id="editName"
+              class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:border-blue-900 font-bold transition"
+            />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[10px] font-black uppercase text-gray-400 ml-4"
+                >Price (₹)</label
+              >
+              <input
+                type="number"
+                id="editPrice"
+                class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:border-blue-900 font-bold transition"
+              />
+            </div>
+            <div>
+              <label class="text-[10px] font-black uppercase text-gray-400 ml-4"
+                >Stock</label
+              >
+              <input
+                type="number"
+                id="editStock"
+                class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:border-blue-900 font-bold transition"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="text-[10px] font-black uppercase text-gray-400 ml-4"
+              >Brand/Company</label
+            >
+            <input
+              type="text"
+              id="editCompany"
+              class="w-full p-4 bg-slate-50 border-2 border-transparent rounded-2xl outline-none focus:border-blue-900 font-bold transition"
+            />
+          </div>
+          <div class="flex gap-4 pt-4">
+            <button
+              type="button"
+              onclick="closeEditModal()"
+              class="flex-1 py-4 font-black uppercase text-sm text-gray-400 tracking-widest"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onclick="saveProductEdit()"
+              class="flex-1 bg-blue-900 text-white py-4 rounded-2xl font-black uppercase text-sm tracking-widest hover:bg-orange-500 transition shadow-xl"
+            >
+              Update Atlas
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <script>
-        let myChart;
-        let allProducts = [];
-        const API_URL = "https://mishra-industries-ltd-yjfr.onrender.com/api/products";
+      let myChart;
+      let allProducts = [];
+      const API_URL =
+        "https://mishra-industries-ltd-yjfr.onrender.com/api/products";
 
-        document.addEventListener('DOMContentLoaded', initDashboard);
+      document.addEventListener("DOMContentLoaded", initDashboard);
 
-        async function initDashboard() {
-            try {
-                const response = await fetch(`${API_URL}/all`);
-                allProducts = await response.json(); 
-                
-                renderStockTable();
-                renderRevenueChart();
-                calculateTopStats();
-            } catch (err) {
-                console.error("Dashboard Sync Failed:", err);
-            }
+      async function initDashboard() {
+        try {
+          const response = await fetch(`${API_URL}/all`);
+          allProducts = await response.json();
+          refreshUI();
+        } catch (err) {
+          console.error("Sync Failed:", err);
         }
+      }
 
-        function renderStockTable() {
-            const tableBody = document.getElementById('stockTableBody');
-            const alertList = document.getElementById('alertList');
-            const searchTerm = document.getElementById('tableSearch').value.toLowerCase();
-            
-            tableBody.innerHTML = "";
-            alertList.innerHTML = "";
+      function renderStockTable() {
+        const tableBody = document.getElementById("stockTableBody");
+        const alertList = document.getElementById("alertList");
+        const searchTerm = document
+          .getElementById("tableSearch")
+          .value.toLowerCase();
 
-            const filtered = allProducts.filter(p => 
-                p.name.toLowerCase().includes(searchTerm) || 
-                p.category.toLowerCase().includes(searchTerm) ||
-                (p.company && p.company.toLowerCase().includes(searchTerm))
-            );
+        tableBody.innerHTML = "";
+        alertList.innerHTML = "";
 
-            filtered.forEach((product, index) => {
-                const isLow = product.stock < 10;
-                
-                if(isLow) {
-                    alertList.innerHTML += `
-                        <div class="flex items-center text-red-600 animate__animated animate__headShake">
+        const filtered = allProducts.filter(
+          (p) =>
+            p.name.toLowerCase().includes(searchTerm) ||
+            p.category.toLowerCase().includes(searchTerm) ||
+            (p.company && p.company.toLowerCase().includes(searchTerm)),
+        );
+
+        filtered.forEach((product, index) => {
+          const isLow = product.stock < 10;
+          if (isLow) {
+            alertList.innerHTML += `
+                        <div class="flex items-center text-red-600">
                             <i class="fas fa-exclamation-triangle mr-2 text-xs"></i>
                             <span class="text-xs font-bold">${product.name} (${product.stock})</span>
                         </div>`;
-                }
+          }
 
-                tableBody.innerHTML += `
-                    <tr class="border-b hover:bg-slate-50 transition group animate__animated animate__fadeInUp" style="animation-delay: ${index * 0.05}s">
+          tableBody.innerHTML += `
+                    <tr class="border-b hover:bg-slate-50 transition group">
                         <td class="p-8">
                             <div class="flex items-center gap-6">
-                                <img src="https://mishra-industries-ltd-yjfr.onrender.com${product.image}" 
-                                     onerror="this.src='../images/logo.jpeg'"
-                                     class="w-16 h-16 rounded-2xl object-cover shadow-md group-hover:scale-110 transition duration-500">
+                                <img src="https://mishra-industries-ltd-yjfr.onrender.com${product.image}" onerror="this.src='../images/logo.jpeg'" class="w-16 h-16 rounded-2xl object-cover shadow-md">
                                 <div>
                                     <p class="font-black text-slate-800 uppercase tracking-tighter text-lg">${product.name}</p>
-                                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">${product.category}</p>
+                                    <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">${product.category} | ₹${product.price}</p>
                                 </div>
                             </div>
                         </td>
                         <td class="p-8">
                             <div class="flex items-center gap-3">
                                 <div class="w-24 bg-gray-100 h-2 rounded-full overflow-hidden">
-                                    <div class="h-full ${isLow ? 'bg-red-500' : 'bg-green-500'} transition-all duration-1000" 
-                                         style="width: ${Math.min((product.stock / 50) * 100, 100)}%"></div>
+                                    <div class="h-full ${isLow ? "bg-red-500" : "bg-green-500"} transition-all" style="width: ${Math.min((product.stock / 50) * 100, 100)}%"></div>
                                 </div>
                                 <span class="font-black text-slate-700">${product.stock} Units</span>
                             </div>
                         </td>
                         <td class="p-8 text-right">
-                            <div class="flex items-center justify-end gap-3">
-                                <input type="number" id="input-${product._id}" value="${product.stock}" 
-                                    class="w-20 border-2 border-slate-100 p-3 rounded-2xl text-center font-black focus:border-orange-500 outline-none transition bg-slate-50">
-                                <button onclick="handleDashboardUpdate('${product._id}')" 
-                                    class="bg-slate-900 text-white p-4 rounded-2xl hover:bg-orange-500 transition shadow-xl transform active:scale-95">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
+                            <div class="flex items-center justify-end gap-2">
+                                <input type="number" id="input-${product._id}" value="${product.stock}" class="w-16 border-2 border-slate-100 p-2.5 rounded-xl text-center font-black outline-none transition bg-slate-50">
+                                <button onclick="handleDashboardUpdate('${product._id}')" class="bg-blue-900/10 text-blue-900 p-3 rounded-xl hover:bg-blue-900 hover:text-white transition"><i class="fas fa-sync-alt"></i></button>
+                                <button onclick="openEditModal('${product._id}')" class="bg-orange-500/10 text-orange-500 p-3 rounded-xl hover:bg-orange-500 hover:text-white transition"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteProduct('${product._id}', '${product.name}')" class="bg-red-500/10 text-red-500 p-3 rounded-xl hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </td>
                     </tr>`;
-            });
+        });
+      }
+
+      async function handleDashboardUpdate(id) {
+        const newQty = parseInt(document.getElementById(`input-${id}`).value);
+        try {
+          const response = await fetch(`${API_URL}/edit/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ stock: newQty }),
+          });
+          if (response.ok) {
+            const idx = allProducts.findIndex((p) => p._id === id);
+            allProducts[idx].stock = newQty;
+            refreshUI();
+          }
+        } catch (err) {
+          alert("Error: " + err.message);
         }
+      }
 
-        async function handleDashboardUpdate(id) {
-            const newQty = parseInt(document.getElementById(`input-${id}`).value);
-            
-            try {
-                const response = await fetch(`${API_URL}/edit/${id}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ stock: newQty })
-                });
+      async function deleteProduct(id, name) {
+        if (!confirm(`⚠️ WARNING: Are you sure you want to delete ${name}?`))
+          return;
+        if (
+          !confirm(
+            `Final check: This will remove ${name} from shop and database forever.`,
+          )
+        )
+          return;
 
-                if(response.ok) {
-                    // Update local data and re-render without full refresh
-                    const productIndex = allProducts.findIndex(p => p._id === id);
-                    allProducts[productIndex].stock = newQty;
-                    renderStockTable();
-                    renderRevenueChart();
-                    calculateTopStats();
-                }
-            } catch (err) {
-                alert("Update failed: " + err.message);
-            }
+        try {
+          const response = await fetch(`${API_URL}/delete/${id}`, {
+            method: "DELETE",
+          });
+          if (response.ok) {
+            allProducts = allProducts.filter((p) => p._id !== id);
+            refreshUI();
+          }
+        } catch (err) {
+          alert("Deletion Failed: " + err.message);
         }
+      }
 
-        function renderRevenueChart() {
-            const ctx = document.getElementById('revenueChart').getContext('2d');
-            const categories = [...new Set(allProducts.map(p => p.category))];
-            const data = categories.map(cat => {
-                return allProducts
-                    .filter(p => p.category === cat)
-                    .reduce((sum, p) => sum + (p.price * p.stock), 0);
-            });
+      function openEditModal(id) {
+        const p = allProducts.find((item) => item._id === id);
+        document.getElementById("editId").value = p._id;
+        document.getElementById("editName").value = p.name;
+        document.getElementById("editPrice").value = p.price;
+        document.getElementById("editStock").value = p.stock;
+        document.getElementById("editCompany").value = p.company || "";
+        document.getElementById("editModal").style.display = "flex";
+      }
 
-            if (myChart) myChart.destroy();
-            
-            myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: categories,
-                    datasets: [{
-                        data: data,
-                        backgroundColor: '#003366',
-                        hoverBackgroundColor: '#f97316',
-                        borderRadius: 12,
-                        barThickness: 40
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        y: { beginAtZero: true, grid: { display: false } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
+      function closeEditModal() {
+        document.getElementById("editModal").style.display = "none";
+      }
+
+      async function saveProductEdit() {
+        const id = document.getElementById("editId").value;
+        const payload = {
+          name: document.getElementById("editName").value,
+          price: parseFloat(document.getElementById("editPrice").value),
+          stock: parseInt(document.getElementById("editStock").value),
+          company: document.getElementById("editCompany").value,
+        };
+
+        try {
+          const response = await fetch(`${API_URL}/edit/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (response.ok) {
+            const idx = allProducts.findIndex((p) => p._id === id);
+            allProducts[idx] = { ...allProducts[idx], ...payload };
+            closeEditModal();
+            refreshUI();
+          }
+        } catch (err) {
+          alert("Sync Error: " + err.message);
         }
+      }
 
-        function calculateTopStats() {
-            const totalVal = allProducts.reduce((sum, p) => sum + (p.price * p.stock), 0);
-            const totalItems = allProducts.reduce((sum, p) => sum + p.stock, 0);
-            
-            document.getElementById('totalRevenue').innerText = "₹" + totalVal.toLocaleString();
-            document.getElementById('totalStockCount').innerText = totalItems.toLocaleString();
-        }
-        function generateExcelReport() {
-    // 1. Prepare the data for Excel
-    const reportData = allProducts.map(product => ({
-        "Product Name": product.name.toUpperCase(),
-        "Category": product.category,
-        "Company/Brand": product.company || "MISHRA ATLAS",
-        "Stock Level": product.stock,
-        "Unit Price": product.price,
-        "Total Stock Value": product.price * product.stock,
-        "Status": product.stock < 25 ? "CRITICAL LOW" : "HEALTHY",
-        "Report Date": new Date().toLocaleDateString()
-    }));
+      function refreshUI() {
+        renderStockTable();
+        renderRevenueChart();
+        calculateTopStats();
+      }
 
-    // 2. Create a new Workbook and Worksheet
-    const worksheet = XLSX.utils.json_to_sheet(reportData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Stock Inventory");
+      function renderRevenueChart() {
+        const ctx = document.getElementById("revenueChart").getContext("2d");
+        const categories = [...new Set(allProducts.map((p) => p.category))];
+        const data = categories.map((cat) =>
+          allProducts
+            .filter((p) => p.category === cat)
+            .reduce((sum, p) => sum + p.price * p.stock, 0),
+        );
 
-    // 3. Auto-adjust column widths for readability
-    const max_width = reportData.reduce((w, r) => Math.max(w, r["Product Name"].length), 15);
-    worksheet["!cols"] = [{ wch: max_width }, { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 12 }, { wch: 18 }, { wch: 15 }, { wch: 15 }];
+        if (myChart) myChart.destroy();
+        myChart = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: categories,
+            datasets: [
+              {
+                data: data,
+                backgroundColor: "#003366",
+                hoverBackgroundColor: "#f97316",
+                borderRadius: 12,
+                barThickness: 40,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, grid: { display: false } },
+              x: { grid: { display: false } },
+            },
+          },
+        });
+      }
 
-    // 4. Download the file
-    const fileName = `Mishra_Industries_Stock_${new Date().toISOString().split('T')[0]}.xlsx`;
-    XLSX.writeFile(workbook, fileName);
-}
+      function calculateTopStats() {
+        const totalVal = allProducts.reduce(
+          (sum, p) => sum + p.price * p.stock,
+          0,
+        );
+        const totalItems = allProducts.reduce((sum, p) => sum + p.stock, 0);
+        document.getElementById("totalRevenue").innerText =
+          "₹" + totalVal.toLocaleString();
+        document.getElementById("totalStockCount").innerText =
+          totalItems.toLocaleString();
+      }
+
+      function generateExcelReport() {
+        const reportData = allProducts.map((p, i) => ({
+          "Sl No.": i + 1,
+          "Product Name": p.name.toUpperCase(),
+          Category: p.category,
+          Company: p.company || "MISHRA ATLAS",
+          Stock: p.stock,
+          Price: p.price,
+          Value: p.price * p.stock,
+          Status: p.stock < 25 ? "CRITICAL" : "HEALTHY",
+        }));
+        const ws = XLSX.utils.json_to_sheet(reportData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Inventory");
+        ws["!cols"] = [
+          { wch: 8 },
+          { wch: 30 },
+          { wch: 15 },
+          { wch: 15 },
+          { wch: 12 },
+          { wch: 12 },
+          { wch: 15 },
+          { wch: 15 },
+        ];
+        XLSX.writeFile(
+          wb,
+          `Mishra_Inventory_${new Date().toISOString().slice(0, 10)}.xlsx`,
+        );
+      }
     </script>
-</body>
+  </body>
 </html>

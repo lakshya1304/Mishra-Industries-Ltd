@@ -6,15 +6,10 @@
     <title>Super Admin | Site Editor | Mishra Industries</title>
     <script>
       (function () {
-        // Retrieve the security tokens from the login process
         const adminToken = localStorage.getItem("adminToken");
         const isManualAuth = localStorage.getItem("adminAuthenticated");
-
-        // If neither the database token nor the manual bypass exists, block access
         if (!adminToken && isManualAuth !== "true") {
-          alert(
-            "⚠️ SECURITY ALERT: Unauthorized Access Detected. Redirecting to Login...",
-          );
+          alert("⚠️ SECURITY ALERT: Unauthorized Access Detected.");
           window.location.href = "admin-login.html";
         }
       })();
@@ -36,9 +31,10 @@
         background: #cbd5e1;
         border-radius: 10px;
       }
-      .glass-effect {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
+      .modal-scrollable {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding-right: 8px;
       }
     </style>
   </head>
@@ -54,13 +50,10 @@
       <nav class="space-y-3 flex-1">
         <a
           href="site-editor.html"
-          class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
+          class="flex items-center space-x-4 p-4 bg-orange-500/10 rounded-2xl transition-all group"
         >
-          <i
-            class="fas fa-layer-group text-slate-500 group-hover:text-orange-500"
-          ></i>
-          <span
-            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+          <i class="fas fa-layer-group text-orange-500"></i>
+          <span class="font-bold text-sm tracking-wide text-white"
             >Site Editor</span
           >
         </a>
@@ -92,18 +85,23 @@
           href="orders.html"
           class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
         >
-          <i class="fas fa-shopping-cart"></i>
-          <span class="font-bold text-sm tracking-wide">Orders List</span>
+          <i
+            class="fas fa-shopping-cart text-slate-500 group-hover:text-orange-500"
+          ></i>
+          <span
+            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+            >Orders List</span
+          >
         </a>
       </nav>
 
-      <div class="mt-10 pt-6 border-t border-slate-100">
+      <div class="mt-10 pt-6 border-t border-slate-800">
         <a
           href="settings.html"
-          class="flex items-center space-x-4 p-4 rounded-2xl hover:bg-orange-50 transition-all group"
+          class="flex items-center space-x-4 p-4 rounded-2xl hover:bg-white/5 transition-all group"
         >
           <div
-            class="w-10 h-10 bg-slate-50 text-slate-400 group-hover:bg-orange-100 group-hover:text-orange-600 rounded-xl flex items-center justify-center transition-all"
+            class="w-10 h-10 bg-slate-800 text-slate-400 group-hover:bg-orange-100 group-hover:text-orange-600 rounded-xl flex items-center justify-center transition-all"
           >
             <i class="fas fa-cog"></i>
           </div>
@@ -113,8 +111,8 @@
             >
               System Console
             </p>
-            <p class="text-[9px] font-bold text-slate-300">
-              Backup, Restore & Analytics
+            <p class="text-[9px] font-bold text-slate-500">
+              Backup & Analytics
             </p>
           </div>
         </a>
@@ -122,7 +120,7 @@
 
       <a
         href="../index.html"
-        class="flex items-center space-x-4 p-4 text-slate-500 hover:text-red-400 transition-all border-t border-slate-800"
+        class="flex items-center space-x-4 p-4 text-slate-500 hover:text-red-400 transition-all border-t border-slate-800 mt-4"
       >
         <i class="fas fa-sign-out-alt"></i>
         <span class="font-bold text-sm">Logout Console</span>
@@ -130,13 +128,13 @@
     </aside>
 
     <main class="flex-1 p-12 overflow-y-auto custom-scrollbar">
-      <div class="flex justify-between items-end mb-12">
+      <header class="flex justify-between items-end mb-12">
         <div>
           <h1 class="text-4xl font-black text-slate-800 mb-2">
             Product Manager
           </h1>
           <p class="text-slate-500 font-medium">
-            Manage your digital showroom and product pricing.
+            Add or edit products in the Mishra Global Atlas.
           </p>
         </div>
         <div class="flex-1 max-w-md mx-8">
@@ -147,7 +145,7 @@
             <input
               type="text"
               id="tableSearch"
-              placeholder="Search name, category or brand..."
+              placeholder="Search by name or category..."
               oninput="loadProducts()"
               class="w-full bg-white border border-slate-200 pl-12 pr-4 py-3 rounded-2xl outline-none focus:border-orange-500 shadow-sm transition-all"
             />
@@ -155,16 +153,16 @@
         </div>
         <button
           onclick="toggleModal()"
-          class="bg-slate-900 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl transition-all transform hover:-translate-y-1 flex items-center space-x-3"
+          class="bg-slate-900 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl transition-all flex items-center space-x-3"
         >
           <i class="fas fa-plus"></i> <span>Add New Product</span>
         </button>
-      </div>
+      </header>
 
       <div
         class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden"
       >
-        <table class="w-full text-left border-collapse">
+        <table class="w-full text-left">
           <thead>
             <tr class="bg-slate-50/50 border-b border-slate-100">
               <th
@@ -180,17 +178,7 @@
               <th
                 class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest"
               >
-                Brand
-              </th>
-              <th
-                class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest"
-              >
                 Pricing
-              </th>
-              <th
-                class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest"
-              >
-                Discount
               </th>
               <th
                 class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest text-right"
@@ -206,17 +194,17 @@
 
     <div
       id="productModal"
-      class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[100] backdrop-blur-md transition-all"
+      class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[100] backdrop-blur-md p-4"
     >
       <div
         class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 animate__animated animate__zoomIn animate__faster"
       >
-        <div class="flex justify-between items-center mb-8">
+        <div class="flex justify-between items-center mb-6">
           <h2
             id="modalTitle"
-            class="text-3xl font-black text-slate-800 tracking-tight"
+            class="text-2xl font-black text-slate-800 tracking-tight"
           >
-            Add Product
+            Product Details
           </h2>
           <button
             onclick="toggleModal()"
@@ -226,137 +214,124 @@
           </button>
         </div>
 
-        <form id="productForm" class="space-y-4">
-          <div class="relative group">
-            <label class="block text-sm font-bold text-slate-700 mb-2"
-              >Product Image</label
-            >
-            <div
-              id="imagePreviewContainer"
-              class="hidden mb-4 relative h-32 w-full rounded-2xl overflow-hidden border"
-            >
-              <img
-                id="imagePreview"
-                src=""
-                class="w-full h-full object-contain"
-              />
-              <button
-                type="button"
-                onclick="resetImage()"
-                class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full shadow-lg"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-            <label
-              id="uploadLabel"
-              class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-200 border-dashed rounded-3xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition"
-            >
-              <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                <i class="fas fa-image text-slate-400 text-3xl mb-3"></i>
-                <p class="text-sm font-bold text-slate-500">
-                  Drop image here or click
-                </p>
-              </div>
-              <input
-                type="file"
-                id="prodImage"
-                class="hidden"
-                accept="image/*"
-                onchange="previewFile()"
-              />
-            </label>
-          </div>
-
-          <div class="grid grid-cols-2 gap-6">
-            <div class="col-span-2">
+        <div class="modal-scrollable custom-scrollbar">
+          <form
+            id="productForm"
+            onsubmit="handleProductForm(event)"
+            class="space-y-4"
+          >
+            <div class="relative group">
               <label class="block text-sm font-bold text-slate-700 mb-2"
-                >Title</label
+                >Product Image</label
               >
+              <div
+                id="imagePreviewContainer"
+                class="hidden mb-4 relative h-40 w-full rounded-2xl overflow-hidden border"
+              >
+                <img
+                  id="imagePreview"
+                  src=""
+                  class="w-full h-full object-contain bg-slate-50"
+                />
+                <button
+                  type="button"
+                  onclick="resetImage()"
+                  class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full"
+                >
+                  <i class="fas fa-times"></i>
+                </button>
+              </div>
+              <label
+                id="uploadLabel"
+                class="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-200 border-dashed rounded-3xl cursor-pointer bg-slate-50 hover:bg-slate-100 transition"
+              >
+                <div
+                  class="flex flex-col items-center justify-center pt-5 pb-6"
+                >
+                  <i
+                    class="fas fa-cloud-upload-alt text-slate-400 text-3xl mb-3"
+                  ></i>
+                  <p class="text-xs font-bold text-slate-500">
+                    Upload Product Image
+                  </p>
+                </div>
+                <input
+                  type="file"
+                  id="prodImage"
+                  class="hidden"
+                  accept="image/*"
+                  onchange="previewFile()"
+                />
+              </label>
+            </div>
+
+            <div class="space-y-4">
               <input
                 type="text"
                 id="prodName"
-                placeholder="e.g. 10A Toggle Switch"
-                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
+                placeholder="Product Name"
+                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                required
               />
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-slate-700 mb-2"
-                >Price (₹)</label
-              >
-              <input
-                type="number"
-                id="prodPrice"
-                placeholder="0.00"
-                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
-              />
-            </div>
-            <div>
-              <label class="block text-sm font-bold text-slate-700 mb-2"
-                >Discount (%)</label
-              >
-              <input
-                type="number"
-                id="prodDiscount"
-                value="0"
-                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
-              />
-            </div>
-            <div class="grid grid-cols-2 gap-4 col-span-2">
-              <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2"
-                  >Category</label
-                >
+              <div class="grid grid-cols-2 gap-4">
+                <input
+                  type="number"
+                  id="prodPrice"
+                  placeholder="Price (₹)"
+                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                  required
+                />
+                <input
+                  type="number"
+                  id="prodDiscount"
+                  placeholder="Discount %"
+                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                />
+              </div>
+              <div class="grid grid-cols-2 gap-4">
                 <select
                   id="prodCategory"
-                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
+                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
                 >
                   <option>Switches</option>
                   <option>Cables</option>
-                  <option>Lightining</option>
+                  <option>Lighting</option>
                 </select>
-              </div>
-              <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2"
-                  >Company</label
-                >
                 <select
                   id="prodCompany"
-                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 focus:bg-white transition"
+                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
                 >
-                  <option value="">Select Brand</option>
-                  <option>Siemens</option>
-                  <option>Anchor</option>
-                  <option>Havells</option>
-                  <option>Polycab</option>
-                  <option>L&T</option>
-                  <option>Mishra Atlas</option>
+                  <option value="SIEMENS">SIEMENS</option>
+                  <option value="ANCHOR">ANCHOR</option>
+                  <option value="HAVELLS">HAVELLS</option>
+                  <option value="POLYCAB">POLYCAB</option>
                 </select>
               </div>
-            </div>
-            <div class="col-span-2">
-              <label class="block text-sm font-bold text-slate-700 mb-2"
-                >Description</label
-              >
+              <input
+                type="number"
+                id="prodStock"
+                placeholder="Initial Stock"
+                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+              />
               <textarea
                 id="prodDesc"
-                placeholder="Technical specifications..."
-                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl h-24 outline-none focus:border-orange-500 focus:bg-white transition"
+                placeholder="Description"
+                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl h-24 outline-none focus:border-orange-500 transition font-bold"
               ></textarea>
             </div>
-          </div>
-
-          <button
-            type="button"
-            onclick="handleProductForm()"
-            class="w-full bg-orange-500 text-white py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-900 shadow-xl transition-all"
-          >
-            Save Product & Sync
-          </button>
-        </form>
+            <button
+              type="submit"
+              id="saveBtn"
+              class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl transition-all"
+            >
+              Save & Sync Atlas
+            </button>
+          </form>
+        </div>
       </div>
     </div>
-    <script module>
+
+    <script>
       const API_URL =
         "https://mishra-industries-ltd-yjfr.onrender.com/api/products";
       let isEditing = false;
@@ -373,15 +348,13 @@
         const preview = document.getElementById("imagePreview");
         const file = document.getElementById("prodImage").files[0];
         const reader = new FileReader();
-
-        reader.onloadend = function () {
+        reader.onloadend = () => {
           preview.src = reader.result;
           document
             .getElementById("imagePreviewContainer")
             .classList.remove("hidden");
           document.getElementById("uploadLabel").classList.add("hidden");
         };
-
         if (file) reader.readAsDataURL(file);
       }
 
@@ -398,17 +371,21 @@
         resetImage();
         isEditing = false;
         currentEditId = null;
-        document.getElementById("modalTitle").innerText = "Add New Product";
-        document.getElementById("prodCompany").value = "";
+        document.getElementById("modalTitle").innerText = "Add Product";
       }
 
-      async function handleProductForm() {
+      async function handleProductForm(e) {
+        if (e) e.preventDefault();
+        const btn = document.getElementById("saveBtn");
+        btn.disabled = true;
+        btn.innerText = "Syncing...";
+
         const formData = new FormData();
         formData.append("name", document.getElementById("prodName").value);
         formData.append("price", document.getElementById("prodPrice").value);
         formData.append(
           "discount",
-          document.getElementById("prodDiscount").value,
+          document.getElementById("prodDiscount").value || 0,
         );
         formData.append(
           "category",
@@ -419,6 +396,10 @@
           document.getElementById("prodCompany").value,
         );
         formData.append(
+          "stock",
+          document.getElementById("prodStock").value || 0,
+        );
+        formData.append(
           "description",
           document.getElementById("prodDesc").value,
         );
@@ -426,31 +407,22 @@
         const imageFile = document.getElementById("prodImage").files[0];
         if (imageFile) formData.append("image", imageFile);
 
-        if (
-          !document.getElementById("prodName").value ||
-          !document.getElementById("prodPrice").value
-        ) {
-          return alert("Product Name and Price are mandatory.");
-        }
-
         try {
           const url =
             isEditing ? `${API_URL}/edit/${currentEditId}` : `${API_URL}/add`;
-          const method = isEditing ? "PUT" : "POST";
-
-          const response = await fetch(url, { method, body: formData });
-
+          const response = await fetch(url, {
+            method: isEditing ? "PUT" : "POST",
+            body: formData,
+          });
           if (response.ok) {
-            alert(
-              isEditing ? "Product Updated!" : (
-                "Product Published Successfully!"
-              ),
-            );
+            alert("✅ Data Synced with Global Showroom");
             location.reload();
           }
         } catch (err) {
-          console.error("Operation failed", err);
-          alert("Could not sync with database. Is the server running?");
+          alert("❌ Sync Failed");
+        } finally {
+          btn.disabled = false;
+          btn.innerText = "Save & Sync Atlas";
         }
       }
 
@@ -459,106 +431,65 @@
           const response = await fetch(`${API_URL}/all`);
           const products = await response.json();
           const tableBody = document.getElementById("productTableBody");
-          const searchTerm = document
+          const query = document
             .getElementById("tableSearch")
-            .value.toLowerCase(); // Get search term
-
+            .value.toLowerCase();
           tableBody.innerHTML = "";
-
-          // Filter products based on search
-          const filteredProducts = products.filter(
-            (product) =>
-              product.name.toLowerCase().includes(searchTerm) ||
-              product.category.toLowerCase().includes(searchTerm) ||
-              (product.company &&
-                product.company.toLowerCase().includes(searchTerm)),
+          const filtered = products.filter(
+            (p) =>
+              p.name.toLowerCase().includes(query) ||
+              p.category.toLowerCase().includes(query),
           );
-
-          if (filteredProducts.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="6" class="p-12 text-center text-slate-400">No products match your search.</td></tr>`;
-            return;
-          }
-
-          filteredProducts.forEach((product) => {
+          filtered.forEach((p) => {
             tableBody.innerHTML += `
-        <tr class="group hover:bg-slate-50 transition">
-            <td class="p-6">
-                <div class="flex items-center space-x-4">
-                    <img src="https://mishra-industries-ltd-yjfr.onrender.com${product.image}" onerror="this.src='../images/logo.jpeg'" class="w-14 h-14 object-cover rounded-xl border border-slate-100 shadow-sm">
-                    <span class="font-bold text-slate-700">${product.name}</span>
-                </div>
-            </td>
-            <td class="p-6 text-slate-500 font-medium">${product.category}</td>
-            <td class="p-6 text-slate-500 font-medium">${product.company || "Unknown"}</td>
-            <td class="p-6 font-black text-slate-800">₹${product.price.toLocaleString()}</td>
-            <td class="p-6">
-                <span class="bg-orange-100 text-orange-600 text-[10px] font-black px-3 py-1 rounded-full">
-                    ${product.discount}% OFF
-                </span>
-            </td>
-            <td class="p-6 text-right space-x-2">
-                <button onclick="prepareEdit('${product._id}')" class="p-3 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button onclick="deleteProduct('${product._id}')" class="p-3 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>
-        </tr>`;
+              <tr class="border-b border-slate-50 hover:bg-slate-50 transition">
+                <td class="p-6 flex items-center gap-4">
+                  <img src="https://mishra-industries-ltd-yjfr.onrender.com${p.image}" onerror="this.src='../images/logo.jpeg'" class="w-12 h-12 rounded-xl object-cover shadow-sm">
+                  <span class="font-bold text-slate-800">${p.name}</span>
+                </td>
+                <td class="p-6 text-slate-500 font-bold">${p.category}</td>
+                <td class="p-6 font-black text-blue-900">₹${p.price.toLocaleString()}</td>
+                <td class="p-6 text-right space-x-2">
+                  <button onclick="prepareEdit('${p._id}')" class="text-orange-500 hover:bg-orange-50 p-3 rounded-xl transition"><i class="fas fa-edit"></i></button>
+                  <button onclick="deleteProduct('${p._id}')" class="text-red-500 hover:bg-red-50 p-3 rounded-xl transition"><i class="fas fa-trash"></i></button>
+                </td>
+              </tr>`;
           });
-        } catch (err) {
-          console.error("Fetch failed", err);
-        }
-      }
-
-      async function prepareEdit(id) {
-        try {
-          const response = await fetch(`${API_URL}/${id}`);
-          const product = await response.json();
-
-          if (product) {
-            isEditing = true;
-            currentEditId = id;
-            document.getElementById("modalTitle").innerText = "Edit Product";
-            document.getElementById("prodName").value = product.name;
-            document.getElementById("prodPrice").value = product.price;
-            document.getElementById("prodDiscount").value =
-              product.discount || 0;
-            document.getElementById("prodCategory").value = product.category;
-            document.getElementById("prodCompany").value =
-              product.company || "";
-            document.getElementById("prodDesc").value = product.description;
-
-            document.getElementById("imagePreview").src =
-              `https://mishra-industries-ltd-yjfr.onrender.com${product.image}`;
-            document
-              .getElementById("imagePreviewContainer")
-              .classList.remove("hidden");
-            document.getElementById("uploadLabel").classList.add("hidden");
-
-            toggleModal();
-          }
         } catch (err) {
           console.error(err);
         }
       }
 
-      async function deleteProduct(id) {
-        if (confirm("Permanently delete this product from database?")) {
-          try {
-            const response = await fetch(`${API_URL}/delete/${id}`, {
-              method: "DELETE",
-            });
-            if (response.ok) {
-              alert("Product Deleted Successfully");
-              location.reload();
-            }
-          } catch (err) {
-            console.error(err);
-          }
+      async function prepareEdit(id) {
+        const res = await fetch(`${API_URL}/${id}`);
+        const p = await res.json();
+        if (p) {
+          isEditing = true;
+          currentEditId = id;
+          document.getElementById("modalTitle").innerText = "Update Product";
+          document.getElementById("prodName").value = p.name;
+          document.getElementById("prodPrice").value = p.price;
+          document.getElementById("prodDiscount").value = p.discount || 0;
+          document.getElementById("prodCategory").value = p.category;
+          document.getElementById("prodCompany").value = p.company || "SIEMENS";
+          document.getElementById("prodStock").value = p.stock || 0;
+          document.getElementById("prodDesc").value = p.description || "";
+          document.getElementById("imagePreview").src =
+            `https://mishra-industries-ltd-yjfr.onrender.com${p.image}`;
+          document
+            .getElementById("imagePreviewContainer")
+            .classList.remove("hidden");
+          document.getElementById("uploadLabel").classList.add("hidden");
+          toggleModal();
         }
       }
 
+      async function deleteProduct(id) {
+        if (confirm("⚠️ Remove from Atlas?")) {
+          await fetch(`${API_URL}/delete/${id}`, { method: "DELETE" });
+          location.reload();
+        }
+      }
       document.addEventListener("DOMContentLoaded", loadProducts);
     </script>
   </body>

@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs"); // Added for directory checking
 const morgan = require("morgan");
 let db = require("./config/db.js");
 
@@ -15,7 +16,6 @@ app.use(morgan("dev"));
 // 3. Global Middleware
 app.use(
   cors({
-    // Updated origins to include all possible local and production entry points
     origin: [
       "http://127.0.0.1:5500",
       "http://localhost:5500",
@@ -28,11 +28,17 @@ app.use(
 );
 
 // Body Parser Middleware
-app.use(express.json({ limit: "10mb" })); // Increased limit for Base64 product images
+app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-// 4. Static Folder for Images
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// 4. Robust Static Folder Configuration
+const uploadDir = path.join(__dirname, "uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+  console.log("Created missing 'uploads' directory.");
+}
+// Mapping the URL /uploads to the physical folder
+app.use("/uploads", express.static(uploadDir));
 
 // Debugging Log
 console.log("-----------------------------------------");
@@ -46,12 +52,12 @@ console.log("-----------------------------------------");
 db();
 
 // 6. API Routes Integration
-app.use('/api/admin', require('./routes/adminRoutes'));
+app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 
-const { errorHandler } = require('./middleware/errorMiddleware');
+const { errorHandler } = require("./middleware/errorMiddleware");
 app.use(errorHandler);
 
 // 7. Root Route for Testing

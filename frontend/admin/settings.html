@@ -30,16 +30,23 @@
         transition: all 0.3s ease;
       }
       .fade-out {
-    opacity: 0;
-    transition: opacity 0.5s ease-out;
-}
+        opacity: 0;
+        transition: opacity 0.5s ease-out;
+      }
     </style>
   </head>
   <body class="min-h-screen pb-20">
-    <button onclick="handleLogout()" class="flex items-center space-x-2 bg-red-50/10 hover:bg-red-600 text-red-500 hover:text-white px-6 py-3 rounded-2xl transition-all duration-300 border border-red-500/20 group">
-      <i class="fas fa-sign-out-alt group-hover:rotate-12 transition-transform"></i>
-    <span class="text-[10px] font-black uppercase tracking-widest">Back to website</span>
-</button>
+    <button
+      onclick="handleLogout()"
+      class="flex items-center space-x-2 bg-red-50/10 hover:bg-red-600 text-red-500 hover:text-white px-6 py-3 rounded-2xl transition-all duration-300 border border-red-500/20 group"
+    >
+      <i
+        class="fas fa-sign-out-alt group-hover:rotate-12 transition-transform"
+      ></i>
+      <span class="text-[10px] font-black uppercase tracking-widest"
+        >Back to website</span
+      >
+    </button>
     <div class="max-w-5xl mx-auto py-12 px-6">
       <div
         class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6"
@@ -204,38 +211,42 @@
     <script>
       const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
 
-      // Enhanced Auto-Refresher for Analytics
-async function loadAnalytics() {
-    const statusNode = document.querySelector('.bg-white span'); // The "Atlas Connected" text
+      async function loadAnalytics() {
+        const statusNode = document.querySelector(".bg-white span");
 
-    try {
-        const response = await fetch(`${API_BASE}/api/orders/stats/total-sales`);
-        const stats = await response.json();
-        
-        if (stats.success) {
-            // Smoothly animate the numbers
-            document.getElementById("totalRevenue").innerText = `₹${stats.totalRevenue.toLocaleString("en-IN")}`;
-            document.getElementById("totalOrders").innerText = stats.totalOrders;
-            
-            // Show successful connection status
+        try {
+          const response = await fetch(
+            `${API_BASE}/api/orders/stats/total-sales`,
+          );
+          const stats = await response.json();
+
+          if (stats.success) {
+            document.getElementById("totalRevenue").innerText =
+              `₹${stats.totalRevenue.toLocaleString("en-IN")}`;
+            document.getElementById("totalOrders").innerText =
+              stats.totalOrders;
+
             statusNode.innerText = "Atlas Connected";
-            statusNode.previousElementSibling.classList.replace('bg-orange-500', 'bg-green-500');
+            statusNode.previousElementSibling.classList.replace(
+              "bg-orange-500",
+              "bg-green-500",
+            );
+          }
+
+          const prodRes = await fetch(`${API_BASE}/api/products/all`);
+          const products = await prodRes.json();
+          document.getElementById("totalProducts").innerText = products.length;
+        } catch (err) {
+          console.error("Stats Sync Error:", err);
+          statusNode.innerText = "Atlas Offline";
+          statusNode.previousElementSibling.classList.replace(
+            "bg-green-500",
+            "bg-red-500",
+          );
         }
-        
-        // Fetch product count for the third card
-        const prodRes = await fetch(`${API_BASE}/api/products/all`);
-        const products = await prodRes.json();
-        document.getElementById("totalProducts").innerText = products.length;
+      }
 
-    } catch (err) {
-        console.error("Stats Sync Error:", err);
-        statusNode.innerText = "Atlas Offline";
-        statusNode.previousElementSibling.classList.replace('bg-green-500', 'bg-red-500');
-    }
-}
-
-// Trigger load on page entry
-document.addEventListener("DOMContentLoaded", loadAnalytics);
+      // EXCEL EXPORT WITH SL NO COLUMN
       async function exportToExcel() {
         const btn = event.target.closest("button");
         btn.innerHTML =
@@ -251,22 +262,34 @@ document.addEventListener("DOMContentLoaded", loadAnalytics);
           const orders = await orderRes.json();
           const wb = XLSX.utils.book_new();
 
-          // Inventory Sheet
-          const cleanProds = products.map(({ image, ...rest }) => rest);
+          // Inventory Sheet with Sl No.
+          const cleanProds = products.map((p, index) => ({
+            "Sl No.": index + 1, // Added Sl No column
+            Product_ID: p._id,
+            Name: p.name,
+            Category: p.category,
+            Company: p.company || "N/A",
+            Price: p.price,
+            Stock: p.stock,
+            Discount: p.discount || 0
+          }));
+          
           XLSX.utils.book_append_sheet(
             wb,
             XLSX.utils.json_to_sheet(cleanProds),
             "Inventory",
           );
 
-          // Sales Sheet
-          const cleanOrders = orders.map((o) => ({
+          // Sales Sheet with Sl No.
+          const cleanOrders = orders.map((o, index) => ({
+            "Sl No.": index + 1, // Added Sl No column
             Order_ID: o._id,
             Customer: o.customerName,
             Total: `₹${o.totalAmount}`,
             Status: o.status,
             Date: new Date(o.createdAt).toLocaleDateString(),
           }));
+
           XLSX.utils.book_append_sheet(
             wb,
             XLSX.utils.json_to_sheet(cleanOrders),
@@ -275,8 +298,9 @@ document.addEventListener("DOMContentLoaded", loadAnalytics);
 
           XLSX.writeFile(
             wb,
-            `Mishra_Report_${new Date().toLocaleDateString()}.xlsx`,
+            `Mishra_Report_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`,
           );
+          
           btn.innerHTML = '<i class="fas fa-check mr-2"></i> Download Ready';
           setTimeout(
             () =>
@@ -285,6 +309,7 @@ document.addEventListener("DOMContentLoaded", loadAnalytics);
             3000,
           );
         } catch (err) {
+          console.error(err);
           alert("Export Failed.");
         }
       }
@@ -330,21 +355,16 @@ document.addEventListener("DOMContentLoaded", loadAnalytics);
       document.addEventListener("DOMContentLoaded", loadAnalytics);
     </script>
     <script>
-    function handleLogout() {
-        // 1. Clear all security tokens
+      function handleLogout() {
         localStorage.removeItem("adminToken");
         localStorage.removeItem("adminAuthenticated");
         localStorage.removeItem("adminUser");
         localStorage.removeItem("Mishra_Session");
-
-        // 2. Visual Fade Out
-        document.body.classList.add('fade-out');
-
-        // 3. Redirect after the animation finishes (500ms)
+        document.body.classList.add("fade-out");
         setTimeout(() => {
-            window.location.href = "../index.html"; 
+          window.location.href = "../index.html";
         }, 500);
-    }
-</script>
+      }
+    </script>
   </body>
 </html>

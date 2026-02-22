@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Order Management | Mishra Industries Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -13,22 +14,25 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <style>
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #1e3a8a;
+        border-radius: 10px;
+      }
+    </style>
   </head>
-  <body class="bg-slate-50 flex min-h-screen font-sans">
+  <body class="bg-slate-50 flex min-h-screen font-sans custom-scrollbar">
     <aside
       class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col z-50"
     >
       <div class="flex items-center space-x-3 mb-12">
-        <div
-          class="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center"
-        >
-          <i class="fas fa-bolt text-white"></i>
-        </div>
-        <h2 class="text-xl font-black tracking-tighter uppercase">
-          Mishra <span class="text-orange-500">Industries</span>
+        <h2 class="text-2xl font-bold tracking-tighter">
+          MISHRA <span class="text-orange-500">INDUSTRIES</span>
         </h2>
       </div>
-
       <nav class="space-y-3 flex-1">
         <a
           href="site-editor.html"
@@ -68,13 +72,14 @@
         </a>
         <a
           href="orders.html"
-          class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
+          class="flex items-center space-x-4 p-4 bg-orange-500/10 rounded-2xl transition-all group"
         >
-          <i class="fas fa-shopping-cart"></i>
-          <span class="font-bold text-sm tracking-wide">Orders List</span>
+          <i class="fas fa-shopping-cart text-orange-500"></i>
+          <span class="font-bold text-sm tracking-wide text-white"
+            >Orders List</span
+          >
         </a>
       </nav>
-
       <a
         href="../index.html"
         class="flex items-center space-x-4 p-4 text-slate-500 hover:text-red-400 transition-all border-t border-slate-800"
@@ -84,7 +89,7 @@
       </a>
     </aside>
 
-    <main class="flex-1 p-12">
+    <main class="flex-1 p-12 overflow-y-auto">
       <header class="flex justify-between items-end mb-12">
         <div>
           <h1
@@ -99,6 +104,12 @@
           </p>
         </div>
         <div class="flex space-x-4">
+          <button
+            onclick="downloadOrderReport()"
+            class="bg-emerald-600 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl"
+          >
+            <i class="fas fa-file-excel mr-2"></i> Export Manifest
+          </button>
           <div class="relative">
             <i
               class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"
@@ -106,7 +117,7 @@
             <input
               type="text"
               id="orderSearch"
-              placeholder="Search by name or ID..."
+              placeholder="Search orders..."
               oninput="filterOrders()"
               class="bg-white border-none shadow-sm pl-12 pr-6 py-4 rounded-2xl text-xs font-bold w-64 focus:ring-2 focus:ring-orange-500 transition-all"
             />
@@ -120,24 +131,80 @@
         </div>
       </header>
 
-      <div
-        class="bg-white rounded-[2.5rem] shadow-2xl shadow-slate-200/50 border border-slate-100 overflow-hidden animate__animated animate__fadeIn"
+      <section class="mb-16 animate__animated animate__fadeIn">
+        <div class="flex items-center gap-4 mb-6">
+          <div
+            class="w-10 h-10 bg-blue-900 text-white rounded-xl flex items-center justify-center shadow-lg"
+          >
+            <i class="fas fa-shopping-bag"></i>
+          </div>
+          <h2
+            class="text-2xl font-black text-blue-900 uppercase tracking-tight"
+          >
+            Active Customer Orders
+          </h2>
+        </div>
+        <div
+          class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden"
+        >
+          <table class="w-full text-left">
+            <thead class="bg-slate-50 border-b">
+              <tr
+                class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+              >
+                <th class="p-8">Reference / Customer</th>
+                <th class="p-8">Manifest Details</th>
+                <th class="p-8">Billing</th>
+                <th class="p-8">Status</th>
+                <th class="p-8 text-right">Operations</th>
+              </tr>
+            </thead>
+            <tbody
+              id="regularOrderTableBody"
+              class="divide-y divide-slate-50"
+            ></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section
+        class="animate__animated animate__fadeIn"
+        style="animation-delay: 0.2s"
       >
-        <table class="w-full text-left">
-          <thead class="bg-slate-50/50 border-b border-slate-100">
-            <tr
-              class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
-            >
-              <th class="p-8">Reference / Customer</th>
-              <th class="p-8">Manifest Details</th>
-              <th class="p-8">Billing (Incl. GST)</th>
-              <th class="p-8">Workflow Status</th>
-              <th class="p-8 text-right">Operations</th>
-            </tr>
-          </thead>
-          <tbody id="orderTableBody" class="divide-y divide-slate-50"></tbody>
-        </table>
-      </div>
+        <div class="flex items-center gap-4 mb-6">
+          <div
+            class="w-10 h-10 bg-orange-500 text-white rounded-xl flex items-center justify-center shadow-lg"
+          >
+            <i class="fas fa-file-contract"></i>
+          </div>
+          <h2
+            class="text-2xl font-black text-orange-500 uppercase tracking-tight"
+          >
+            Bulk Quotation Requests
+          </h2>
+        </div>
+        <div
+          class="bg-white rounded-[2.5rem] shadow-xl border border-orange-100 overflow-hidden"
+        >
+          <table class="w-full text-left">
+            <thead class="bg-orange-50/50 border-b border-orange-100">
+              <tr
+                class="text-[10px] font-black text-orange-400 uppercase tracking-widest"
+              >
+                <th class="p-8">REQ Reference / Company</th>
+                <th class="p-8">Project Requirements</th>
+                <th class="p-8">Estimated Qty</th>
+                <th class="p-8">Status</th>
+                <th class="p-8 text-right">Operations</th>
+              </tr>
+            </thead>
+            <tbody
+              id="bulkQuotationTableBody"
+              class="divide-y divide-orange-50"
+            ></tbody>
+          </table>
+        </div>
+      </section>
     </main>
 
     <script>
@@ -146,8 +213,11 @@
       let allOrders = [];
 
       async function loadOrders() {
-        const table = document.getElementById("orderTableBody");
-        table.innerHTML = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
+        const regTable = document.getElementById("regularOrderTableBody");
+        const bulkTable = document.getElementById("bulkQuotationTableBody");
+        const loader = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
+        regTable.innerHTML = loader;
+        bulkTable.innerHTML = loader;
 
         try {
           const response = await fetch(`${API_BASE}/all`);
@@ -155,64 +225,93 @@
           renderOrders(allOrders);
         } catch (err) {
           console.error("Order Fetch Failed:", err);
-          table.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold">Atlas Connection Offline</td></tr>`;
+          regTable.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold">Atlas Connection Offline</td></tr>`;
         }
       }
 
       function renderOrders(orders) {
-        const table = document.getElementById("orderTableBody");
-        table.innerHTML = "";
+        const regTable = document.getElementById("regularOrderTableBody");
+        const bulkTable = document.getElementById("bulkQuotationTableBody");
+        regTable.innerHTML = "";
+        bulkTable.innerHTML = "";
 
-        orders.reverse().forEach((order, index) => {
+        orders.forEach((order, index) => {
+          const isQuotation = order.customerName.includes("(QUOTATION)");
           const statusMap = {
             Pending: "bg-orange-100 text-orange-600 border-orange-200",
             Shipped: "bg-blue-100 text-blue-600 border-blue-200",
             Delivered: "bg-green-100 text-green-600 border-green-200",
           };
-
           const currentStatusClass =
             statusMap[order.status] || statusMap["Pending"];
+          const itemList = order.items
+            .map((i) => `${i.name} (x${i.quantity || 1})`)
+            .join(", ");
 
-          table.innerHTML += `
-                    <tr class="hover:bg-slate-50/80 transition-all group animate__animated animate__fadeInUp" style="animation-delay: ${index * 0.05}s">
-                        <td class="p-8">
-                            <p class="text-[10px] font-black text-slate-300 mb-1">#MI-${order._id.slice(-6).toUpperCase()}</p>
-                            <p class="font-black text-slate-800 uppercase tracking-tight">${order.customerName}</p>
-                            <p class="text-[10px] font-bold text-slate-400 mt-1"><i class="fas fa-phone-alt mr-1"></i> ${order.phone}</p>
-                        </td>
-                        <td class="p-8">
-                            <div class="max-w-xs">
-                                <p class="text-xs font-bold text-slate-600 leading-relaxed truncate">${order.items.map((i) => i.name).join(", ")}</p>
-                                <p class="text-[9px] text-slate-400 mt-2 font-medium italic"><i class="fas fa-map-marker-alt mr-1"></i> ${order.address}</p>
-                            </div>
-                        </td>
-                        <td class="p-8">
-                            <p class="font-black text-xl text-blue-900 tracking-tighter">₹${order.totalAmount.toLocaleString()}</p>
-                            <p class="text-[9px] font-black text-green-500 uppercase">GST 18% Cleared</p>
-                        </td>
-                        <td class="p-8">
-                            <span class="${currentStatusClass} border text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest shadow-sm">${order.status || "Pending"}</span>
-                        </td>
-                        <td class="p-8 text-right">
-                            <div class="flex justify-end space-x-2">
-                                <button onclick="updateStatus('${order._id}', 'Shipped')" class="bg-blue-900 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-orange-500 transition-all shadow-lg shadow-blue-900/10">Ship</button>
-                                <button onclick="updateStatus('${order._id}', 'Delivered')" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-green-500 hover:text-white transition-all">Done</button>
-                            </div>
-                        </td>
-                    </tr>`;
+          const rowHtml = `
+            <tr class="hover:bg-slate-50 transition-all">
+                <td class="p-8">
+                    <p class="text-[10px] font-black text-slate-300 mb-1">#${isQuotation ? "REQ" : "MI"}-${order._id.slice(-6).toUpperCase()}</p>
+                    <p class="font-black text-slate-800 uppercase tracking-tight">${order.customerName}</p>
+                    <p class="text-[10px] font-bold text-slate-400 mt-1"><i class="fas fa-id-card mr-1"></i> ${order.phone}</p>
+                </td>
+                <td class="p-8">
+                    <div class="max-w-xs">
+                        <p class="text-xs font-bold text-slate-600 truncate">${itemList}</p>
+                        <p class="text-[9px] text-slate-400 mt-2 font-medium italic">${order.address}</p>
+                    </div>
+                </td>
+                <td class="p-8">
+                    <p class="font-black text-xl ${isQuotation ? "text-orange-500" : "text-blue-900"} tracking-tighter">${isQuotation ? "Price Required" : "₹" + order.totalAmount.toLocaleString()}</p>
+                    <p class="text-[9px] font-black text-slate-300 uppercase">${isQuotation ? "Bulk Inquiry" : (order.paymentMethod || "COD") + " Verified"}</p>
+                </td>
+                <td class="p-8">
+                    <span class="${currentStatusClass} border text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest">${order.status || "Pending"}</span>
+                </td>
+                <td class="p-8 text-right">
+                    <div class="flex justify-end space-x-2">
+                        ${
+                          isQuotation ?
+                            `
+                            <button onclick="prepareQuote('${order._id}', '${order.customerName}')" class="bg-orange-500 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-900 transition-all shadow-lg">Send Quote</button>
+                        `
+                          : `
+                            <button onclick="updateStatus('${order._id}', 'Shipped')" class="bg-blue-900 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-orange-500 transition-all shadow-lg">Ship</button>
+                            <button onclick="updateStatus('${order._id}', 'Delivered')" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-green-500 hover:text-white transition-all">Done</button>
+                        `
+                        }
+                        <button onclick="deleteRecord('${order._id}')" class="bg-red-50 text-red-400 p-2 rounded-xl hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash-alt text-xs"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+
+          if (isQuotation) bulkTable.innerHTML += rowHtml;
+          else regTable.innerHTML += rowHtml;
         });
       }
 
       async function updateStatus(id, newStatus) {
         try {
-          const response = await fetch(`${API_BASE}/status/${id}`, {
+          const res = await fetch(`${API_BASE}/status/${id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: newStatus }),
           });
-          if (response.ok) loadOrders();
+          if (res.ok) loadOrders();
         } catch (err) {
-          alert("Status Update Failed");
+          alert("Update Failed");
+        }
+      }
+
+      async function deleteRecord(id) {
+        if (!confirm("Permanently remove this record?")) return;
+        try {
+          const res = await fetch(`${API_BASE}/delete/${id}`, {
+            method: "DELETE",
+          });
+          if (res.ok) loadOrders();
+        } catch (err) {
+          alert("Delete Failed");
         }
       }
 
@@ -224,6 +323,40 @@
             o._id.toLowerCase().includes(term),
         );
         renderOrders(filtered);
+      }
+
+      function prepareQuote(orderId, companyName) {
+        const cleanName = companyName.replace("(QUOTATION)", "").trim();
+        const subject = encodeURIComponent(
+          `Price Quotation - Mishra Industries - REQ:${orderId.slice(-6).toUpperCase()}`,
+        );
+        const body = encodeURIComponent(
+          `Dear ${cleanName},\n\nThank you for your bulk enquiry.\n\nRegards,\nMishra Industries Ltd.`,
+        );
+        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      }
+
+      function downloadOrderReport() {
+        if (allOrders.length === 0) return alert("No data to export.");
+        const reportData = allOrders.map((order, index) => ({
+          "Sl No.": index + 1,
+          Type:
+            order.customerName.includes("(QUOTATION)") ? "BULK REQ" : "SALE",
+          Reference: `${order.customerName.includes("(QUOTATION)") ? "REQ" : "MI"}-${order._id.slice(-6).toUpperCase()}`,
+          Customer: order.customerName,
+          "Phone/GST": order.phone,
+          Items: order.items.map((i) => i.name).join(", "),
+          Amount: order.totalAmount,
+          Status: order.status,
+          Date: new Date(order.createdAt).toLocaleString(),
+        }));
+        const worksheet = XLSX.utils.json_to_sheet(reportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Mishra_Fulfillment");
+        XLSX.writeFile(
+          workbook,
+          `Mishra_Industries_Report_${new Date().toISOString().split("T")[0]}.xlsx`,
+        );
       }
 
       document.addEventListener("DOMContentLoaded", loadOrders);
