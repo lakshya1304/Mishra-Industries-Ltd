@@ -56,7 +56,8 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
-
+// This MUST be in your server.js to allow manual files to load
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 const { errorHandler } = require("./middleware/errorMiddleware");
 app.use(errorHandler);
 

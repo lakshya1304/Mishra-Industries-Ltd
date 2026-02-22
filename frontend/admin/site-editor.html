@@ -94,7 +94,6 @@
           >
         </a>
       </nav>
-
       <div class="mt-10 pt-6 border-t border-slate-800">
         <a
           href="settings.html"
@@ -117,7 +116,6 @@
           </div>
         </a>
       </div>
-
       <a
         href="../index.html"
         class="flex items-center space-x-4 p-4 text-slate-500 hover:text-red-400 transition-all border-t border-slate-800 mt-4"
@@ -164,27 +162,16 @@
       >
         <table class="w-full text-left">
           <thead>
-            <tr class="bg-slate-50/50 border-b border-slate-100">
-              <th
-                class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest"
-              >
-                Product
-              </th>
-              <th
-                class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest"
-              >
-                Category
-              </th>
-              <th
-                class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest"
-              >
-                Pricing
-              </th>
-              <th
-                class="p-6 text-xs font-black text-slate-400 uppercase tracking-widest text-right"
-              >
-                Actions
-              </th>
+            <tr
+              class="bg-slate-50/50 border-b border-slate-100 uppercase tracking-widest text-[10px] font-black text-slate-400"
+            >
+              <th class="p-6">Sl No.</th>
+              <th class="p-6">Product</th>
+              <th class="p-6">Brand</th>
+              <th class="p-6">Category</th>
+              <th class="p-6">Discount</th>
+              <th class="p-6">Pricing</th>
+              <th class="p-6 text-right">Actions</th>
             </tr>
           </thead>
           <tbody id="productTableBody" class="divide-y divide-slate-50"></tbody>
@@ -213,7 +200,6 @@
             &times;
           </button>
         </div>
-
         <div class="modal-scrollable custom-scrollbar">
           <form
             id="productForm"
@@ -264,7 +250,6 @@
                 />
               </label>
             </div>
-
             <div class="space-y-4">
               <input
                 type="text"
@@ -334,6 +319,7 @@
     <script>
       const API_URL =
         "https://mishra-industries-ltd-yjfr.onrender.com/api/products";
+      const SERVER_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
       let isEditing = false;
       let currentEditId = null;
 
@@ -426,6 +412,25 @@
         }
       }
 
+      function getProductImage(image) {
+  if (!image) return "../images/logo.jpeg";
+
+  // If it's a Base64 string from the database, use it directly
+  if (image.startsWith("data:")) {
+    return image;
+  }
+
+  // If it's a manual filename (like 'image1.jpg'), convert it to a full URL
+  // We check if it already starts with http to avoid double-prefixing
+  if (image.startsWith("http")) {
+    return image;
+  }
+  
+  // Ensure the path starts with a slash
+  const cleanPath = image.startsWith("/") ? image : `/${image}`;
+  return `${SERVER_BASE}${cleanPath}`;
+}
+
       async function loadProducts() {
         try {
           const response = await fetch(`${API_URL}/all`);
@@ -435,19 +440,27 @@
             .getElementById("tableSearch")
             .value.toLowerCase();
           tableBody.innerHTML = "";
+
           const filtered = products.filter(
             (p) =>
               p.name.toLowerCase().includes(query) ||
               p.category.toLowerCase().includes(query),
           );
-          filtered.forEach((p) => {
+
+          filtered.forEach((p, index) => {
+            const imgPath = getProductImage(p.image);
             tableBody.innerHTML += `
-              <tr class="border-b border-slate-50 hover:bg-slate-50 transition">
+              <tr class="border-b border-slate-50 hover:bg-slate-50 transition group">
+                <td class="p-6 font-bold text-slate-400 text-xs">${index + 1}</td>
                 <td class="p-6 flex items-center gap-4">
-                  <img src="https://mishra-industries-ltd-yjfr.onrender.com${p.image}" onerror="this.src='../images/logo.jpeg'" class="w-12 h-12 rounded-xl object-cover shadow-sm">
+                  <img src="${imgPath}" onerror="this.src='../images/logo.jpeg'" class="w-12 h-12 rounded-xl object-cover shadow-sm">
                   <span class="font-bold text-slate-800">${p.name}</span>
                 </td>
-                <td class="p-6 text-slate-500 font-bold">${p.category}</td>
+                <td class="p-6 text-orange-500 font-black text-[10px] uppercase tracking-tighter">${p.company || "N/A"}</td>
+                <td class="p-6 text-slate-500 font-bold text-xs">${p.category}</td>
+                <td class="p-6">
+                    <span class="bg-orange-100 text-orange-600 px-2 py-1 rounded-lg text-[10px] font-black uppercase">${p.discount || 0}% OFF</span>
+                </td>
                 <td class="p-6 font-black text-blue-900">₹${p.price.toLocaleString()}</td>
                 <td class="p-6 text-right space-x-2">
                   <button onclick="prepareEdit('${p._id}')" class="text-orange-500 hover:bg-orange-50 p-3 rounded-xl transition"><i class="fas fa-edit"></i></button>
@@ -474,8 +487,8 @@
           document.getElementById("prodCompany").value = p.company || "SIEMENS";
           document.getElementById("prodStock").value = p.stock || 0;
           document.getElementById("prodDesc").value = p.description || "";
-          document.getElementById("imagePreview").src =
-            `https://mishra-industries-ltd-yjfr.onrender.com${p.image}`;
+          const imgPreview = document.getElementById("imagePreview");
+          imgPreview.src = getProductImage(p.image);
           document
             .getElementById("imagePreviewContainer")
             .classList.remove("hidden");
