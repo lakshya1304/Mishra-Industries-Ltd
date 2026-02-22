@@ -80,8 +80,17 @@ function renderUserLists(users) {
   retailerCount.innerText = `${rCount} Total`;
 }
 
-// Order History Sync
+// MODERN ORDER POPUP
 async function viewUserOrders(userId, userName) {
+  const modal = document.getElementById("orderHistoryModal");
+  const list = document.getElementById("modalOrderList");
+  const lifetimeDisplay = document.getElementById("modalLifetimeValue");
+  const nameDisplay = document.getElementById("modalUserName");
+
+  list.innerHTML = `<div class="p-10 text-center"><i class="fas fa-circle-notch fa-spin text-blue-900 text-2xl"></i></div>`;
+  modal.classList.remove("hidden");
+  nameDisplay.innerText = `${userName}'s History`;
+
   try {
     const response = await fetch(`${API_BASE}/orders/all`);
     const allOrders = await response.json();
@@ -90,16 +99,45 @@ async function viewUserOrders(userId, userName) {
     );
 
     if (userOrders.length === 0) {
-      alert(`${userName} has not placed any orders yet.`);
+      list.innerHTML = `
+                <div class="py-12 text-center">
+                    <i class="fas fa-box-open text-slate-200 text-5xl mb-4"></i>
+                    <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">No orders found for this user</p>
+                </div>`;
+      lifetimeDisplay.innerText = "₹0";
     } else {
-      const totalSpent = userOrders.reduce((sum, o) => sum + o.totalAmount, 0);
-      alert(
-        `History for ${userName}:\n- Total Orders: ${userOrders.length}\n- Lifetime Value: ₹${totalSpent.toLocaleString()}\n\nPlease check the "Orders List" page for manifest details.`,
-      );
+      let lifetime = 0;
+      list.innerHTML = userOrders
+        .map((o) => {
+          lifetime += o.totalAmount;
+          const date = new Date(o.createdAt).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          });
+          return `
+                    <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center group hover:border-blue-900 transition-all">
+                        <div>
+                            <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1">#MI-${o._id.slice(-6).toUpperCase()}</p>
+                            <p class="text-xs font-black text-blue-900">${date}</p>
+                            <p class="text-[8px] font-bold text-slate-400 uppercase mt-1">${o.items.length} Items | ${o.paymentMethod || "COD"}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-black text-blue-900 tracking-tighter">₹${o.totalAmount.toLocaleString()}</p>
+                            <span class="text-[8px] font-black uppercase text-emerald-500">${o.status || "Pending"}</span>
+                        </div>
+                    </div>`;
+        })
+        .join("");
+      lifetimeDisplay.innerText = `₹${lifetime.toLocaleString()}`;
     }
   } catch (err) {
-    alert("Error fetching user order history.");
+    list.innerHTML = `<p class="p-10 text-center text-red-500 font-bold">Sync Failed</p>`;
   }
+}
+
+function closeOrderModal() {
+  document.getElementById("orderHistoryModal").classList.add("hidden");
 }
 
 function filterUsers() {

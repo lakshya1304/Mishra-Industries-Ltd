@@ -87,4 +87,17 @@ router.get("/user-orders", protect, async (req, res) => {
   }
 });
 
+// DELETE: Purge order from database
+router.delete("/delete/:id", async (req, res) => {
+  try {
+    const deletedOrder = await Order.findByIdAndDelete(req.params.id);
+    if (!deletedOrder) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
+    res.json({ success: true, message: "Order purged from Atlas" });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
 module.exports = router;

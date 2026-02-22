@@ -2,18 +2,15 @@ let currentBrand = "All";
 let currentCategory = null;
 const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
 
+// Debounce timer for smooth price sliding
+let sliderTimeout;
+
 async function renderShop() {
   const grid = document.getElementById("productGrid");
   const countDisplay = document.getElementById("productCount");
   const priceRange = document.getElementById("priceRange");
   const priceDisplay = document.getElementById("priceDisplay");
   const searchInput = document.getElementById("searchInput");
-
-  grid.innerHTML = `
-        <div class="col-span-full h-96 flex flex-col items-center justify-center space-y-4">
-            <div class="w-12 h-12 border-4 border-slate-100 border-t-orange-500 rounded-full animate-spin"></div>
-            <p class="text-[10px] font-black uppercase text-slate-400 tracking-[0.4em] animate-pulse">Syncing Mishra Atlas</p>
-        </div>`;
 
   try {
     const response = await fetch(`${API_BASE}/api/products/all`);
@@ -30,27 +27,23 @@ async function renderShop() {
 
     let filtered = products.filter((p) => {
       const finalPrice = p.price - (p.price * (p.discount || 0)) / 100;
-
       const matchesSearch =
         p.name.toLowerCase().includes(searchTerm) ||
         p.category.toLowerCase().includes(searchTerm);
-
       const matchesBrand =
         currentBrand === "All" ||
         (p.company && p.company.toLowerCase() === currentBrand.toLowerCase());
-
       const matchesPrice = finalPrice <= maxPrice;
-
       const matchesCategory =
         selectedCategories.length === 0 ||
         selectedCategories.some((c) => p.category.toLowerCase().includes(c));
-
       return matchesSearch && matchesBrand && matchesPrice && matchesCategory;
     });
 
     if (sortValue === "low") filtered.sort((a, b) => a.price - b.price);
     else if (sortValue === "high") filtered.sort((a, b) => b.price - a.price);
-    else filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    else
+      filtered.sort((a, b) => new Error(b.createdAt) - new Date(a.createdAt));
 
     countDisplay.innerText = `${filtered.length} Items Found Under ₹${maxPrice.toLocaleString()}`;
 
@@ -76,9 +69,7 @@ async function renderShop() {
                      class="group bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-700 animate__animated animate__fadeInUp relative"
                      style="animation-delay: ${i * 0.05}s">
                     <div class="h-72 bg-slate-50 p-12 flex items-center justify-center relative overflow-hidden">
-                        <img src="${finalImgSrc}" 
-                             onerror="this.src='./images/logo.jpeg'"
-                             class="h-full w-full object-contain group-hover:scale-110 transition-transform duration-1000">
+                        <img src="${finalImgSrc}" onerror="this.src='./images/logo.jpeg'" class="h-full w-full object-contain group-hover:scale-110 transition-transform duration-1000">
                         ${product.discount > 0 ? `<div class="absolute top-6 left-6 bg-orange-500 text-white text-[9px] font-black px-3 py-1 rounded-full shadow-lg z-10">-${product.discount}%</div>` : ""}
                     </div>
                     <div class="p-8">
@@ -104,6 +95,17 @@ async function renderShop() {
   } catch (err) {
     console.error("Fetch failed:", err);
   }
+}
+
+// BUG FIX: Debounced Slider to prevent glitching
+function handleSliderChange() {
+  const priceDisplay = document.getElementById("priceDisplay");
+  priceDisplay.innerText = `₹${parseInt(document.getElementById("priceRange").value).toLocaleString()}`;
+
+  clearTimeout(sliderTimeout);
+  sliderTimeout = setTimeout(() => {
+    renderShop();
+  }, 150);
 }
 
 function filterByBrand(button) {
@@ -137,25 +139,15 @@ function startVoiceSearch() {
   recognition.start();
 }
 
-function handlePhotoSearch(event) {
-  const file = event.target.files[0];
-  const searchInput = document.getElementById("searchInput");
-  if (!file) return;
-  searchInput.value = "Analyzing image...";
-  setTimeout(() => {
-    const name = file.name.toLowerCase();
-    searchInput.value =
-      name.includes("switch") ? "Switch"
-      : name.includes("wire") || name.includes("cable") ? "Cable"
-      : "Electrical";
-    renderShop();
-  }, 1500);
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   renderShop();
-  updateCartDrawer(); // Initialize count on load
-  document.getElementById("priceRange").addEventListener("input", renderShop);
+  updateCartDrawer();
+
+  // Connect smooth slider
+  document
+    .getElementById("priceRange")
+    .addEventListener("input", handleSliderChange);
+
   document.getElementById("sortSelect").addEventListener("change", renderShop);
   document.getElementById("searchInput").addEventListener("input", renderShop);
   document.querySelectorAll(".cat-check").forEach((check) => {
@@ -163,18 +155,18 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   const user = JSON.parse(localStorage.getItem("mishraUser"));
-  const authWrapper = document.getElementById("authNavWrapper");
   if (user && user.fullName) {
     const initials = user.fullName
       .split(" ")
       .map((n) => n[0])
       .join("")
       .toUpperCase();
-    authWrapper.innerHTML = `<div class="user-avatar" onclick="location.href='profile.html'" title="My Profile">${initials}</div>`;
+    document.getElementById("authNavWrapper").innerHTML =
+      `<div class="user-avatar" onclick="location.href='profile.html'" title="My Profile">${initials}</div>`;
   }
 });
 
-// FIXED: addToCart no longer calls toggleCart() automatically
+// UNIFIED KEY: "mishra_cart"
 function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
   let cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   const existingItem = cart.find((item) => item.name === name);
@@ -192,13 +184,12 @@ function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
   }
 
   localStorage.setItem("mishra_cart", JSON.stringify(cart));
-  updateCartDrawer(); // Syncs counts instantly
+  updateCartDrawer();
 }
 
 function toggleCart() {
   const drawer = document.getElementById("cartDrawer");
   const isVisible = !drawer.classList.contains("invisible");
-
   if (isVisible) {
     drawer.classList.add("invisible");
     drawer.querySelector(".cart-drawer").classList.remove("open");
@@ -209,14 +200,12 @@ function toggleCart() {
   }
 }
 
-// FIXED: Correctly updates the total calculation and navbar bubble
 function updateCartDrawer() {
   const cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   const cartList = document.getElementById("cartItemsList");
   const cartTotalDisplay = document.getElementById("cartTotal");
   const navbarCartCount = document.getElementById("cartCount");
 
-  // Calculate Subtotal & Total Items
   let total = 0;
   let totalQty = 0;
   cart.forEach((item) => {
@@ -224,18 +213,13 @@ function updateCartDrawer() {
     totalQty += item.quantity;
   });
 
-  // Update Navbar Bubble
   if (navbarCartCount) navbarCartCount.innerText = totalQty;
   if (cartTotalDisplay)
     cartTotalDisplay.innerText = `₹${total.toLocaleString()}`;
 
   if (!cartList) return;
-
   if (cart.length === 0) {
-    cartList.innerHTML = `
-      <div class="text-center py-20 text-slate-400 font-bold uppercase text-[10px] tracking-widest">
-        Cart is empty
-      </div>`;
+    cartList.innerHTML = `<div class="text-center py-20 text-slate-400 font-bold uppercase text-[10px] tracking-widest">Cart is empty</div>`;
     return;
   }
 
@@ -245,9 +229,6 @@ function updateCartDrawer() {
     if (!imgSrc.startsWith("http") && !imgSrc.startsWith("data:")) {
       imgSrc = API_BASE + (imgSrc.startsWith("/") ? imgSrc : "/" + imgSrc);
     }
-
-    const itemTotal = item.price * item.quantity;
-
     cartList.innerHTML += `
       <div class="flex items-center space-x-4 border-b pb-4">
         <img src="${imgSrc}" onerror="this.src='./images/logo.jpeg'" class="w-16 h-16 object-contain rounded-xl bg-slate-50">
@@ -258,7 +239,7 @@ function updateCartDrawer() {
             <span class="text-sm font-bold">${item.quantity}</span>
             <button onclick="changeQuantity(${index}, 1)" class="w-6 h-6 bg-slate-200 rounded flex items-center justify-center font-bold">+</button>
           </div>
-          <p class="font-black text-blue-900 mt-2">₹${itemTotal.toLocaleString()}</p>
+          <p class="font-black text-blue-900 mt-2">₹${(item.price * item.quantity).toLocaleString()}</p>
         </div>
         <button onclick="removeFromCart(${index})" class="text-red-500 font-bold text-xl hover:scale-110 transition">&times;</button>
       </div>`;
@@ -268,11 +249,8 @@ function updateCartDrawer() {
 function changeQuantity(index, change) {
   let cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   if (!cart[index]) return;
-
   cart[index].quantity += change;
-  if (cart[index].quantity <= 0) {
-    cart.splice(index, 1);
-  }
+  if (cart[index].quantity <= 0) cart.splice(index, 1);
   localStorage.setItem("mishra_cart", JSON.stringify(cart));
   updateCartDrawer();
 }

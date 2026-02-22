@@ -5,15 +5,7 @@ const registerValidation = (data) => {
     fullName: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
     // UPDATED: Supports '+' followed by 1-4 digit country code and 10 digit number
-    phone: Joi.string()
-      .trim()
-      .pattern(/^\+\d{1,4}\d{10}$/)
-      .required()
-      .messages({
-        "string.pattern.base":
-          "Phone number must be in valid international format (e.g., +919876543210).",
-        "any.required": "Phone number is a required field.",
-      }),
+    
     password: Joi.string()
       .min(8)
       .pattern(

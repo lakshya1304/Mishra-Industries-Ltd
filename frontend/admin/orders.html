@@ -15,6 +15,10 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap");
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+      }
       .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
       }
@@ -22,8 +26,6 @@
         background: #1e3a8a;
         border-radius: 10px;
       }
-
-      /* Professional Invoice Print Layout */
       @media print {
         body * {
           visibility: hidden;
@@ -46,10 +48,10 @@
       }
     </style>
   </head>
-  <body class="bg-slate-50 flex min-h-screen font-sans custom-scrollbar">
+  <body class="bg-slate-50 flex min-h-screen custom-scrollbar">
     <div
       id="invoiceContainer"
-      class="hidden bg-white p-12 font-sans border border-slate-200"
+      class="hidden bg-white p-12 border border-slate-200"
     >
       <div
         class="flex justify-between items-start border-b-4 border-blue-900 pb-8"
@@ -75,7 +77,6 @@
           </p>
         </div>
       </div>
-
       <div class="grid grid-cols-2 gap-12 my-10">
         <div>
           <p class="text-[10px] font-black uppercase text-blue-900 mb-2">
@@ -113,7 +114,6 @@
           </div>
         </div>
       </div>
-
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="bg-blue-900 text-white">
@@ -134,41 +134,42 @@
         </thead>
         <tbody id="invItemsBody" class="divide-y divide-slate-100"></tbody>
       </table>
-
       <div class="mt-10 flex justify-end">
         <div class="w-72 space-y-3">
           <div class="flex justify-between text-sm font-bold text-slate-500">
-            <span>Taxable Value</span>
-            <span id="invSubtotal">₹0</span>
+            <span>Taxable Value</span><span id="invSubtotal">₹0</span>
           </div>
           <div class="flex justify-between text-sm font-bold text-slate-500">
-            <span>GST (18% Statutory)</span>
-            <span id="invGst">₹0</span>
+            <span>GST (18%)</span><span id="invGst">₹0</span>
           </div>
           <div
             class="flex justify-between text-2xl font-black text-blue-900 border-t-2 border-blue-900 pt-3"
           >
-            <span>Grand Total</span>
-            <span id="invGrandTotal">₹0</span>
+            <span>Grand Total</span><span id="invGrandTotal">₹0</span>
           </div>
         </div>
       </div>
+    </div>
 
+    <div
+      id="itemModal"
+      class="fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden p-6"
+    >
       <div
-        class="mt-24 border-t border-slate-100 pt-8 flex justify-between items-end"
+        class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden animate__animated animate__zoomIn"
       >
-        <div class="text-left">
-          <p class="text-[8px] font-black text-slate-300 uppercase">
-            Authorized Signatory
-          </p>
-          <div class="h-10"></div>
-          <p class="text-[10px] font-bold text-slate-800">
-            For Mishra Industries Ltd.
-          </p>
+        <div
+          class="bg-blue-900 p-6 text-white flex justify-between items-center"
+        >
+          <h3 class="font-black uppercase tracking-widest text-sm">
+            Order Manifest
+          </h3>
+          <button onclick="closeItemModal()" class="text-2xl">&times;</button>
         </div>
-        <p class="text-[9px] text-slate-400 italic">
-          Generated via Mishra Atlas Cloud Fulfillment System
-        </p>
+        <div
+          id="modalContent"
+          class="p-8 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar"
+        ></div>
       </div>
     </div>
 
@@ -266,6 +267,57 @@
         </div>
       </header>
 
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+        <div
+          class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"
+        >
+          <p
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1"
+          >
+            Monthly Revenue
+          </p>
+          <h2 id="monthlyRevenue" class="text-3xl font-black text-blue-900">
+            ₹0
+          </h2>
+          <p
+            id="monthName"
+            class="text-[9px] font-bold text-orange-500 uppercase mt-2"
+          >
+            Current Month
+          </p>
+        </div>
+        <div
+          class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"
+        >
+          <p
+            class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1"
+          >
+            Monthly Orders
+          </p>
+          <h2 id="monthlyOrders" class="text-3xl font-black text-blue-900">
+            0
+          </h2>
+          <p class="text-[9px] font-bold text-emerald-500 uppercase mt-2">
+            Active Volume
+          </p>
+        </div>
+        <div class="bg-blue-900 p-8 rounded-[2.5rem] shadow-xl border-none">
+          <p
+            class="text-[10px] font-black text-blue-300 uppercase tracking-widest mb-1"
+          >
+            Lifetime Revenue
+          </p>
+          <h2 id="lifetimeRevenue" class="text-3xl font-black text-white">
+            ₹0
+          </h2>
+          <p
+            class="text-[9px] font-bold text-orange-400 uppercase mt-2 tracking-widest"
+          >
+            Gross Platform Value
+          </p>
+        </div>
+      </div>
+
       <section
         class="bg-white rounded-[3rem] shadow-xl border border-slate-100 overflow-hidden"
       >
@@ -276,7 +328,7 @@
             >
               <th class="p-8">Order Info</th>
               <th class="p-8">Customer & Address</th>
-              <th class="p-8">Payment Details</th>
+              <th class="p-8">Payment & TXN</th>
               <th class="p-8">Status</th>
               <th class="p-8 text-right">Operations</th>
             </tr>
@@ -294,20 +346,45 @@
       async function loadOrders() {
         const tableBody = document.getElementById("orderTableBody");
         tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
-
         try {
           const res = await fetch(`${API_BASE}/all`);
           allOrders = await res.json();
+          calculateStats(allOrders);
           renderOrders(allOrders);
         } catch (err) {
           tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold">DATABASE OFFLINE</td></tr>`;
         }
       }
 
+      function calculateStats(orders) {
+        const now = new Date();
+        const monthlyData = orders.filter((o) => {
+          const d = new Date(o.createdAt);
+          return (
+            d.getMonth() === now.getMonth() &&
+            d.getFullYear() === now.getFullYear()
+          );
+        });
+        const lifetimeTotal = orders.reduce((sum, o) => sum + o.totalAmount, 0);
+        const monthlyTotal = monthlyData.reduce(
+          (sum, o) => sum + o.totalAmount,
+          0,
+        );
+
+        document.getElementById("monthlyRevenue").innerText =
+          `₹${monthlyTotal.toLocaleString()}`;
+        document.getElementById("monthlyOrders").innerText = monthlyData.length;
+        document.getElementById("lifetimeRevenue").innerText =
+          `₹${lifetimeTotal.toLocaleString()}`;
+        document.getElementById("monthName").innerText = now.toLocaleString(
+          "default",
+          { month: "long", year: "numeric" },
+        );
+      }
+
       function renderOrders(orders) {
         const tableBody = document.getElementById("orderTableBody");
         tableBody.innerHTML = "";
-
         orders.forEach((order) => {
           const orderDate = new Date(order.createdAt).toLocaleDateString(
             "en-IN",
@@ -315,54 +392,108 @@
           );
           const payMode = order.paymentMethod || "COD";
           const statusColors = {
-            Pending: "bg-amber-100 text-amber-600 border-amber-200",
+            Pending:
+              "bg-amber-100 text-amber-600 hover:bg-emerald-500 hover:text-white transition-all cursor-pointer",
             Paid: "bg-emerald-100 text-emerald-600 border-emerald-200",
             Shipped: "bg-blue-100 text-blue-600 border-blue-200",
             Delivered: "bg-slate-100 text-slate-400",
           };
 
           tableBody.innerHTML += `
-            <tr class="hover:bg-slate-50/80 transition-all group">
+            <tr class="hover:bg-slate-50 transition-all">
                 <td class="p-8">
                     <p class="text-[9px] font-black text-slate-300 mb-1">#MI-${order._id.slice(-6).toUpperCase()}</p>
                     <p class="text-[10px] font-black text-blue-900 uppercase">${orderDate}</p>
-                    <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">${order.items.length} Items Ordered</p>
+                    <button onclick="viewItems('${order._id}')" class="mt-2 px-3 py-1 bg-blue-50 text-blue-600 rounded-lg text-[8px] font-black uppercase hover:bg-blue-600 hover:text-white transition-all">
+                       <i class="fas fa-eye mr-1"></i> View Items
+                    </button>
                 </td>
                 <td class="p-8">
                     <p class="font-black text-slate-800 uppercase text-sm">${order.customerName}</p>
-                    <p class="text-[10px] font-bold text-slate-400 mt-1 mb-2"><i class="fas fa-phone-alt mr-1"></i> ${order.phone}</p>
-                    <p class="text-[9px] text-slate-500 bg-slate-100 px-2 py-1 rounded-lg inline-block max-w-[200px] truncate"><i class="fas fa-map-marker-alt mr-1 text-orange-500"></i> ${order.address}</p>
+                    <p class="text-[10px] font-bold text-slate-400 mb-2">${order.phone}</p>
+                    <p class="text-[9px] text-slate-500 bg-slate-100 px-2 py-1 rounded-lg inline-block max-w-[200px] truncate"><i class="fas fa-map-marker-alt mr-1"></i> ${order.address}</p>
                 </td>
                 <td class="p-8">
                     <p class="font-black text-xl text-blue-900 tracking-tighter">₹${order.totalAmount.toLocaleString()}</p>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-600">${payMode}</span>
-                        <span class="text-[8px] font-bold text-slate-300 truncate max-w-[80px]">ID: ${order.transactionId || "N/A"}</span>
+                    <div class="mt-1 flex flex-col gap-0.5">
+                        <span class="text-[8px] font-black uppercase text-blue-600">${payMode}</span>
+                        <span class="text-[9px] font-mono font-bold text-slate-400 break-all leading-tight">TXN: ${order.transactionId || "N/A"}</span>
                     </div>
                 </td>
                 <td class="p-8">
-                    <span class="${statusColors[order.status] || statusColors.Pending} border text-[8px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">${order.status || "Pending"}</span>
+                    <span onclick="togglePaidStatus('${order._id}', '${order.status}')" class="${statusColors[order.status] || statusColors.Pending} border text-[8px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
+                          ${order.status || "Pending"}
+                    </span>
                 </td>
-                <td class="p-8 text-right">
-                    <div class="flex justify-end space-x-2">
-                        <button onclick="generateBill('${order._id}')" class="bg-blue-900 text-white px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg">
-                            <i class="fas fa-file-invoice mr-2"></i> Bill
-                        </button>
-                        <button onclick="deleteOrder('${order._id}')" class="bg-red-50 text-red-400 p-3 rounded-xl hover:bg-red-500 hover:text-white transition-all">
-                            <i class="fas fa-trash-alt text-xs"></i>
-                        </button>
-                    </div>
+                <td class="p-8 text-right flex justify-end space-x-2 pt-14">
+                    <button onclick="shipAndNotify('${order._id}')" class="bg-blue-900 text-white px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg">Ship</button>
+                    <button onclick="generateBill('${order._id}')" class="bg-slate-100 text-blue-900 border border-slate-200 px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-900 hover:text-white transition-all">Bill</button>
+                    <button onclick="deleteOrder('${order._id}')" class="bg-red-50 text-red-400 p-3 rounded-xl hover:bg-red-500 hover:text-white transition-all shadow-sm"><i class="fas fa-trash-alt"></i></button>
                 </td>
             </tr>`;
         });
       }
 
-      // AUTOMATED BILL GENERATOR
+      // CLICK TO UPDATE DATABASE STATUS
+      async function togglePaidStatus(id, currentStatus) {
+        if (currentStatus !== "Pending") return;
+        if (!confirm("Mark this order as PAID?")) return;
+        try {
+          const res = await fetch(`${API_BASE}/status/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "Paid" }),
+          });
+          if (res.ok) loadOrders();
+        } catch (err) {
+          alert("Status Update Failed");
+        }
+      }
+
+      // SHIP & WHATSAPP
+      async function shipAndNotify(id) {
+        const order = allOrders.find((o) => o._id === id);
+        if (!order) return;
+        try {
+          const res = await fetch(`${API_BASE}/status/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "Shipped" }),
+          });
+          if (res.ok) {
+            const orderRef = `#MI-${order._id.slice(-6).toUpperCase()}`;
+            const msg = encodeURIComponent(
+              `*Mishra Industries Shipment*\n\nDear ${order.customerName},\nYour order ${orderRef} has been shipped!\n\nThank you.`,
+            );
+            window.open(`https://wa.me/91${order.phone}?text=${msg}`, "_blank");
+            loadOrders();
+          }
+        } catch (err) {
+          alert("Shipping Sync Failed");
+        }
+      }
+
+      function viewItems(id) {
+        const order = allOrders.find((o) => o._id === id);
+        document.getElementById("modalContent").innerHTML = order.items
+          .map(
+            (i) => `
+              <div class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
+                  <div><p class="font-black text-blue-900 text-sm">${i.name}</p><p class="text-[10px] font-bold text-slate-400 uppercase">Rate: ₹${i.price.toLocaleString()}</p></div>
+                  <div class="text-right"><p class="text-xs font-black text-blue-900">Qty: ${i.quantity}</p><p class="text-xs font-black text-orange-500">₹${(i.price * i.quantity).toLocaleString()}</p></div>
+              </div>`,
+          )
+          .join("");
+        document.getElementById("itemModal").classList.remove("hidden");
+      }
+
+      function closeItemModal() {
+        document.getElementById("itemModal").classList.add("hidden");
+      }
+
       function generateBill(id) {
         const order = allOrders.find((o) => o._id === id);
         if (!order) return;
-
-        // Populate Invoice Data
         document.getElementById("invId").innerText =
           `#MI-${order._id.slice(-6).toUpperCase()}`;
         document.getElementById("invDate").innerText =
@@ -375,70 +506,80 @@
           `Method: ${order.paymentMethod || "COD"}`;
         document.getElementById("invTxnId").innerText =
           `TXN ID: ${order.transactionId || "N/A"}`;
-
         const badge = document.getElementById("invStatusBadge");
         badge.innerText =
-          order.status === "Paid" || order.paymentMethod === "Razorpay" ?
+          order.status === "Paid" || order.status === "Shipped" ?
             "PAYMENT RECEIVED"
           : "PAYMENT DUE";
-        badge.className = `inline-block mt-3 px-4 py-1 rounded-full text-[10px] font-black uppercase ${order.status === "Paid" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`;
+        badge.className = `inline-block mt-3 px-4 py-1 rounded-full text-[10px] font-black uppercase ${order.status === "Paid" || order.status === "Shipped" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`;
 
-        // Calculate Totals
         const subtotal = order.totalAmount / 1.18;
         const gst = order.totalAmount - subtotal;
-
         document.getElementById("invItemsBody").innerHTML = order.items
           .map(
             (item, i) => `
-              <tr>
-                  <td class="p-4 text-xs text-slate-400 font-bold">${i + 1}</td>
-                  <td class="p-4 text-xs font-bold text-slate-800">${item.name}</td>
-                  <td class="p-4 text-xs text-center font-bold text-slate-600">${item.quantity}</td>
-                  <td class="p-4 text-xs text-right text-slate-600">₹${item.price.toLocaleString()}</td>
-                  <td class="p-4 text-xs font-black text-blue-900 text-right">₹${(item.price * item.quantity).toLocaleString()}</td>
-              </tr>
-          `,
+              <tr><td class="p-4 text-xs text-slate-400 font-bold">${i + 1}</td><td class="p-4 text-xs font-bold text-slate-800">${item.name}</td><td class="p-4 text-xs text-center font-bold text-slate-600">${item.quantity}</td><td class="p-4 text-xs text-right text-slate-600">₹${item.price.toLocaleString()}</td><td class="p-4 text-xs font-black text-blue-900 text-right">₹${(item.price * item.quantity).toLocaleString()}</td></tr>`,
           )
           .join("");
-
         document.getElementById("invSubtotal").innerText =
           `₹${subtotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
         document.getElementById("invGst").innerText =
           `₹${gst.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
         document.getElementById("invGrandTotal").innerText =
           `₹${order.totalAmount.toLocaleString()}`;
-
-        // Trigger Print
         const inv = document.getElementById("invoiceContainer");
         inv.classList.remove("hidden");
         window.print();
         inv.classList.add("hidden");
       }
 
+      // CRITICAL FIX: Database Delete Function
       async function deleteOrder(id) {
-        if (!confirm("Permanently delete this order?")) return;
-        const res = await fetch(`${API_BASE}/delete/${id}`, {
-          method: "DELETE",
-        });
-        if (res.ok) loadOrders();
+        if (
+          !confirm(
+            "⚠️ Are you sure you want to permanently delete this order from the database?",
+          )
+        )
+          return;
+        try {
+          const res = await fetch(`${API_BASE}/delete/${id}`, {
+            method: "DELETE",
+          });
+          if (res.ok) {
+            alert("✅ Success: Order removed from Atlas database.");
+            loadOrders(); // Refresh table
+          } else {
+            const err = await res.json();
+            alert("❌ Server Error: " + err.message);
+          }
+        } catch (err) {
+          alert("❌ Network error: Atlas Connection Offline.");
+        }
       }
 
       function downloadOrderReport() {
-        const report = allOrders.map((o) => ({
+        if (allOrders.length === 0) return alert("No data available.");
+        const report = allOrders.map((o, index) => ({
+          "Sl No.": index + 1,
+          "Order ID": `MI-${o._id.slice(-6).toUpperCase()}`,
           Date: new Date(o.createdAt).toLocaleDateString(),
           Customer: o.customerName,
           Phone: o.phone,
           Address: o.address,
-          Total: o.totalAmount,
-          Payment: o.paymentMethod,
-          Status: o.status,
+          Products: o.items
+            .map((i) => `${i.name} (x${i.quantity})`)
+            .join(" | "),
+          Method: o.paymentMethod || "COD",
+          "TXN ID": o.transactionId || "N/A",
+          "Total (₹)": o.totalAmount,
+          Status: o.status || "Pending",
         }));
         const ws = XLSX.utils.json_to_sheet(report);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Orders");
         XLSX.writeFile(
           wb,
-          `Mishra_Orders_${new Date().toISOString().split("T")[0]}.xlsx`,
+          `Mishra_Monthly_Manifest_${new Date().toISOString().split("T")[0]}.xlsx`,
         );
       }
 

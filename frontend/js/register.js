@@ -88,8 +88,8 @@ async function handleRegistration() {
         body: JSON.stringify({
           fullName,
           email,
-          phone,
           password,
+          phone,
           accountType: selectedType,
           businessName: selectedType === "retailer" ? businessName : undefined,
           gstNumber: selectedType === "retailer" ? gstNumber : undefined,
