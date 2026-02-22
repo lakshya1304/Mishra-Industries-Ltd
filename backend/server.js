@@ -2,7 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
-const fs = require("fs"); // Added for directory checking
+const fs = require("fs");
 const morgan = require("morgan");
 let db = require("./config/db.js");
 
@@ -27,7 +27,7 @@ app.use(
   }),
 );
 
-// Body Parser Middleware
+// Body Parser Middleware - Increased limits for Base64 image strings
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
@@ -37,7 +37,7 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true });
   console.log("Created missing 'uploads' directory.");
 }
-// Mapping the URL /uploads to the physical folder
+// Mapping the URL /uploads to the physical folder for manual assets
 app.use("/uploads", express.static(uploadDir));
 
 // Debugging Log
@@ -56,17 +56,16 @@ app.use("/api/admin", require("./routes/adminRoutes"));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
-// This MUST be in your server.js to allow manual files to load
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-const { errorHandler } = require("./middleware/errorMiddleware");
-app.use(errorHandler);
 
 // 7. Root Route for Testing
 app.get("/", (req, res) => {
   res.send("Mishra Industries API is running correctly...");
 });
 
-// 8. Error Handling Middleware
+// 8. Error Handling Middleware (Custom & Global)
+const { errorHandler } = require("./middleware/errorMiddleware");
+
+// Final catch-all error handling
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   res.status(statusCode).json({
@@ -74,6 +73,9 @@ app.use((err, req, res, next) => {
     stack: process.env.NODE_ENV === "production" ? null : err.stack,
   });
 });
+
+// Optional but recommended: Use the specific custom error handler if preferred
+app.use(errorHandler);
 
 let PORT = process.env.PORT || 5000;
 

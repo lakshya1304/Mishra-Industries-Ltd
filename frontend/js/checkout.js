@@ -1,106 +1,98 @@
-const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
+const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com/api";
 
 function loadCheckoutDetails() {
-  // Try both common cart key names to avoid "empty cart" errors
-  const cart =
-    JSON.parse(localStorage.getItem("mishra_cart")) ||
-    JSON.parse(localStorage.getItem("cart")) ||
-    [];
-
+  const cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   const user = JSON.parse(localStorage.getItem("mishraUser"));
   const summary = JSON.parse(localStorage.getItem("mishra_bill_summary"));
 
-  // Only redirect if absolutely no items are found
   if (cart.length === 0) {
-    alert(
-      "⚠️ Connection Error: Your cart appears to be empty. Please return to the shop.",
-    );
-    location.href = "shop.html";
+    alert("⚠️ Your cart is empty. Redirecting to shop.");
+    window.location.href = "shop.html";
     return;
   }
 
-  // Pre-fill shipping info from User profile
-  if (user) {
-    document.getElementById("custName").value =
-      user.fullName || user.name || "";
-    document.getElementById("custPhone").value = user.phone || "";
-    document.getElementById("custAddress").value = user.address || "";
-    document.getElementById("custCity").value = user.city || "";
-    document.getElementById("custPin").value = user.pincode || "";
+  // Mandatory Login Logic
+  if (!user || !user.token) {
+    alert(
+      "🔐 Authentication Required: Please login to Mishra Industries to proceed with payment.",
+    );
+    window.location.href = "login.html";
+    return;
   }
 
-  // Render items into the Bill section
-  document.getElementById("cartCount").innerText = `${cart.length} ITEMS`;
+  // Pre-fill user data
+  document.getElementById("custName").value = user.fullName || user.name || "";
+  document.getElementById("custPhone").value = user.phone || "";
+  document.getElementById("custAddress").value = user.address || "";
+  document.getElementById("custCity").value = user.city || "";
+  document.getElementById("custPin").value = user.pincode || "";
+
   const container = document.getElementById("orderReviewItems");
   container.innerHTML = cart
     .map(
       (item) => `
-    <div class="flex justify-between items-center text-[11px] font-bold bg-white/5 p-3 rounded-xl border border-white/5 hover:bg-white/10 transition-all">
-        <span>${item.quantity}x ${item.name}</span>
+    <div class="flex justify-between items-center text-[11px] font-bold bg-white/5 p-4 rounded-2xl border border-white/5">
+        <div class="flex flex-col">
+          <span>${item.name}</span>
+          <span class="text-[9px] opacity-50 font-normal">Qty: ${item.quantity}</span>
+        </div>
         <span>₹${(item.price * item.quantity).toLocaleString()}</span>
-    </div>
-  `,
+    </div>`,
     )
     .join("");
 
-  // Logic to calculate bill if summary is missing in storage
-  let subtotal = 0;
-  if (summary && summary.subtotal) {
-    subtotal = summary.subtotal;
-  } else {
-    subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  if (summary) {
+    document.getElementById("displaySubtotal").innerText =
+      `₹${summary.subtotal.toLocaleString()}`;
+    document.getElementById("displayGst").innerText =
+      `₹${summary.gst.toLocaleString()}`;
+    document.getElementById("displayTotal").innerText =
+      `₹${summary.total.toLocaleString()}`;
   }
-
-  const gst = subtotal * 0.18;
-  const total = subtotal + gst;
-
-  // Update Display
-  document.getElementById("displaySubtotal").innerText =
-    `₹${subtotal.toLocaleString()}`;
-  document.getElementById("displayGst").innerText = `₹${gst.toLocaleString()}`;
-  document.getElementById("displayTotal").innerText =
-    `₹${total.toLocaleString()}`;
-
-  // Sync back to storage for final order placing
-  localStorage.setItem(
-    "mishra_bill_summary",
-    JSON.stringify({ subtotal, gst, total }),
-  );
-  localStorage.setItem("mishra_cart", JSON.stringify(cart));
 }
 
 async function placeOrder() {
   const cart = JSON.parse(localStorage.getItem("mishra_cart"));
   const summary = JSON.parse(localStorage.getItem("mishra_bill_summary"));
+  const user = JSON.parse(localStorage.getItem("mishraUser"));
+
+  // Check login again just in case
+  if (!user || !user.token) {
+    alert("Session expired. Please login again.");
+    window.location.href = "login.html";
+    return;
+  }
 
   const name = document.getElementById("custName").value.trim();
   const phone = document.getElementById("custPhone").value.trim();
+  const address = document.getElementById("custAddress").value.trim();
   const city = document.getElementById("custCity").value.trim();
   const pin = document.getElementById("custPin").value.trim();
-  const street = document.getElementById("custAddress").value.trim();
 
-  if (!name || !phone || !street || !city || !pin) {
-    return alert("⚠️ Please complete the shipping manifest.");
+  if (!name || !phone || !address) {
+    return alert("⚠️ Please provide full shipping details.");
   }
 
-  // Package order for Payment Gateway
-  const pendingOrder = {
+  const fullAddress = `${address}, ${city} - ${pin}`;
+
+  // Pack order for Payment Page AND Backend Sync
+  const orderData = {
     customerName: name,
     phone: phone,
-    address: `${street}, ${city} - ${pin}`,
+    address: fullAddress,
     items: cart,
     totalAmount: summary.total,
-    gstAmount: summary.gst,
+    userId: user._id, // Connected to User ID
     status: "Payment Pending",
   };
 
-  localStorage.setItem("pending_mishra_order", JSON.stringify(pendingOrder));
+  localStorage.setItem("pending_mishra_order", JSON.stringify(orderData));
 
-  // Visual feedback before redirect
+  // Show transition overlay and redirect
   document.getElementById("paymentSuccessOverlay").classList.remove("hidden");
   setTimeout(() => {
-    location.href = "payment.html";
-  }, 1500);
+    window.location.href = "payment.html";
+  }, 1200);
 }
 
 document.addEventListener("DOMContentLoaded", loadCheckoutDetails);

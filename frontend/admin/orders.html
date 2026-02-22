@@ -22,11 +22,158 @@
         background: #1e3a8a;
         border-radius: 10px;
       }
+
+      /* Professional Invoice Print Layout */
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #invoiceContainer,
+        #invoiceContainer * {
+          visibility: visible;
+        }
+        #invoiceContainer {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          padding: 40px;
+          background: white !important;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
     </style>
   </head>
   <body class="bg-slate-50 flex min-h-screen font-sans custom-scrollbar">
+    <div
+      id="invoiceContainer"
+      class="hidden bg-white p-12 font-sans border border-slate-200"
+    >
+      <div
+        class="flex justify-between items-start border-b-4 border-blue-900 pb-8"
+      >
+        <div>
+          <h1 class="text-4xl font-black text-blue-900">MISHRA INDUSTRIES</h1>
+          <p
+            class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1"
+          >
+            Official Industrial Atlas Network
+          </p>
+          <p class="text-xs mt-4 text-slate-600 font-bold">
+            GSTIN: 20ABCDE1234F1Z5
+          </p>
+        </div>
+        <div class="text-right">
+          <h2 class="text-2xl font-black text-slate-800 uppercase">
+            Tax Invoice
+          </h2>
+          <p id="invId" class="text-blue-600 font-bold">#MI-000000</p>
+          <p id="invDate" class="text-xs text-slate-500 mt-1">
+            Date: --/--/----
+          </p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-12 my-10">
+        <div>
+          <p class="text-[10px] font-black uppercase text-blue-900 mb-2">
+            Customer Details:
+          </p>
+          <p
+            id="invCustName"
+            class="font-black text-lg text-slate-800 uppercase"
+          >
+            --
+          </p>
+          <p id="invCustPhone" class="text-sm text-slate-600 font-bold">--</p>
+          <p
+            id="invCustAddress"
+            class="text-sm text-slate-500 mt-2 italic max-w-xs"
+          >
+            --
+          </p>
+        </div>
+        <div class="text-right">
+          <p class="text-[10px] font-black uppercase text-blue-900 mb-2">
+            Payment Summary:
+          </p>
+          <p id="invPayMethod" class="font-bold text-slate-800 uppercase">
+            Method: --
+          </p>
+          <p id="invTxnId" class="text-[10px] text-slate-400 font-mono mt-1">
+            TXN: --
+          </p>
+          <div
+            id="invStatusBadge"
+            class="inline-block mt-3 px-4 py-1 rounded-full text-[10px] font-black uppercase"
+          >
+            --
+          </div>
+        </div>
+      </div>
+
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-blue-900 text-white">
+            <th class="p-4 text-[10px] uppercase font-black">Sl.</th>
+            <th class="p-4 text-[10px] uppercase font-black">
+              Item Description
+            </th>
+            <th class="p-4 text-[10px] uppercase font-black text-center">
+              Qty
+            </th>
+            <th class="p-4 text-[10px] uppercase font-black text-right">
+              Price
+            </th>
+            <th class="p-4 text-[10px] uppercase font-black text-right">
+              Total
+            </th>
+          </tr>
+        </thead>
+        <tbody id="invItemsBody" class="divide-y divide-slate-100"></tbody>
+      </table>
+
+      <div class="mt-10 flex justify-end">
+        <div class="w-72 space-y-3">
+          <div class="flex justify-between text-sm font-bold text-slate-500">
+            <span>Taxable Value</span>
+            <span id="invSubtotal">₹0</span>
+          </div>
+          <div class="flex justify-between text-sm font-bold text-slate-500">
+            <span>GST (18% Statutory)</span>
+            <span id="invGst">₹0</span>
+          </div>
+          <div
+            class="flex justify-between text-2xl font-black text-blue-900 border-t-2 border-blue-900 pt-3"
+          >
+            <span>Grand Total</span>
+            <span id="invGrandTotal">₹0</span>
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="mt-24 border-t border-slate-100 pt-8 flex justify-between items-end"
+      >
+        <div class="text-left">
+          <p class="text-[8px] font-black text-slate-300 uppercase">
+            Authorized Signatory
+          </p>
+          <div class="h-10"></div>
+          <p class="text-[10px] font-bold text-slate-800">
+            For Mishra Industries Ltd.
+          </p>
+        </div>
+        <p class="text-[9px] text-slate-400 italic">
+          Generated via Mishra Atlas Cloud Fulfillment System
+        </p>
+      </div>
+    </div>
+
     <aside
-      class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col z-50"
+      class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col z-50 no-print"
     >
       <div class="flex items-center space-x-3 mb-12">
         <h2 class="text-2xl font-bold tracking-tighter">
@@ -89,7 +236,7 @@
       </a>
     </aside>
 
-    <main class="flex-1 p-12 overflow-y-auto">
+    <main class="flex-1 p-12 overflow-y-auto no-print">
       <header class="flex justify-between items-end mb-12">
         <div>
           <h1
@@ -100,7 +247,7 @@
           <p
             class="text-slate-400 font-bold text-xs mt-2 uppercase tracking-[0.3em]"
           >
-            Live Order Stream from Mishra Atlas
+            Live Order & Billing Stream
           </p>
         </div>
         <div class="flex space-x-4">
@@ -108,20 +255,8 @@
             onclick="downloadOrderReport()"
             class="bg-emerald-600 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl"
           >
-            <i class="fas fa-file-excel mr-2"></i> Export Manifest
+            <i class="fas fa-file-excel mr-2"></i> Manifest
           </button>
-          <div class="relative">
-            <i
-              class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"
-            ></i>
-            <input
-              type="text"
-              id="orderSearch"
-              placeholder="Search orders..."
-              oninput="filterOrders()"
-              class="bg-white border-none shadow-sm pl-12 pr-6 py-4 rounded-2xl text-xs font-bold w-64 focus:ring-2 focus:ring-orange-500 transition-all"
-            />
-          </div>
           <button
             onclick="loadOrders()"
             class="bg-white p-4 rounded-2xl shadow-sm hover:text-orange-500 transition-all border border-slate-100"
@@ -131,79 +266,23 @@
         </div>
       </header>
 
-      <section class="mb-16 animate__animated animate__fadeIn">
-        <div class="flex items-center gap-4 mb-6">
-          <div
-            class="w-10 h-10 bg-blue-900 text-white rounded-xl flex items-center justify-center shadow-lg"
-          >
-            <i class="fas fa-shopping-bag"></i>
-          </div>
-          <h2
-            class="text-2xl font-black text-blue-900 uppercase tracking-tight"
-          >
-            Active Customer Orders
-          </h2>
-        </div>
-        <div
-          class="bg-white rounded-[2.5rem] shadow-xl border border-slate-100 overflow-hidden"
-        >
-          <table class="w-full text-left">
-            <thead class="bg-slate-50 border-b">
-              <tr
-                class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
-              >
-                <th class="p-8">Reference / Customer</th>
-                <th class="p-8">Manifest Details</th>
-                <th class="p-8">Billing</th>
-                <th class="p-8">Status</th>
-                <th class="p-8 text-right">Operations</th>
-              </tr>
-            </thead>
-            <tbody
-              id="regularOrderTableBody"
-              class="divide-y divide-slate-50"
-            ></tbody>
-          </table>
-        </div>
-      </section>
-
       <section
-        class="animate__animated animate__fadeIn"
-        style="animation-delay: 0.2s"
+        class="bg-white rounded-[3rem] shadow-xl border border-slate-100 overflow-hidden"
       >
-        <div class="flex items-center gap-4 mb-6">
-          <div
-            class="w-10 h-10 bg-orange-500 text-white rounded-xl flex items-center justify-center shadow-lg"
-          >
-            <i class="fas fa-file-contract"></i>
-          </div>
-          <h2
-            class="text-2xl font-black text-orange-500 uppercase tracking-tight"
-          >
-            Bulk Quotation Requests
-          </h2>
-        </div>
-        <div
-          class="bg-white rounded-[2.5rem] shadow-xl border border-orange-100 overflow-hidden"
-        >
-          <table class="w-full text-left">
-            <thead class="bg-orange-50/50 border-b border-orange-100">
-              <tr
-                class="text-[10px] font-black text-orange-400 uppercase tracking-widest"
-              >
-                <th class="p-8">REQ Reference / Company</th>
-                <th class="p-8">Project Requirements</th>
-                <th class="p-8">Estimated Qty</th>
-                <th class="p-8">Status</th>
-                <th class="p-8 text-right">Operations</th>
-              </tr>
-            </thead>
-            <tbody
-              id="bulkQuotationTableBody"
-              class="divide-y divide-orange-50"
-            ></tbody>
-          </table>
-        </div>
+        <table class="w-full text-left border-collapse">
+          <thead class="bg-slate-50 border-b">
+            <tr
+              class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+            >
+              <th class="p-8">Order Info</th>
+              <th class="p-8">Customer & Address</th>
+              <th class="p-8">Payment Details</th>
+              <th class="p-8">Status</th>
+              <th class="p-8 text-right">Operations</th>
+            </tr>
+          </thead>
+          <tbody id="orderTableBody" class="divide-y divide-slate-50"></tbody>
+        </table>
       </section>
     </main>
 
@@ -213,149 +292,153 @@
       let allOrders = [];
 
       async function loadOrders() {
-        const regTable = document.getElementById("regularOrderTableBody");
-        const bulkTable = document.getElementById("bulkQuotationTableBody");
-        const loader = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
-        regTable.innerHTML = loader;
-        bulkTable.innerHTML = loader;
+        const tableBody = document.getElementById("orderTableBody");
+        tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
 
         try {
-          const response = await fetch(`${API_BASE}/all`);
-          allOrders = await response.json();
+          const res = await fetch(`${API_BASE}/all`);
+          allOrders = await res.json();
           renderOrders(allOrders);
         } catch (err) {
-          console.error("Order Fetch Failed:", err);
-          regTable.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold">Atlas Connection Offline</td></tr>`;
+          tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold">DATABASE OFFLINE</td></tr>`;
         }
       }
 
       function renderOrders(orders) {
-        const regTable = document.getElementById("regularOrderTableBody");
-        const bulkTable = document.getElementById("bulkQuotationTableBody");
-        regTable.innerHTML = "";
-        bulkTable.innerHTML = "";
+        const tableBody = document.getElementById("orderTableBody");
+        tableBody.innerHTML = "";
 
-        orders.forEach((order, index) => {
-          const isQuotation = order.customerName.includes("(QUOTATION)");
-          const statusMap = {
-            Pending: "bg-orange-100 text-orange-600 border-orange-200",
+        orders.forEach((order) => {
+          const orderDate = new Date(order.createdAt).toLocaleDateString(
+            "en-IN",
+            { day: "2-digit", month: "short", year: "numeric" },
+          );
+          const payMode = order.paymentMethod || "COD";
+          const statusColors = {
+            Pending: "bg-amber-100 text-amber-600 border-amber-200",
+            Paid: "bg-emerald-100 text-emerald-600 border-emerald-200",
             Shipped: "bg-blue-100 text-blue-600 border-blue-200",
-            Delivered: "bg-green-100 text-green-600 border-green-200",
+            Delivered: "bg-slate-100 text-slate-400",
           };
-          const currentStatusClass =
-            statusMap[order.status] || statusMap["Pending"];
-          const itemList = order.items
-            .map((i) => `${i.name} (x${i.quantity || 1})`)
-            .join(", ");
 
-          const rowHtml = `
-            <tr class="hover:bg-slate-50 transition-all">
+          tableBody.innerHTML += `
+            <tr class="hover:bg-slate-50/80 transition-all group">
                 <td class="p-8">
-                    <p class="text-[10px] font-black text-slate-300 mb-1">#${isQuotation ? "REQ" : "MI"}-${order._id.slice(-6).toUpperCase()}</p>
-                    <p class="font-black text-slate-800 uppercase tracking-tight">${order.customerName}</p>
-                    <p class="text-[10px] font-bold text-slate-400 mt-1"><i class="fas fa-id-card mr-1"></i> ${order.phone}</p>
+                    <p class="text-[9px] font-black text-slate-300 mb-1">#MI-${order._id.slice(-6).toUpperCase()}</p>
+                    <p class="text-[10px] font-black text-blue-900 uppercase">${orderDate}</p>
+                    <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">${order.items.length} Items Ordered</p>
                 </td>
                 <td class="p-8">
-                    <div class="max-w-xs">
-                        <p class="text-xs font-bold text-slate-600 truncate">${itemList}</p>
-                        <p class="text-[9px] text-slate-400 mt-2 font-medium italic">${order.address}</p>
+                    <p class="font-black text-slate-800 uppercase text-sm">${order.customerName}</p>
+                    <p class="text-[10px] font-bold text-slate-400 mt-1 mb-2"><i class="fas fa-phone-alt mr-1"></i> ${order.phone}</p>
+                    <p class="text-[9px] text-slate-500 bg-slate-100 px-2 py-1 rounded-lg inline-block max-w-[200px] truncate"><i class="fas fa-map-marker-alt mr-1 text-orange-500"></i> ${order.address}</p>
+                </td>
+                <td class="p-8">
+                    <p class="font-black text-xl text-blue-900 tracking-tighter">₹${order.totalAmount.toLocaleString()}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-600">${payMode}</span>
+                        <span class="text-[8px] font-bold text-slate-300 truncate max-w-[80px]">ID: ${order.transactionId || "N/A"}</span>
                     </div>
                 </td>
                 <td class="p-8">
-                    <p class="font-black text-xl ${isQuotation ? "text-orange-500" : "text-blue-900"} tracking-tighter">${isQuotation ? "Price Required" : "₹" + order.totalAmount.toLocaleString()}</p>
-                    <p class="text-[9px] font-black text-slate-300 uppercase">${isQuotation ? "Bulk Inquiry" : (order.paymentMethod || "COD") + " Verified"}</p>
-                </td>
-                <td class="p-8">
-                    <span class="${currentStatusClass} border text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest">${order.status || "Pending"}</span>
+                    <span class="${statusColors[order.status] || statusColors.Pending} border text-[8px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">${order.status || "Pending"}</span>
                 </td>
                 <td class="p-8 text-right">
                     <div class="flex justify-end space-x-2">
-                        ${
-                          isQuotation ?
-                            `
-                            <button onclick="prepareQuote('${order._id}', '${order.customerName}')" class="bg-orange-500 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-blue-900 transition-all shadow-lg">Send Quote</button>
-                        `
-                          : `
-                            <button onclick="updateStatus('${order._id}', 'Shipped')" class="bg-blue-900 text-white px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-orange-500 transition-all shadow-lg">Ship</button>
-                            <button onclick="updateStatus('${order._id}', 'Delivered')" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-green-500 hover:text-white transition-all">Done</button>
-                        `
-                        }
-                        <button onclick="deleteRecord('${order._id}')" class="bg-red-50 text-red-400 p-2 rounded-xl hover:bg-red-500 hover:text-white transition-all"><i class="fas fa-trash-alt text-xs"></i></button>
+                        <button onclick="generateBill('${order._id}')" class="bg-blue-900 text-white px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg">
+                            <i class="fas fa-file-invoice mr-2"></i> Bill
+                        </button>
+                        <button onclick="deleteOrder('${order._id}')" class="bg-red-50 text-red-400 p-3 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                            <i class="fas fa-trash-alt text-xs"></i>
+                        </button>
                     </div>
                 </td>
             </tr>`;
-
-          if (isQuotation) bulkTable.innerHTML += rowHtml;
-          else regTable.innerHTML += rowHtml;
         });
       }
 
-      async function updateStatus(id, newStatus) {
-        try {
-          const res = await fetch(`${API_BASE}/status/${id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ status: newStatus }),
-          });
-          if (res.ok) loadOrders();
-        } catch (err) {
-          alert("Update Failed");
-        }
+      // AUTOMATED BILL GENERATOR
+      function generateBill(id) {
+        const order = allOrders.find((o) => o._id === id);
+        if (!order) return;
+
+        // Populate Invoice Data
+        document.getElementById("invId").innerText =
+          `#MI-${order._id.slice(-6).toUpperCase()}`;
+        document.getElementById("invDate").innerText =
+          `Date: ${new Date(order.createdAt).toLocaleDateString("en-GB")}`;
+        document.getElementById("invCustName").innerText = order.customerName;
+        document.getElementById("invCustPhone").innerText =
+          `Phone: ${order.phone}`;
+        document.getElementById("invCustAddress").innerText = order.address;
+        document.getElementById("invPayMethod").innerText =
+          `Method: ${order.paymentMethod || "COD"}`;
+        document.getElementById("invTxnId").innerText =
+          `TXN ID: ${order.transactionId || "N/A"}`;
+
+        const badge = document.getElementById("invStatusBadge");
+        badge.innerText =
+          order.status === "Paid" || order.paymentMethod === "Razorpay" ?
+            "PAYMENT RECEIVED"
+          : "PAYMENT DUE";
+        badge.className = `inline-block mt-3 px-4 py-1 rounded-full text-[10px] font-black uppercase ${order.status === "Paid" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`;
+
+        // Calculate Totals
+        const subtotal = order.totalAmount / 1.18;
+        const gst = order.totalAmount - subtotal;
+
+        document.getElementById("invItemsBody").innerHTML = order.items
+          .map(
+            (item, i) => `
+              <tr>
+                  <td class="p-4 text-xs text-slate-400 font-bold">${i + 1}</td>
+                  <td class="p-4 text-xs font-bold text-slate-800">${item.name}</td>
+                  <td class="p-4 text-xs text-center font-bold text-slate-600">${item.quantity}</td>
+                  <td class="p-4 text-xs text-right text-slate-600">₹${item.price.toLocaleString()}</td>
+                  <td class="p-4 text-xs font-black text-blue-900 text-right">₹${(item.price * item.quantity).toLocaleString()}</td>
+              </tr>
+          `,
+          )
+          .join("");
+
+        document.getElementById("invSubtotal").innerText =
+          `₹${subtotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+        document.getElementById("invGst").innerText =
+          `₹${gst.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+        document.getElementById("invGrandTotal").innerText =
+          `₹${order.totalAmount.toLocaleString()}`;
+
+        // Trigger Print
+        const inv = document.getElementById("invoiceContainer");
+        inv.classList.remove("hidden");
+        window.print();
+        inv.classList.add("hidden");
       }
 
-      async function deleteRecord(id) {
-        if (!confirm("Permanently remove this record?")) return;
-        try {
-          const res = await fetch(`${API_BASE}/delete/${id}`, {
-            method: "DELETE",
-          });
-          if (res.ok) loadOrders();
-        } catch (err) {
-          alert("Delete Failed");
-        }
-      }
-
-      function filterOrders() {
-        const term = document.getElementById("orderSearch").value.toLowerCase();
-        const filtered = allOrders.filter(
-          (o) =>
-            o.customerName.toLowerCase().includes(term) ||
-            o._id.toLowerCase().includes(term),
-        );
-        renderOrders(filtered);
-      }
-
-      function prepareQuote(orderId, companyName) {
-        const cleanName = companyName.replace("(QUOTATION)", "").trim();
-        const subject = encodeURIComponent(
-          `Price Quotation - Mishra Industries - REQ:${orderId.slice(-6).toUpperCase()}`,
-        );
-        const body = encodeURIComponent(
-          `Dear ${cleanName},\n\nThank you for your bulk enquiry.\n\nRegards,\nMishra Industries Ltd.`,
-        );
-        window.location.href = `mailto:?subject=${subject}&body=${body}`;
+      async function deleteOrder(id) {
+        if (!confirm("Permanently delete this order?")) return;
+        const res = await fetch(`${API_BASE}/delete/${id}`, {
+          method: "DELETE",
+        });
+        if (res.ok) loadOrders();
       }
 
       function downloadOrderReport() {
-        if (allOrders.length === 0) return alert("No data to export.");
-        const reportData = allOrders.map((order, index) => ({
-          "Sl No.": index + 1,
-          Type:
-            order.customerName.includes("(QUOTATION)") ? "BULK REQ" : "SALE",
-          Reference: `${order.customerName.includes("(QUOTATION)") ? "REQ" : "MI"}-${order._id.slice(-6).toUpperCase()}`,
-          Customer: order.customerName,
-          "Phone/GST": order.phone,
-          Items: order.items.map((i) => i.name).join(", "),
-          Amount: order.totalAmount,
-          Status: order.status,
-          Date: new Date(order.createdAt).toLocaleString(),
+        const report = allOrders.map((o) => ({
+          Date: new Date(o.createdAt).toLocaleDateString(),
+          Customer: o.customerName,
+          Phone: o.phone,
+          Address: o.address,
+          Total: o.totalAmount,
+          Payment: o.paymentMethod,
+          Status: o.status,
         }));
-        const worksheet = XLSX.utils.json_to_sheet(reportData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Mishra_Fulfillment");
+        const ws = XLSX.utils.json_to_sheet(report);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Orders");
         XLSX.writeFile(
-          workbook,
-          `Mishra_Industries_Report_${new Date().toISOString().split("T")[0]}.xlsx`,
+          wb,
+          `Mishra_Orders_${new Date().toISOString().split("T")[0]}.xlsx`,
         );
       }
 

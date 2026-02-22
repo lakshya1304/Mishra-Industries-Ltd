@@ -1,10 +1,9 @@
-let allUsersData = []; // Pure data ko yahan store karenge
+let allUsersData = [];
+const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com/api";
 
 async function fetchUsers() {
   try {
-    const response = await fetch(
-      "https://mishra-industries-ltd-yjfr.onrender.com/api/auth/all-users",
-    );
+    const response = await fetch(`${API_BASE}/auth/all-users`);
     allUsersData = await response.json();
     renderUserLists(allUsersData);
   } catch (err) {
@@ -35,7 +34,7 @@ function renderUserLists(users) {
                     <div class="space-y-1 w-full">
                         <div class="flex items-center gap-2">
                             <h4 class="font-black text-blue-900 text-sm uppercase tracking-tight">${user.fullName}</h4>
-                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
                         </div>
                         <p class="text-[10px] text-gray-400 font-bold flex items-center gap-1">
                             <i class="fas fa-envelope text-blue-300 w-3"></i> ${user.email}
@@ -57,6 +56,12 @@ function renderUserLists(users) {
                             </div>`
                           : ""
                         }
+                        
+                        <div class="mt-4 flex gap-2">
+                            <button onclick="viewUserOrders('${user._id}', '${user.fullName}')" class="px-4 py-1.5 bg-white text-blue-900 border border-blue-100 rounded-lg text-[9px] font-black uppercase hover:bg-blue-900 hover:text-white transition-all shadow-sm">
+                                <i class="fas fa-receipt mr-1"></i> View Orders
+                            </button>
+                        </div>
                     </div>
                     <div class="flex flex-col items-end gap-2 ml-2">
                         <span class="text-[9px] font-black text-gray-300 uppercase bg-white px-2 py-1 rounded-lg border border-gray-100">ID: ${user._id.slice(-4)}</span>
@@ -75,7 +80,28 @@ function renderUserLists(users) {
   retailerCount.innerText = `${rCount} Total`;
 }
 
-// REAL-TIME SEARCH
+// Order History Sync
+async function viewUserOrders(userId, userName) {
+  try {
+    const response = await fetch(`${API_BASE}/orders/all`);
+    const allOrders = await response.json();
+    const userOrders = allOrders.filter(
+      (o) => o.user && (o.user._id === userId || o.user === userId),
+    );
+
+    if (userOrders.length === 0) {
+      alert(`${userName} has not placed any orders yet.`);
+    } else {
+      const totalSpent = userOrders.reduce((sum, o) => sum + o.totalAmount, 0);
+      alert(
+        `History for ${userName}:\n- Total Orders: ${userOrders.length}\n- Lifetime Value: ₹${totalSpent.toLocaleString()}\n\nPlease check the "Orders List" page for manifest details.`,
+      );
+    }
+  } catch (err) {
+    alert("Error fetching user order history.");
+  }
+}
+
 function filterUsers() {
   const query = document.getElementById("directorySearch").value.toLowerCase();
   const filtered = allUsersData.filter(
@@ -87,12 +113,10 @@ function filterUsers() {
   renderUserLists(filtered);
 }
 
-// EXPORT TO EXCEL WITH SL NO.
 function exportToExcel() {
   if (allUsersData.length === 0) return alert("No data to export.");
-
   const excelData = allUsersData.map((user, index) => ({
-    "Sl No.": index + 1, // Serial Number
+    "Sl No.": index + 1,
     "Full Name": user.fullName,
     Email: user.email,
     Phone: user.phone || "N/A",
@@ -100,26 +124,23 @@ function exportToExcel() {
     Business: user.businessName || "Individual",
     GST: user.gstNumber || "N/A",
   }));
-
   const worksheet = XLSX.utils.json_to_sheet(excelData);
   const workbook = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(workbook, worksheet, "Mishra_Users");
   XLSX.writeFile(
     workbook,
-    `Mishra_Database_${new Date().toISOString().slice(0, 10)}.xlsx`,
+    `Mishra_User_Database_${new Date().toISOString().slice(0, 10)}.xlsx`,
   );
 }
 
 async function deleteUser(userId, userName) {
-  if (!confirm(`Delete ${userName}?`)) return;
+  if (!confirm(`Delete ${userName}? This will remove all associated access.`))
+    return;
   try {
-    const response = await fetch(
-      `https://mishra-industries-ltd-yjfr.onrender.com/api/auth/delete-user/${userId}`,
-      { method: "DELETE" },
-    );
-    if (response.ok) {
-      fetchUsers();
-    }
+    const response = await fetch(`${API_BASE}/auth/delete-user/${userId}`, {
+      method: "DELETE",
+    });
+    if (response.ok) fetchUsers();
   } catch (err) {
     console.error(err);
   }
@@ -127,14 +148,11 @@ async function deleteUser(userId, userName) {
 
 async function deleteAllUsers() {
   if (
-    confirm("Triple Warning: Delete ALL users?") &&
-    confirm("Are you sure?")
+    confirm("三重 Triple Warning: Delete ALL users?") &&
+    confirm("Are you sure? This cannot be undone.")
   ) {
     try {
-      await fetch(
-        `https://mishra-industries-ltd-yjfr.onrender.com/api/auth/delete-all-users`,
-        { method: "DELETE" },
-      );
+      await fetch(`${API_BASE}/auth/delete-all-users`, { method: "DELETE" });
       fetchUsers();
     } catch (err) {
       console.error(err);
@@ -143,4 +161,3 @@ async function deleteAllUsers() {
 }
 
 document.addEventListener("DOMContentLoaded", fetchUsers);
-setInterval(fetchUsers, 30000);

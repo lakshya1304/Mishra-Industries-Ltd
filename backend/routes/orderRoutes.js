@@ -1,24 +1,21 @@
 const express = require("express");
 const router = express.Router();
 const Order = require("../models/Order");
-// CRITICAL FIX: Added the missing protect import
 const { protect } = require("../middleware/authMiddleware");
 
-/**
- * POST: Add new verified order to Atlas
- * Now supports paymentMethod and Confirmed status from payment.js
- */
-router.post("/add", async (req, res) => {
+// POST: Add new verified order to Atlas
+router.post("/add", protect, async (req, res) => {
   try {
-    // Standardizing the order data with timestamps
     const newOrder = new Order({
+      user: req.user._id,
       customerName: req.body.customerName,
       phone: req.body.phone,
       address: req.body.address,
       items: req.body.items,
       totalAmount: req.body.totalAmount,
-      gstAmount: req.body.gstAmount,
+      gstAmount: req.body.gstAmount || 0,
       paymentMethod: req.body.paymentMethod || "Not Specified",
+      transactionId: req.body.transactionId || "N/A",
       status: req.body.status || "Pending",
     });
 
@@ -29,13 +26,9 @@ router.post("/add", async (req, res) => {
   }
 });
 
-/**
- * GET: Fetch all orders for the Admin Dashboard
- * Uses createdAt descending so newest orders appear first in the Admin Table
- */
+// GET: Fetch all orders for the Admin Dashboard
 router.get("/all", async (req, res) => {
   try {
-    // Changed orderDate to createdAt to match standard Mongoose timestamps
     const orders = await Order.find().sort({ createdAt: -1 });
     res.json(orders);
   } catch (err) {
@@ -43,10 +36,7 @@ router.get("/all", async (req, res) => {
   }
 });
 
-/**
- * PUT: Update Order Status (e.g., Pending to Shipped/Delivered)
- * Allows the Admin Dashboard to push orders through the fulfillment pipeline
- */
+// PUT: Update Order Status
 router.put("/status/:id", async (req, res) => {
   try {
     const updatedOrder = await Order.findByIdAndUpdate(
@@ -55,19 +45,17 @@ router.put("/status/:id", async (req, res) => {
       { new: true },
     );
 
-    if (!updatedOrder) {
+    if (!updatedOrder)
       return res
         .status(404)
         .json({ success: false, message: "Order not found" });
-    }
-
     res.json(updatedOrder);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-// GET: Unified Analytics for System Console
+// GET: Unified Analytics
 router.get("/stats/total-sales", async (req, res) => {
   try {
     const stats = await Order.aggregate([
@@ -75,30 +63,22 @@ router.get("/stats/total-sales", async (req, res) => {
         $group: {
           _id: null,
           totalRevenue: { $sum: "$totalAmount" },
-          totalOrders: { $count: {} },
+          totalOrders: { $sum: 1 },
         },
       },
     ]);
-
-    // If no orders exist yet, return zeros instead of empty array
     const result =
       stats.length > 0 ? stats[0] : { totalRevenue: 0, totalOrders: 0 };
-
-    res.json({
-      success: true,
-      totalRevenue: result.totalRevenue,
-      totalOrders: result.totalOrders,
-    });
+    res.json({ success: true, ...result });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// GET /api/orders/user-orders
+// GET: Fetch current user's orders
 router.get("/user-orders", protect, async (req, res) => {
   try {
-    // Only finds orders matching req.user.id (from JWT)
-    const orders = await Order.find({ user: req.user.id }).sort({
+    const orders = await Order.find({ user: req.user._id }).sort({
       createdAt: -1,
     });
     res.json(orders);

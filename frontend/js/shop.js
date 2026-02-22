@@ -106,29 +106,24 @@ async function renderShop() {
   }
 }
 
-// FIXED: Robust filterByBrand function with active blue background logic
 function filterByBrand(button) {
   currentBrand = button.dataset.brand;
-
   const chips = document.querySelectorAll(".filter-chip");
-
   chips.forEach((chip) => {
     chip.classList.remove("bg-blue-900", "text-white", "active");
     chip.classList.add("text-slate-600", "border-slate-100");
   });
-
   button.classList.remove("text-slate-600", "border-slate-100");
   button.classList.add("bg-blue-900", "text-white", "active");
-
   renderShop();
 }
+
 function startVoiceSearch() {
   const micIcon = document.getElementById("micIcon");
   const searchInput = document.getElementById("searchInput");
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SpeechRecognition) return alert("Browser not supported");
-
   const recognition = new SpeechRecognition();
   recognition.lang = "en-IN";
   recognition.onstart = () =>
@@ -159,6 +154,7 @@ function handlePhotoSearch(event) {
 
 document.addEventListener("DOMContentLoaded", () => {
   renderShop();
+  updateCartDrawer(); // Initialize count on load
   document.getElementById("priceRange").addEventListener("input", renderShop);
   document.getElementById("sortSelect").addEventListener("change", renderShop);
   document.getElementById("searchInput").addEventListener("input", renderShop);
@@ -178,8 +174,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+// FIXED: addToCart no longer calls toggleCart() automatically
 function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
-  let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  let cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   const existingItem = cart.find((item) => item.name === name);
 
   if (existingItem) {
@@ -194,111 +191,95 @@ function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
     });
   }
 
-  localStorage.setItem("mishraCart", JSON.stringify(cart));
-  if (document.getElementById("cartCount")) {
-    document.getElementById("cartCount").innerText = cart.reduce(
-      (sum, item) => sum + item.quantity,
-      0,
-    );
-  }
- updateCartDrawer();
-toggleCart();
+  localStorage.setItem("mishra_cart", JSON.stringify(cart));
+  updateCartDrawer(); // Syncs counts instantly
 }
 
 function toggleCart() {
   const drawer = document.getElementById("cartDrawer");
-  drawer.classList.toggle("invisible");
-  drawer.querySelector(".cart-drawer").classList.toggle("open");
-  updateCartDrawer();
+  const isVisible = !drawer.classList.contains("invisible");
+
+  if (isVisible) {
+    drawer.classList.add("invisible");
+    drawer.querySelector(".cart-drawer").classList.remove("open");
+  } else {
+    drawer.classList.remove("invisible");
+    drawer.querySelector(".cart-drawer").classList.add("open");
+    updateCartDrawer();
+  }
 }
 
+// FIXED: Correctly updates the total calculation and navbar bubble
 function updateCartDrawer() {
-  const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
-
-  const cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  const cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   const cartList = document.getElementById("cartItemsList");
-  const cartTotal = document.getElementById("cartTotal");
-  const cartCount = document.getElementById("cartCount");
+  const cartTotalDisplay = document.getElementById("cartTotal");
+  const navbarCartCount = document.getElementById("cartCount");
 
-  cartList.innerHTML = "";
+  // Calculate Subtotal & Total Items
+  let total = 0;
+  let totalQty = 0;
+  cart.forEach((item) => {
+    total += item.price * item.quantity;
+    totalQty += item.quantity;
+  });
+
+  // Update Navbar Bubble
+  if (navbarCartCount) navbarCartCount.innerText = totalQty;
+  if (cartTotalDisplay)
+    cartTotalDisplay.innerText = `₹${total.toLocaleString()}`;
+
+  if (!cartList) return;
 
   if (cart.length === 0) {
     cartList.innerHTML = `
       <div class="text-center py-20 text-slate-400 font-bold uppercase text-[10px] tracking-widest">
         Cart is empty
       </div>`;
-    cartTotal.innerText = "₹0";
-    cartCount.innerText = "0";
     return;
   }
 
-  let total = 0;
-  let totalQty = 0;
-
+  cartList.innerHTML = "";
   cart.forEach((item, index) => {
-
-    // FIX IMAGE PATH
     let imgSrc = item.image;
     if (!imgSrc.startsWith("http") && !imgSrc.startsWith("data:")) {
       imgSrc = API_BASE + (imgSrc.startsWith("/") ? imgSrc : "/" + imgSrc);
     }
 
     const itemTotal = item.price * item.quantity;
-    total += itemTotal;
-    totalQty += item.quantity;
 
     cartList.innerHTML += `
       <div class="flex items-center space-x-4 border-b pb-4">
-        
-        <img src="${imgSrc}" 
-             onerror="this.src='./images/logo.jpeg'"
-             class="w-16 h-16 object-contain rounded-xl bg-slate-50">
-
+        <img src="${imgSrc}" onerror="this.src='./images/logo.jpeg'" class="w-16 h-16 object-contain rounded-xl bg-slate-50">
         <div class="flex-1">
           <h4 class="font-bold text-sm text-blue-900">${item.name}</h4>
-
           <div class="flex items-center space-x-2 mt-2">
-            <button onclick="changeQuantity(${index}, -1)"
-              class="w-6 h-6 bg-slate-200 rounded flex items-center justify-center font-bold">-</button>
-
+            <button onclick="changeQuantity(${index}, -1)" class="w-6 h-6 bg-slate-200 rounded flex items-center justify-center font-bold">-</button>
             <span class="text-sm font-bold">${item.quantity}</span>
-
-            <button onclick="changeQuantity(${index}, 1)"
-              class="w-6 h-6 bg-slate-200 rounded flex items-center justify-center font-bold">+</button>
+            <button onclick="changeQuantity(${index}, 1)" class="w-6 h-6 bg-slate-200 rounded flex items-center justify-center font-bold">+</button>
           </div>
-
-          <p class="font-black text-blue-900 mt-2">
-            ₹${itemTotal.toLocaleString()}
-          </p>
+          <p class="font-black text-blue-900 mt-2">₹${itemTotal.toLocaleString()}</p>
         </div>
-
-        <button onclick="removeFromCart(${index})"
-          class="text-red-500 font-bold text-xl hover:scale-110 transition">
-          &times;
-        </button>
+        <button onclick="removeFromCart(${index})" class="text-red-500 font-bold text-xl hover:scale-110 transition">&times;</button>
       </div>`;
   });
-
-  cartTotal.innerText = `₹${total.toLocaleString()}`;
-  cartCount.innerText = totalQty;
 }
 
 function changeQuantity(index, change) {
-  let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  let cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
+  if (!cart[index]) return;
 
   cart[index].quantity += change;
-
   if (cart[index].quantity <= 0) {
     cart.splice(index, 1);
   }
-
-  localStorage.setItem("mishraCart", JSON.stringify(cart));
+  localStorage.setItem("mishra_cart", JSON.stringify(cart));
   updateCartDrawer();
 }
 
 function removeFromCart(index) {
-  let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  let cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   cart.splice(index, 1);
-  localStorage.setItem("mishraCart", JSON.stringify(cart));
+  localStorage.setItem("mishra_cart", JSON.stringify(cart));
   updateCartDrawer();
 }

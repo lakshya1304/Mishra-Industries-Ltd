@@ -1,6 +1,6 @@
 function renderFullCart() {
-  // FIXED: Now consistently using "mishraCart"
-  const cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  // UNIFIED KEY: "mishra_cart"
+  const cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   const container = document.getElementById("fullCartList");
   const itemCountDisplay = document.getElementById("itemCountDisplay");
 
@@ -35,7 +35,6 @@ function renderFullCart() {
     rawOriginalTotal += itemOriginal;
     discountedTotal += itemDiscounted;
 
-    // Sync image path with shop and Site Editor
     const imageSrc =
       item.image ?
         item.image.startsWith("http") || item.image.startsWith("data:") ?
@@ -97,35 +96,35 @@ function updatePricing(original, discounted) {
 
   localStorage.setItem(
     "mishra_bill_summary",
-    JSON.stringify({
-      subtotal: discounted,
-      gst: gstAmount,
-      total: finalTotal,
-    }),
+    JSON.stringify({ subtotal: discounted, gst: gstAmount, total: finalTotal }),
   );
 }
 
 function updateQty(name, delta) {
-  let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  let cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   const item = cart.find((i) => i.name === name);
   if (item) {
     item.quantity += delta;
     if (item.quantity <= 0) cart = cart.filter((i) => i.name !== name);
-    localStorage.setItem("mishraCart", JSON.stringify(cart));
+    localStorage.setItem("mishra_cart", JSON.stringify(cart));
     renderFullCart();
   }
 }
 
 function removeItem(name) {
-  let cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  let cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   cart = cart.filter((i) => i.name !== name);
-  localStorage.setItem("mishraCart", JSON.stringify(cart));
+  localStorage.setItem("mishra_cart", JSON.stringify(cart));
   renderFullCart();
 }
 
 function proceedToCheckout() {
-  const cart = JSON.parse(localStorage.getItem("mishraCart")) || [];
+  const cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   if (cart.length === 0) return alert("Your basket is empty!");
+
+  // LOCK IN DATA
+  localStorage.setItem("mishra_cart", JSON.stringify(cart));
+
   document.body.classList.add("animate__animated", "animate__fadeOut");
   setTimeout(() => {
     location.href = "checkout.html";
