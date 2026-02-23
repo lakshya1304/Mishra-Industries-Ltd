@@ -10,16 +10,10 @@ const protect = async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     try {
-      // Get token from header
       token = req.headers.authorization.split(" ")[1];
 
-      // Verify token
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET || "mishraback_secret",
-      );
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Attach user to request
       req.user = await User.findById(decoded.id).select("-password");
 
       if (!req.user) {
@@ -47,10 +41,7 @@ const protectAdmin = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(" ")[1];
 
-      const decoded = jwt.verify(
-        token,
-        process.env.JWT_SECRET || "mishraback_secret",
-      );
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
       req.adminId = decoded.id;
 

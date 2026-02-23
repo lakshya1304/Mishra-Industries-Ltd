@@ -11,7 +11,7 @@ dotenv.config();
 
 // 2. Initialize Express
 const app = express();
-app.use(morgan("dev"));
+app.use(morgan("dev")); 
 
 // 3. Global Middleware
 app.use(

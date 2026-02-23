@@ -14,28 +14,34 @@ exports.registerUser = async (req, res) => {
   if (error) return res.status(400).json({ message: error.details[0].message });
 
   try {
-    // Make sure stdCode is included here!
-    const { fullName, email, stdCode, phone, password, accountType, businessName, gstNumber } = req.body;
+    const {
+      fullName,
+      email,
+      stdCode,
+      phone,
+      password,
+      accountType,
+      businessName,
+      gstNumber,
+    } = req.body;
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ $or: [{ email }, { phone }] });
     if (userExists) {
-      return res.status(400).json({ message: "Email already registered" });
+      return res
+        .status(400)
+        .json({ message: "Email or Phone already registered" });
     }
 
-    // Save to database
-    const user = await User.create({ 
-        fullName, 
-        email, 
-        stdCode, 
-        phone, 
-        password, 
-        accountType, 
-        businessName, 
-        gstNumber 
+    const user = await User.create({
+      fullName,
+      email,
+      stdCode,
+      phone,
+      password,
+      accountType,
+      businessName,
+      gstNumber,
     });
-    
-    // ... rest of your code (token generation, etc)
-   
 
     try {
       await sendEmail({
@@ -71,7 +77,11 @@ exports.loginUser = async (req, res) => {
 
     if (user && (await user.matchPassword(password))) {
       if (user.accountType !== accountType) {
-        return res.status(401).json({ message: `Access denied: This is a ${user.accountType} account` });
+        return res
+          .status(401)
+          .json({
+            message: `Access denied: This is a ${user.accountType} account`,
+          });
       }
 
       res.json({
@@ -134,14 +144,18 @@ exports.updateProfile = async (req, res) => {
     }
 
     if (req.files) {
-      if (req.files.profilePic) user.profilePic = `/uploads/${req.files.profilePic[0].filename}`;
-      if (req.files.gstFile) user.gstFile = `/uploads/${req.files.gstFile[0].filename}`;
-      if (req.files.panFile) user.panFile = `/uploads/${req.files.panFile[0].filename}`;
-      if (req.files.msmeFile) user.msmeFile = `/uploads/${req.files.msmeFile[0].filename}`;
+      if (req.files.profilePic)
+        user.profilePic = `/uploads/${req.files.profilePic[0].filename}`;
+      if (req.files.gstFile)
+        user.gstFile = `/uploads/${req.files.gstFile[0].filename}`;
+      if (req.files.panFile)
+        user.panFile = `/uploads/${req.files.panFile[0].filename}`;
+      if (req.files.msmeFile)
+        user.msmeFile = `/uploads/${req.files.msmeFile[0].filename}`;
     }
 
     if (req.body.removeProfilePic === "true") {
-        user.profilePic = null;
+      user.profilePic = null;
     }
 
     const updatedUser = await user.save();
@@ -161,9 +175,12 @@ exports.changePassword = async (req, res) => {
       return res.status(401).json({ message: "Current password incorrect" });
     }
 
-    const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    const passRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
     if (!passRegex.test(newPassword)) {
-      return res.status(400).json({ message: "Password does not meet security criteria" });
+      return res
+        .status(400)
+        .json({ message: "Password does not meet security criteria" });
     }
 
     user.password = newPassword;
@@ -174,20 +191,27 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-exports.forgotPassword = async (req, res) => res.status(501).json({ message: "Not implemented" });
-exports.verifyOTP = async (req, res) => res.status(501).json({ message: "Not implemented" });
-exports.resetPassword = async (req, res) => res.status(501).json({ message: "Not implemented" });
+exports.forgotPassword = async (req, res) =>
+  res.status(501).json({ message: "Not implemented" });
+exports.verifyOTP = async (req, res) =>
+  res.status(501).json({ message: "Not implemented" });
+exports.resetPassword = async (req, res) =>
+  res.status(501).json({ message: "Not implemented" });
 
 exports.deleteUser = async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
     res.json({ message: "User deleted" });
-  } catch (error) { res.status(500).json({ message: error.message }); }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 exports.deleteAllUsers = async (req, res) => {
   try {
     await User.deleteMany({});
     res.json({ message: "All users wiped" });
-  } catch (error) { res.status(500).json({ message: error.message }); }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };

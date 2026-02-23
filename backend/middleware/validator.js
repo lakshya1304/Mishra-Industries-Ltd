@@ -6,11 +6,8 @@ const registerValidation = (data) => {
     email: Joi.string().email().required(),
 
     // These must match exactly what your frontend sends
-    stdCode: Joi.string().required(),
-    phone: Joi.string()
-      .pattern(/^[0-9]{7,12}$/)
-      .required(),
-
+  
+    phone: Joi.string().pattern(/^[0-9]{7,12}$/).required(),
     password: Joi.string()
       .min(8)
       .pattern(

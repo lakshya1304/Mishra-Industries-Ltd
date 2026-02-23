@@ -3,7 +3,7 @@ const router = express.Router();
 const Order = require("../models/Order");
 const { protect } = require("../middleware/authMiddleware");
 
-// POST: Add new verified order to Atlas
+// POST: Add new verified order
 router.post("/add", protect, async (req, res) => {
   try {
     const newOrder = new Order({
@@ -26,9 +26,13 @@ router.post("/add", protect, async (req, res) => {
   }
 });
 
-// GET: Fetch all orders for the Admin Dashboard
-router.get("/all", async (req, res) => {
+// ✅ Admin: Fetch all orders
+router.get("/all", protect, async (req, res) => {
   try {
+    if (req.user.accountType !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
     const orders = await Order.find().sort({ createdAt: -1 });
     res.json(orders);
   } catch (err) {
@@ -36,9 +40,13 @@ router.get("/all", async (req, res) => {
   }
 });
 
-// PUT: Update Order Status
-router.put("/status/:id", async (req, res) => {
+// ✅ Admin: Update Order Status
+router.put("/status/:id", protect, async (req, res) => {
   try {
+    if (req.user.accountType !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
     const updatedOrder = await Order.findByIdAndUpdate(
       req.params.id,
       { status: req.body.status },
@@ -46,18 +54,21 @@ router.put("/status/:id", async (req, res) => {
     );
 
     if (!updatedOrder)
-      return res
-        .status(404)
-        .json({ success: false, message: "Order not found" });
+      return res.status(404).json({ message: "Order not found" });
+
     res.json(updatedOrder);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-// GET: Unified Analytics
-router.get("/stats/total-sales", async (req, res) => {
+// ✅ Admin Analytics
+router.get("/stats/total-sales", protect, async (req, res) => {
   try {
+    if (req.user.accountType !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
     const stats = await Order.aggregate([
       {
         $group: {
@@ -67,36 +78,44 @@ router.get("/stats/total-sales", async (req, res) => {
         },
       },
     ]);
+
     const result =
       stats.length > 0 ? stats[0] : { totalRevenue: 0, totalOrders: 0 };
+
     res.json({ success: true, ...result });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
-// GET: Fetch current user's orders
-router.get("/user-orders", protect, async (req, res) => {
+// ✅ User: Fetch own orders
+router.get("/my-orders", protect, async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id }).sort({
       createdAt: -1,
     });
+
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: "Order Sync Failed" });
   }
 });
 
-// DELETE: Purge order from database
-router.delete("/delete/:id", async (req, res) => {
+// ✅ Admin Delete
+router.delete("/delete/:id", protect, async (req, res) => {
   try {
-    const deletedOrder = await Order.findByIdAndDelete(req.params.id);
-    if (!deletedOrder) {
-      return res.status(404).json({ success: false, message: "Order not found" });
+    if (req.user.accountType !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
     }
-    res.json({ success: true, message: "Order purged from Atlas" });
+
+    const deletedOrder = await Order.findByIdAndDelete(req.params.id);
+
+    if (!deletedOrder)
+      return res.status(404).json({ message: "Order not found" });
+
+    res.json({ message: "Order deleted" });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 

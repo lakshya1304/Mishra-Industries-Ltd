@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const path = require("node:path"); // ✅ keep only ONE path import
+const path = require("node:path"); // ✅ FIXED typo from "ath" to "path"
 const fs = require("node:fs");
 const { protect } = require("../middleware/authMiddleware");
 
