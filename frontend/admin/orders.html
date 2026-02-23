@@ -342,17 +342,33 @@
       const API_BASE =
         "https://mishra-industries-ltd-yjfr.onrender.com/api/orders";
       let allOrders = [];
+      const user = JSON.parse(localStorage.getItem("mishraUser"));
+
+      // REMOVED frontend strict check for admin role
+      if (!user || !user.token) {
+        window.location.href = "../login.html";
+      }
 
       async function loadOrders() {
         const tableBody = document.getElementById("orderTableBody");
         tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
         try {
-          const res = await fetch(`${API_BASE}/all`);
+          // Send Bearer token to connect to Atlas database
+          const res = await fetch(`${API_BASE}/all`, {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (!res.ok) throw new Error("Connection failed.");
+
           allOrders = await res.json();
           calculateStats(allOrders);
           renderOrders(allOrders);
         } catch (err) {
-          tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold">DATABASE OFFLINE</td></tr>`;
+          console.error(err);
+          tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold uppercase tracking-widest">DATABASE CONNECTION FAILED: CHECK BACKEND LOGS</td></tr>`;
         }
       }
 
@@ -365,9 +381,12 @@
             d.getFullYear() === now.getFullYear()
           );
         });
-        const lifetimeTotal = orders.reduce((sum, o) => sum + o.totalAmount, 0);
+        const lifetimeTotal = orders.reduce(
+          (sum, o) => sum + (o.totalAmount || 0),
+          0,
+        );
         const monthlyTotal = monthlyData.reduce(
-          (sum, o) => sum + o.totalAmount,
+          (sum, o) => sum + (o.totalAmount || 0),
           0,
         );
 
@@ -393,7 +412,7 @@
           const payMode = order.paymentMethod || "COD";
           const statusColors = {
             Pending:
-              "bg-amber-100 text-amber-600 hover:bg-emerald-500 hover:text-white transition-all cursor-pointer",
+              "bg-amber-100 text-amber-600 hover:bg-emerald-500 hover:text-white cursor-pointer",
             Paid: "bg-emerald-100 text-emerald-600 border-emerald-200",
             Shipped: "bg-blue-100 text-blue-600 border-blue-200",
             Delivered: "bg-slate-100 text-slate-400",
@@ -414,7 +433,7 @@
                     <p class="text-[9px] text-slate-500 bg-slate-100 px-2 py-1 rounded-lg inline-block max-w-[200px] truncate"><i class="fas fa-map-marker-alt mr-1"></i> ${order.address}</p>
                 </td>
                 <td class="p-8">
-                    <p class="font-black text-xl text-blue-900 tracking-tighter">₹${order.totalAmount.toLocaleString()}</p>
+                    <p class="font-black text-xl text-blue-900 tracking-tighter">₹${(order.totalAmount || 0).toLocaleString()}</p>
                     <div class="mt-1 flex flex-col gap-0.5">
                         <span class="text-[8px] font-black uppercase text-blue-600">${payMode}</span>
                         <span class="text-[9px] font-mono font-bold text-slate-400 break-all leading-tight">TXN: ${order.transactionId || "N/A"}</span>
@@ -434,14 +453,16 @@
         });
       }
 
-      // CLICK TO UPDATE DATABASE STATUS
       async function togglePaidStatus(id, currentStatus) {
         if (currentStatus !== "Pending") return;
         if (!confirm("Mark this order as PAID?")) return;
         try {
           const res = await fetch(`${API_BASE}/status/${id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
             body: JSON.stringify({ status: "Paid" }),
           });
           if (res.ok) loadOrders();
@@ -450,14 +471,16 @@
         }
       }
 
-      // SHIP & WHATSAPP
       async function shipAndNotify(id) {
         const order = allOrders.find((o) => o._id === id);
         if (!order) return;
         try {
           const res = await fetch(`${API_BASE}/status/${id}`, {
             method: "PUT",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
             body: JSON.stringify({ status: "Shipped" }),
           });
           if (res.ok) {
@@ -479,8 +502,8 @@
           .map(
             (i) => `
               <div class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
-                  <div><p class="font-black text-blue-900 text-sm">${i.name}</p><p class="text-[10px] font-bold text-slate-400 uppercase">Rate: ₹${i.price.toLocaleString()}</p></div>
-                  <div class="text-right"><p class="text-xs font-black text-blue-900">Qty: ${i.quantity}</p><p class="text-xs font-black text-orange-500">₹${(i.price * i.quantity).toLocaleString()}</p></div>
+                  <div><p class="font-black text-blue-900 text-sm">${i.name}</p><p class="text-[10px] font-bold text-slate-400 uppercase">Rate: ₹${(i.price || 0).toLocaleString()}</p></div>
+                  <div class="text-right"><p class="text-xs font-black text-blue-900">Qty: ${i.quantity}</p><p class="text-xs font-black text-orange-500">₹${((i.price || 0) * i.quantity).toLocaleString()}</p></div>
               </div>`,
           )
           .join("");
@@ -506,54 +529,57 @@
           `Method: ${order.paymentMethod || "COD"}`;
         document.getElementById("invTxnId").innerText =
           `TXN ID: ${order.transactionId || "N/A"}`;
+
         const badge = document.getElementById("invStatusBadge");
         badge.innerText =
-          order.status === "Paid" || order.status === "Shipped" ?
+          (
+            order.status === "Paid" ||
+            order.status === "Shipped" ||
+            order.status === "Delivered"
+          ) ?
             "PAYMENT RECEIVED"
           : "PAYMENT DUE";
-        badge.className = `inline-block mt-3 px-4 py-1 rounded-full text-[10px] font-black uppercase ${order.status === "Paid" || order.status === "Shipped" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`;
+        badge.className = `inline-block mt-3 px-4 py-1 rounded-full text-[10px] font-black uppercase ${badge.innerText === "PAYMENT RECEIVED" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`;
 
-        const subtotal = order.totalAmount / 1.18;
-        const gst = order.totalAmount - subtotal;
-        document.getElementById("invItemsBody").innerHTML = order.items
+        const subtotal = (order.totalAmount || 0) / 1.18;
+        const gst = (order.totalAmount || 0) - subtotal;
+        document.getElementById("invItemsBody").innerHTML = (order.items || [])
           .map(
             (item, i) => `
-              <tr><td class="p-4 text-xs text-slate-400 font-bold">${i + 1}</td><td class="p-4 text-xs font-bold text-slate-800">${item.name}</td><td class="p-4 text-xs text-center font-bold text-slate-600">${item.quantity}</td><td class="p-4 text-xs text-right text-slate-600">₹${item.price.toLocaleString()}</td><td class="p-4 text-xs font-black text-blue-900 text-right">₹${(item.price * item.quantity).toLocaleString()}</td></tr>`,
+              <tr><td class="p-4 text-xs text-slate-400 font-bold">${i + 1}</td><td class="p-4 text-xs font-bold text-slate-800">${item.name}</td><td class="p-4 text-xs text-center font-bold text-slate-600">${item.quantity}</td><td class="p-4 text-xs text-right text-slate-600">₹${(item.price || 0).toLocaleString()}</td><td class="p-4 text-xs font-black text-blue-900 text-right">₹${((item.price || 0) * item.quantity).toLocaleString()}</td></tr>`,
           )
           .join("");
+
         document.getElementById("invSubtotal").innerText =
           `₹${subtotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
         document.getElementById("invGst").innerText =
           `₹${gst.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
         document.getElementById("invGrandTotal").innerText =
-          `₹${order.totalAmount.toLocaleString()}`;
+          `₹${(order.totalAmount || 0).toLocaleString()}`;
+
         const inv = document.getElementById("invoiceContainer");
         inv.classList.remove("hidden");
         window.print();
         inv.classList.add("hidden");
       }
 
-      // CRITICAL FIX: Database Delete Function
       async function deleteOrder(id) {
-        if (
-          !confirm(
-            "⚠️ Are you sure you want to permanently delete this order from the database?",
-          )
-        )
+        if (!confirm("⚠️ Permanently delete this order from Atlas database?"))
           return;
         try {
           const res = await fetch(`${API_BASE}/delete/${id}`, {
             method: "DELETE",
+            headers: { Authorization: `Bearer ${user.token}` },
           });
           if (res.ok) {
-            alert("✅ Success: Order removed from Atlas database.");
-            loadOrders(); // Refresh table
+            alert("✅ Success: Order removed.");
+            loadOrders();
           } else {
             const err = await res.json();
             alert("❌ Server Error: " + err.message);
           }
         } catch (err) {
-          alert("❌ Network error: Atlas Connection Offline.");
+          alert("❌ Atlas Connection Offline.");
         }
       }
 
@@ -566,11 +592,7 @@
           Customer: o.customerName,
           Phone: o.phone,
           Address: o.address,
-          Products: o.items
-            .map((i) => `${i.name} (x${i.quantity})`)
-            .join(" | "),
           Method: o.paymentMethod || "COD",
-          "TXN ID": o.transactionId || "N/A",
           "Total (₹)": o.totalAmount,
           Status: o.status || "Pending",
         }));
@@ -579,7 +601,7 @@
         XLSX.utils.book_append_sheet(wb, ws, "Orders");
         XLSX.writeFile(
           wb,
-          `Mishra_Monthly_Manifest_${new Date().toISOString().split("T")[0]}.xlsx`,
+          `Mishra_Manifest_${new Date().toISOString().split("T")[0]}.xlsx`,
         );
       }
 

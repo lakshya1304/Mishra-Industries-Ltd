@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/sendEmail");
+// Ensure this destructured import matches the object export in validator.js
 const { registerValidation } = require("../middleware/validator");
 
 // Helper to create Token
@@ -10,6 +11,7 @@ const generateToken = (id) => {
 
 // Register User
 exports.registerUser = async (req, res) => {
+  // This line triggers the error if the import above is incorrect
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
