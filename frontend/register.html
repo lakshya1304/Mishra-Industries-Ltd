@@ -26,6 +26,9 @@
         color: #1e3a8a !important;
         background-color: #fffaf0;
       }
+      .hidden {
+        display: none;
+      }
       .floating-label-group {
         position: relative;
       }
@@ -48,13 +51,20 @@
       .requirement-item.unmet {
         color: #94a3b8;
       }
+      .requirement-item i {
+        margin-right: 4px;
+      }
+
+      /* International Input Styling */
       .iti {
         width: 100%;
         display: block;
       }
-      /* Fixed padding to prevent overlap with flag */
+      .iti__flag-container {
+        padding: 2px;
+      }
       .floating-input-phone {
-        padding-left: 95px !important;
+        padding-left: 90px !important;
       }
     </style>
   </head>
@@ -65,7 +75,7 @@
       <div class="absolute top-8 left-8 md:top-12 md:left-16">
         <a
           href="index.html"
-          class="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-widest hover:text-orange-500 transition-all group"
+          class="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-widest hover:text-orange-500 transition-all whitespace-nowrap group"
         >
           <i
             class="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-1"
@@ -114,7 +124,7 @@
             class="floating-input w-full p-5 bg-white border-2 border-gray-100 rounded-2xl outline-none focus:border-blue-900 transition-all font-bold text-sm peer"
           />
           <label
-            class="floating-label absolute top-5 left-5 text-gray-400 font-bold transition-all uppercase tracking-widest text-xs"
+            class="floating-label absolute top-5 left-5 text-gray-400 font-bold transition-all pointer-events-none uppercase tracking-widest text-xs"
             >Full Name</label
           >
         </div>
@@ -127,7 +137,7 @@
             class="floating-input w-full p-5 bg-white border-2 border-gray-100 rounded-2xl outline-none focus:border-blue-900 transition-all font-bold text-sm peer"
           />
           <label
-            class="floating-label absolute top-5 left-5 text-gray-400 font-bold transition-all uppercase tracking-widest text-xs"
+            class="floating-label absolute top-5 left-5 text-gray-400 font-bold transition-all pointer-events-none uppercase tracking-widest text-xs"
             >Email Address</label
           >
         </div>
@@ -144,7 +154,7 @@
               class="floating-input w-full p-5 bg-white border-2 border-orange-200 rounded-2xl outline-none focus:border-orange-500 transition-all font-bold text-sm peer"
             />
             <label
-              class="floating-label absolute top-5 left-5 text-orange-400 font-bold transition-all uppercase tracking-widest text-xs"
+              class="floating-label absolute top-5 left-5 text-orange-400 font-bold transition-all pointer-events-none uppercase tracking-widest text-xs"
               >Business Name</label
             >
           </div>
@@ -158,7 +168,7 @@
               class="floating-input w-full p-5 bg-white border-2 border-orange-200 rounded-2xl outline-none focus:border-orange-500 transition-all font-bold text-sm peer"
             />
             <label
-              class="floating-label absolute top-5 left-5 text-orange-400 font-bold transition-all uppercase tracking-widest text-xs"
+              class="floating-label absolute top-5 left-5 text-orange-400 font-bold transition-all pointer-events-none uppercase tracking-widest text-xs"
               >GST Number</label
             >
           </div>
@@ -170,6 +180,11 @@
             id="regPhone"
             class="floating-input-phone w-full p-5 bg-white border-2 border-gray-100 rounded-2xl outline-none focus:border-blue-900 transition-all font-bold text-sm"
           />
+          <p
+            class="text-[8px] font-black text-gray-400 uppercase tracking-widest mt-2 ml-4"
+          >
+            Global Standard Contact (Select Country)
+          </p>
         </div>
 
         <div class="relative">
@@ -220,7 +235,7 @@
         <button
           type="button"
           onclick="handleRegistration()"
-          class="md:col-span-2 bg-blue-900 text-white font-black py-5 rounded-2xl hover:bg-orange-500 transition-all shadow-xl mt-4 uppercase tracking-widest"
+          class="md:col-span-2 bg-blue-900 text-white font-black py-5 rounded-2xl hover:bg-orange-500 transition-all shadow-xl shadow-blue-900/10 transform active:scale-95 mt-4 uppercase tracking-widest"
         >
           Register Now
         </button>
