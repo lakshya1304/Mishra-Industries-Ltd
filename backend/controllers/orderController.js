@@ -1,34 +1,34 @@
-const Order = require("../models/Order");
+import Order from "../models/Order.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import err from "../utils/err.js";
+import success from "../utils/success.js";
 
-const createOrder = async (req, res) => {
-  try {
-    const {
-      customerName,
-      phone,
-      address,
-      items,
-      totalAmount,
-      paymentMethod,
-      transactionId,
-    } = req.body;
+export const createOrder = asyncHandler(async (req, res) => {
+  const {
+    customerName,
+    phone,
+    address,
+    items,
+    totalAmount,
+    paymentMethod,
+    transactionId,
+  } = req.body;
 
-    const newOrder = new Order({
-      user: req.user._id,
-      customerName,
-      phone,
-      address,
-      items,
-      totalAmount,
-      paymentMethod,
-      transactionId,
-      status: paymentMethod === "COD" ? "Pending" : "Paid",
-    });
+  const newOrder = new Order({
+    user: req.user._id,
+    customerName,
+    phone,
+    address,
+    items,
+    totalAmount,
+    paymentMethod,
+    transactionId,
+    status: paymentMethod === "COD" ? "Pending" : "Paid",
+  });
 
-    const savedOrder = await newOrder.save();
-    res.status(201).json({ success: true, order: savedOrder });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
-  }
-};
+  const savedOrder = await newOrder.save();
+  if (!savedOrder) return err(res, "Order creation failed", 500);
+  return success(res, "Order created", 201, { order: savedOrder });
+});
 
-module.exports = { createOrder };
+export default createOrder;

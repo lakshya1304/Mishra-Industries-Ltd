@@ -1,26 +1,35 @@
-const Admin = require('../models/Admin');
-const jwt = require('jsonwebtoken');
+import Admin from "../models/Admin.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import error from "../utils/error.js";
+import bcrypt from "bcryptjs";
+import token from "../utils/token.js";
 
 // Generate JWT Token
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET || 'mishraback_secret', { expiresIn: '30d' });
-};
 
-const loginAdmin = async (req, res) => {
-    const { email, password } = req.body;
-    const admin = await Admin.findOne({ email });
+export const loginAdmin = asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return error(res, "Both email and password are required", 400);
+  }
+  const admin = await Admin.findOne({ email });
+  if (!admin) {
+    return error(res, "No user was found", 404);
+  }
 
-    // For now, we compare plain text. (Use bcrypt for production later)
-    if (admin && admin.password === password) {
-        res.json({
-            _id: admin._id,
-            email: admin.email,
-            isAdmin: true,
-            token: generateToken(admin._id)
-        });
-    } else {
-        res.status(401).json({ message: 'Invalid Admin Credentials' });
-    }
-};
+  if (!bcrypt.compare(admin.password, password)) {
+    return error(res, "Invalid password", 400);
+  }
+  return success(
+    res,
+    `Welcome back ${admin?.username ?? admin?.name ?? "Admin"}`,
+    200,
+    {
+      _id: admin._id,
+      email: admin.email,
+      isAdmin: true,
+      token: token(admin._id),
+    },
+  );
+});
 
-module.exports = { loginAdmin };
+export default loginAdmin;
