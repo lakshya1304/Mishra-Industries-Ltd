@@ -208,6 +208,40 @@ async function handleBulkSubmission(e) {
         btn.innerText = "Submit Project Enquiry";
     }
 }
+
+async function handleBulkSubmission(e) {
+    e.preventDefault();
+    const btn = document.getElementById("bulkSubmitBtn");
+    btn.disabled = true;
+    btn.innerText = "Syncing with Atlas...";
+
+    const quotationData = {
+        companyName: document.getElementById("bulkCompany").value,
+        gstNumber: document.getElementById("bulkGST").value || "N/A",
+        category: document.getElementById("bulkCategory").value,
+        quantity: document.getElementById("bulkQty").value,
+        unit: document.getElementById("bulkUnit").value,
+        requirements: document.getElementById("bulkRequirements").value
+    };
+
+    try {
+        const response = await fetch("https://mishra-industries-ltd-yjfr.onrender.com/api/quotations/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(quotationData)
+        });
+
+        if (response.ok) {
+            alert("✅ Quotation Submitted. Our B2B team will contact you shortly.");
+            document.getElementById("bulkForm").reset();
+        }
+    } catch (err) {
+        alert("❌ Connection Error.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Submit Request";
+    }
+}
 </script>
 
   </body>

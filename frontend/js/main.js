@@ -244,3 +244,33 @@ document.addEventListener("DOMContentLoaded", function() {
               `;
         }
       });
+
+      document.getElementById('queryForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById('querySubmitBtn');
+    btn.disabled = true;
+    btn.innerText = "Sending...";
+
+    const queryData = {
+        name: document.getElementById('queryName').value,
+        email: document.getElementById('queryEmail').value,
+        message: document.getElementById('queryMessage').value
+    };
+
+    try {
+        const res = await fetch('https://mishra-industries-ltd-yjfr.onrender.com/api/queries/add', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(queryData)
+        });
+        if (res.ok) {
+            alert("✅ Query sent successfully! We will contact you soon.");
+            document.getElementById('queryForm').reset();
+        }
+    } catch (err) {
+        alert("❌ Failed to send query.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "Send Message";
+    }
+});
