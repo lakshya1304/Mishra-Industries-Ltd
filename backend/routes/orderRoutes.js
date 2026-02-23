@@ -38,12 +38,14 @@ router.post("/add", protect, async (req, res) => {
 // ===============================
 router.get("/all", protect, async (req, res) => {
   try {
+    // FIX: This check triggers the 403 error if your Atlas record says "customer"
     if (req.user.accountType !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
+      return res
+        .status(403)
+        .json({ message: "Access denied: Account type is not admin" });
     }
 
     const orders = await Order.find().sort({ createdAt: -1 });
-
     res.status(200).json(orders);
   } catch (err) {
     res.status(500).json({ error: err.message });

@@ -5,9 +5,9 @@ const registerValidation = (data) => {
     fullName: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
 
-    // FIX 2: Update regex to allow an optional '+' sign at the start
+    // FIX: Optimized for 10-digit Indian numbers sent by your frontend
     phone: Joi.string()
-      .pattern(/^\+?[0-9]{7,15}$/)
+      .pattern(/^[0-9]{10,15}$/)
       .required(),
 
     password: Joi.string()
@@ -19,7 +19,7 @@ const registerValidation = (data) => {
       )
       .required(),
 
-    accountType: Joi.string().valid("customer", "retailer").required(),
+    accountType: Joi.string().valid("customer", "retailer", "admin").required(),
 
     businessName: Joi.string().when("accountType", {
       is: "retailer",
@@ -34,7 +34,7 @@ const registerValidation = (data) => {
         then: Joi.required(),
         otherwise: Joi.optional().allow(""),
       }),
-  });
+  }).unknown(true); // Allows extra fields like stdCode if sent, without crashing
 
   return schema.validate(data);
 };

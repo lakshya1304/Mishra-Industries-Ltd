@@ -226,7 +226,7 @@
             >Orders List</span
           >
         </a>
-         <a
+        <a
           href="queries.html"
           class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
         >
@@ -299,163 +299,162 @@
     </main>
 
     <script>
-  const API_BASE =
-    "https://mishra-industries-ltd-yjfr.onrender.com/api/orders/all";
+      const API_BASE =
+        "https://mishra-industries-ltd-yjfr.onrender.com/api/orders";
+      let allOrders = [];
 
-  let allOrders = [];
+      async function loadOrders() {
+        const tableBody = document.getElementById("orderTableBody");
+        tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
 
-  async function loadOrders() {
-    const tableBody = document.getElementById("orderTableBody");
-    tableBody.innerHTML = `
-      <tr>
-        <td colspan="5" class="p-20 text-center">
-          <i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i>
-        </td>
-      </tr>`;
-
-    try {
-      const token = localStorage.getItem("adminToken"); // if you use JWT
-      const res = await fetch(`${API_BASE}/all`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-      });
-
-      if (!res.ok) {
-        throw new Error("Server not responding");
+        try {
+          const res = await fetch(`${API_BASE}/all`);
+          allOrders = await res.json();
+          renderOrders(allOrders);
+        } catch (err) {
+          tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold">DATABASE OFFLINE</td></tr>`;
+        }
       }
 
-      const data = await res.json();
+      function renderOrders(orders) {
+        const tableBody = document.getElementById("orderTableBody");
+        tableBody.innerHTML = "";
 
-      // In case backend returns { orders: [...] }
-      allOrders = Array.isArray(data) ? data : data.orders || [];
+        orders.forEach((order) => {
+          const orderDate = new Date(order.createdAt).toLocaleDateString(
+            "en-IN",
+            { day: "2-digit", month: "short", year: "numeric" },
+          );
+          const payMode = order.paymentMethod || "COD";
+          const statusColors = {
+            Pending: "bg-amber-100 text-amber-600 border-amber-200",
+            Paid: "bg-emerald-100 text-emerald-600 border-emerald-200",
+            Shipped: "bg-blue-100 text-blue-600 border-blue-200",
+            Delivered: "bg-slate-100 text-slate-400",
+          };
 
-      if (!allOrders.length) {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="5" class="p-20 text-center text-slate-400 font-bold">
-              NO ORDERS FOUND
-            </td>
-          </tr>`;
-        return;
+          tableBody.innerHTML += `
+            <tr class="hover:bg-slate-50/80 transition-all group">
+                <td class="p-8">
+                    <p class="text-[9px] font-black text-slate-300 mb-1">#MI-${order._id.slice(-6).toUpperCase()}</p>
+                    <p class="text-[10px] font-black text-blue-900 uppercase">${orderDate}</p>
+                    <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">${order.items.length} Items Ordered</p>
+                </td>
+                <td class="p-8">
+                    <p class="font-black text-slate-800 uppercase text-sm">${order.customerName}</p>
+                    <p class="text-[10px] font-bold text-slate-400 mt-1 mb-2"><i class="fas fa-phone-alt mr-1"></i> ${order.phone}</p>
+                    <p class="text-[9px] text-slate-500 bg-slate-100 px-2 py-1 rounded-lg inline-block max-w-[200px] truncate"><i class="fas fa-map-marker-alt mr-1 text-orange-500"></i> ${order.address}</p>
+                </td>
+                <td class="p-8">
+                    <p class="font-black text-xl text-blue-900 tracking-tighter">₹${order.totalAmount.toLocaleString()}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-600">${payMode}</span>
+                        <span class="text-[8px] font-bold text-slate-300 truncate max-w-[80px]">ID: ${order.transactionId || "N/A"}</span>
+                    </div>
+                </td>
+                <td class="p-8">
+                    <span class="${statusColors[order.status] || statusColors.Pending} border text-[8px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">${order.status || "Pending"}</span>
+                </td>
+                <td class="p-8 text-right">
+                    <div class="flex justify-end space-x-2">
+                        <button onclick="generateBill('${order._id}')" class="bg-blue-900 text-white px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg">
+                            <i class="fas fa-file-invoice mr-2"></i> Bill
+                        </button>
+                        <button onclick="deleteOrder('${order._id}')" class="bg-red-50 text-red-400 p-3 rounded-xl hover:bg-red-500 hover:text-white transition-all">
+                            <i class="fas fa-trash-alt text-xs"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        });
       }
 
-      renderOrders(allOrders);
-    } catch (err) {
-      console.error("Order Fetch Error:", err);
-      tableBody.innerHTML = `
-        <tr>
-          <td colspan="5" class="p-20 text-center text-red-500 font-bold">
-            SERVER CONNECTION FAILED
-          </td>
-        </tr>`;
-    }
-  }
+      // AUTOMATED BILL GENERATOR
+      function generateBill(id) {
+        const order = allOrders.find((o) => o._id === id);
+        if (!order) return;
 
-  function renderOrders(orders) {
-    const tableBody = document.getElementById("orderTableBody");
-    tableBody.innerHTML = "";
+        // Populate Invoice Data
+        document.getElementById("invId").innerText =
+          `#MI-${order._id.slice(-6).toUpperCase()}`;
+        document.getElementById("invDate").innerText =
+          `Date: ${new Date(order.createdAt).toLocaleDateString("en-GB")}`;
+        document.getElementById("invCustName").innerText = order.customerName;
+        document.getElementById("invCustPhone").innerText =
+          `Phone: ${order.phone}`;
+        document.getElementById("invCustAddress").innerText = order.address;
+        document.getElementById("invPayMethod").innerText =
+          `Method: ${order.paymentMethod || "COD"}`;
+        document.getElementById("invTxnId").innerText =
+          `TXN ID: ${order.transactionId || "N/A"}`;
 
-    orders.forEach((order) => {
-      const orderDate = new Date(order.createdAt).toLocaleDateString(
-        "en-IN",
-        { day: "2-digit", month: "short", year: "numeric" }
-      );
+        const badge = document.getElementById("invStatusBadge");
+        badge.innerText =
+          order.status === "Paid" || order.paymentMethod === "Razorpay" ?
+            "PAYMENT RECEIVED"
+          : "PAYMENT DUE";
+        badge.className = `inline-block mt-3 px-4 py-1 rounded-full text-[10px] font-black uppercase ${order.status === "Paid" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`;
 
-      const payMode = order.paymentMethod || "COD";
+        // Calculate Totals
+        const subtotal = order.totalAmount / 1.18;
+        const gst = order.totalAmount - subtotal;
 
-      const statusColors = {
-        Pending: "bg-amber-100 text-amber-600 border-amber-200",
-        Paid: "bg-emerald-100 text-emerald-600 border-emerald-200",
-        Shipped: "bg-blue-100 text-blue-600 border-blue-200",
-        Delivered: "bg-slate-100 text-slate-400",
-      };
+        document.getElementById("invItemsBody").innerHTML = order.items
+          .map(
+            (item, i) => `
+              <tr>
+                  <td class="p-4 text-xs text-slate-400 font-bold">${i + 1}</td>
+                  <td class="p-4 text-xs font-bold text-slate-800">${item.name}</td>
+                  <td class="p-4 text-xs text-center font-bold text-slate-600">${item.quantity}</td>
+                  <td class="p-4 text-xs text-right text-slate-600">₹${item.price.toLocaleString()}</td>
+                  <td class="p-4 text-xs font-black text-blue-900 text-right">₹${(item.price * item.quantity).toLocaleString()}</td>
+              </tr>
+          `,
+          )
+          .join("");
 
-      tableBody.innerHTML += `
-        <tr class="hover:bg-slate-50/80 transition-all group">
-          <td class="p-8">
-            <p class="text-[9px] font-black text-slate-300 mb-1">
-              #MI-${order._id?.slice(-6).toUpperCase()}
-            </p>
-            <p class="text-[10px] font-black text-blue-900 uppercase">
-              ${orderDate}
-            </p>
-            <p class="text-[8px] font-bold text-slate-400 mt-1 uppercase tracking-tighter">
-              ${order.items?.length || 0} Items Ordered
-            </p>
-          </td>
+        document.getElementById("invSubtotal").innerText =
+          `₹${subtotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+        document.getElementById("invGst").innerText =
+          `₹${gst.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
+        document.getElementById("invGrandTotal").innerText =
+          `₹${order.totalAmount.toLocaleString()}`;
 
-          <td class="p-8">
-            <p class="font-black text-slate-800 uppercase text-sm">
-              ${order.customerName || "N/A"}
-            </p>
-            <p class="text-[10px] font-bold text-slate-400 mt-1 mb-2">
-              <i class="fas fa-phone-alt mr-1"></i> ${order.phone || "-"}
-            </p>
-            <p class="text-[9px] text-slate-500 bg-slate-100 px-2 py-1 rounded-lg inline-block max-w-[200px] truncate">
-              <i class="fas fa-map-marker-alt mr-1 text-orange-500"></i>
-              ${order.address || "-"}
-            </p>
-          </td>
+        // Trigger Print
+        const inv = document.getElementById("invoiceContainer");
+        inv.classList.remove("hidden");
+        window.print();
+        inv.classList.add("hidden");
+      }
 
-          <td class="p-8">
-            <p class="font-black text-xl text-blue-900 tracking-tighter">
-              ₹${(order.totalAmount || 0).toLocaleString()}
-            </p>
-            <div class="flex items-center gap-2 mt-1">
-              <span class="text-[8px] font-black uppercase px-2 py-0.5 rounded bg-blue-50 text-blue-600">
-                ${payMode}
-              </span>
-              <span class="text-[8px] font-bold text-slate-300 truncate max-w-[80px]">
-                ID: ${order.transactionId || "N/A"}
-              </span>
-            </div>
-          </td>
+      async function deleteOrder(id) {
+        if (!confirm("Permanently delete this order?")) return;
+        const res = await fetch(`${API_BASE}/delete/${id}`, {
+          method: "DELETE",
+        });
+        if (res.ok) loadOrders();
+      }
 
-          <td class="p-8">
-            <span class="${
-              statusColors[order.status] || statusColors.Pending
-            } border text-[8px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest">
-              ${order.status || "Pending"}
-            </span>
-          </td>
+      function downloadOrderReport() {
+        const report = allOrders.map((o) => ({
+          Date: new Date(o.createdAt).toLocaleDateString(),
+          Customer: o.customerName,
+          Phone: o.phone,
+          Address: o.address,
+          Total: o.totalAmount,
+          Payment: o.paymentMethod,
+          Status: o.status,
+        }));
+        const ws = XLSX.utils.json_to_sheet(report);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Orders");
+        XLSX.writeFile(
+          wb,
+          `Mishra_Orders_${new Date().toISOString().split("T")[0]}.xlsx`,
+        );
+      }
 
-          <td class="p-8 text-right">
-            <div class="flex justify-end space-x-2">
-              <button onclick="generateBill('${order._id}')"
-                class="bg-blue-900 text-white px-5 py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-orange-600 transition-all shadow-lg">
-                <i class="fas fa-file-invoice mr-2"></i> Bill
-              </button>
-
-              <button onclick="deleteOrder('${order._id}')"
-                class="bg-red-50 text-red-400 p-3 rounded-xl hover:bg-red-500 hover:text-white transition-all">
-                <i class="fas fa-trash-alt text-xs"></i>
-              </button>
-            </div>
-          </td>
-        </tr>`;
-    });
-  }
-
-  async function deleteOrder(id) {
-    if (!confirm("Permanently delete this order?")) return;
-
-    const token = localStorage.getItem("adminToken");
-
-    const res = await fetch(`${API_BASE}/delete/${id}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
-      },
-    });
-
-    if (res.ok) loadOrders();
-  }
-
-  document.addEventListener("DOMContentLoaded", loadOrders);
-</script>
+      document.addEventListener("DOMContentLoaded", loadOrders);
+    </script>
   </body>
 </html>
