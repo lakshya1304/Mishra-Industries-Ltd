@@ -5,10 +5,11 @@ let iti;
 document.addEventListener("DOMContentLoaded", function () {
   const phoneInput = document.querySelector("#regPhone");
 
+  // Fixed country to India and removed dropdown
   iti = window.intlTelInput(phoneInput, {
     separateDialCode: true,
     initialCountry: "in",
-    preferredCountries: ["in", "us", "ae", "gb"],
+    allowDropdown: false,
     nationalMode: false,
     autoHideDialCode: false,
     formatOnDisplay: false,
@@ -46,26 +47,24 @@ async function handleRegistration() {
   const email = document.getElementById("regEmail").value.trim();
   const password = document.getElementById("regPass").value;
   const businessName = document.getElementById("regBusiness").value.trim();
-
   const phoneInput = document.getElementById("regPhone");
 
-  // Get full number including country code (e.g., +918123456789)
-  const phone = iti.getNumber();
+  // Prepare standard code and phone digits for backend
+  const stdCode = `+${iti.getSelectedCountryData().dialCode}`;
+  const phone = phoneInput.value.trim();
 
   const gstNumber =
     document.getElementById("regGST") ?
       document.getElementById("regGST").value.toUpperCase().trim()
     : "";
 
-  if (!fullName || !email || !password || !phoneInput.value.trim()) {
+  if (!fullName || !email || !password || !phone) {
     return alert("Please fill in all required fields.");
   }
 
-  // ✅ Strict phone validation
+  // ✅ Validates based on Indian 10-digit standard
   if (!iti.isValidNumber()) {
-    return alert(
-      "Please enter a valid phone number according to selected country code.",
-    );
+    return alert("Please enter a valid 10-digit Indian phone number.");
   }
 
   if (selectedType === "retailer") {
@@ -89,6 +88,7 @@ async function handleRegistration() {
           fullName,
           email,
           password,
+          stdCode,
           phone,
           accountType: selectedType,
           businessName: selectedType === "retailer" ? businessName : undefined,
@@ -99,15 +99,20 @@ async function handleRegistration() {
 
     const data = await response.json();
 
-    if (response.ok) {
+    // ✅ CHECK FOR SUCCESS (Status 201)
+    if (response.status === 201 || response.ok) {
+      console.log("Registration Successful, redirecting...");
       localStorage.setItem("mishraUser", JSON.stringify(data));
       window.location.href = "shop.html";
     } else {
-      alert(data.message || "Registration failed");
+      // ✅ Handle Duplicates or Validation errors from Backend
+      alert(
+        data.message || "Registration error: Email or Phone already exists.",
+      );
     }
   } catch (err) {
     console.error("Connection Error:", err);
-    alert("Cannot connect to server. Ensure backend is running.");
+    alert("Connection to Atlas failed. Ensure backend is running.");
   }
 }
 

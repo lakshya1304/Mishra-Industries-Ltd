@@ -5,10 +5,12 @@ const registerValidation = (data) => {
     fullName: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
 
-    // ADDED: stdCode to allow the country dial code (e.g., +91)
-    stdCode: Joi.string().required(),
-
-    // UPDATED: regex to allow the optional '+' sign sent by the frontend
+   stdCode: {
+    type: String,
+    required: true,
+    default: "+91"
+  },
+    // FIX 2: Update regex to allow an optional '+' sign at the start
     phone: Joi.string()
       .pattern(/^\+?[0-9]{7,15}$/)
       .required(),
@@ -32,7 +34,6 @@ const registerValidation = (data) => {
 
     gstNumber: Joi.string()
       .length(15)
-      .pattern(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/)
       .when("accountType", {
         is: "retailer",
         then: Joi.required(),
@@ -43,5 +44,4 @@ const registerValidation = (data) => {
   return schema.validate(data);
 };
 
-// Ensure this matches the destructured import in your authController.js
 module.exports = { registerValidation };
