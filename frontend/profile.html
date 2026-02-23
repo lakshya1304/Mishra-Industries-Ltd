@@ -436,69 +436,96 @@
       }
 
       // UPDATE: Save Details & Photo to Database
-      async function executeAutoUpdate() {
-        const saveBtn = document.getElementById("saveBtn");
-        saveBtn.disabled = true;
-        saveBtn.innerText = "Syncing Atlas...";
+      
+        // ✅ Corrected Update Function
+async function executeAutoUpdate() {
+  const saveBtn = document.getElementById("saveBtn");
+  saveBtn.disabled = true;
+  saveBtn.innerText = "Syncing Atlas...";
 
-        const formData = new FormData();
-        formData.append(
-          "fullName",
-          document.getElementById("profName").value.trim(),
-        );
-        formData.append(
-          "phone",
-          document.getElementById("profPhone").value.trim(),
-        );
-        formData.append(
-          "address",
-          document.getElementById("addrStreet").value.trim(),
-        );
-        formData.append(
-          "pincode",
-          document.getElementById("addrPin").value.trim(),
-        );
-        formData.append(
-          "city",
-          document.getElementById("addrCity").value.trim(),
-        );
+  const formData = new FormData();
+  
+  // Mapping Text Fields to Schema
+  formData.append("fullName", document.getElementById("profName").value.trim());
+  formData.append("phone", document.getElementById("profPhone").value.trim());
+  formData.append("address", document.getElementById("addrStreet").value.trim());
+  formData.append("pincode", document.getElementById("addrPin").value.trim());
+  formData.append("city", document.getElementById("addrCity").value.trim());
 
-        const picInput = document.getElementById("profilePicInput");
-        if (picInput.files[0]) formData.append("profilePic", picInput.files[0]);
+  // Mapping File Uploads
+  const picInput = document.getElementById("profilePicInput");
+  if (picInput.files[0]) {
+    formData.append("profilePic", picInput.files[0]);
+  }
 
-        if (user.accountType === "retailer") {
-          formData.append(
-            "businessName",
-            document.getElementById("bizName").value.trim(),
-          );
-          formData.append(
-            "gstNumber",
-            document.getElementById("bizGST").value.trim(),
-          );
-        }
+  // Retailer Specific Fields
+  if (user.accountType === "retailer") {
+    formData.append("businessName", document.getElementById("bizName").value.trim());
+    formData.append("gstNumber", document.getElementById("bizGST").value.trim());
+  }
 
-        try {
-          const res = await fetch(`${API_URL}/api/auth/update-profile`, {
-            method: "PUT",
-            headers: { Authorization: `Bearer ${user.token}` },
-            body: formData, // FormData ensures image storage in DB
-          });
-          if (res.ok) {
-            const data = await res.json();
-            user = { ...user, ...data.user };
-            localStorage.setItem("mishraUser", JSON.stringify(user));
-            showToast("Database Updated Successfully", "success");
-            document.getElementById("saveBanner").classList.add("hidden");
-            location.reload();
-          }
-        } catch (err) {
-          showToast("Sync Error", "error");
-        } finally {
-          saveBtn.disabled = false;
-          saveBtn.innerText = "Save Changes";
-        }
-      }
+  try {
+    const res = await fetch(`${API_URL}/api/auth/update-profile`, {
+      method: "PUT",
+      headers: { 
+        // IMPORTANT: DO NOT set 'Content-Type'. Let the browser set it for FormData.
+        "Authorization": `Bearer ${user.token}` 
+      },
+      body: formData, 
+    });
 
+    const data = await res.json();
+
+    if (res.ok) {
+      // Update local context and storage with fresh data from Atlas
+      localStorage.setItem("mishraUser", JSON.stringify({ ...user, ...data.user }));
+      showToast("Profile & Photo Synced", "success");
+      
+      // Briefly delay to show success before refreshing the UI
+      setTimeout(() => location.reload(), 1500);
+    } else {
+      showToast(data.message || "Update Failed", "error");
+    }
+  } catch (err) {
+    showToast("Server Connection Error", "error");
+    console.error(err);
+  } finally {
+    saveBtn.disabled = false;
+    saveBtn.innerText = "Save Changes";
+  }
+}
+
+// ✅ Corrected Password Update Function
+async function handlePasswordChange() {
+  const oldPassword = document.getElementById("oldPassword").value;
+  const newPassword = document.getElementById("newPassword").value;
+  const confirmPassword = document.getElementById("confirmPassword").value;
+
+  if (newPassword !== confirmPassword) {
+    return showToast("Passwords do not match", "error");
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/api/auth/change-password`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${user.token}`
+      },
+      body: JSON.stringify({ oldPassword, newPassword })
+    });
+
+    const data = await res.json();
+    if (res.ok) {
+      showToast("Security Key Updated", "success");
+      document.getElementById("passwordForm").reset();
+    } else {
+      showToast(data.message || "Change Failed", "error");
+    }
+  } catch (err) {
+    showToast("Security Sync Error", "error");
+  }
+}
       // SYNC: Fetch live historical transactions
       async function fetchOrders() {
         const container = document.getElementById("orderLogContainer");

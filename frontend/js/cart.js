@@ -42,33 +42,38 @@ function renderFullCart() {
         : `https://mishra-industries-ltd-yjfr.onrender.com${item.image}`
       : "./images/logo.jpeg";
 
+    // UPDATED: Added responsive flex-col md:flex-row and centering for mobile
     html += `
-            <div class="group bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 flex flex-col md:flex-row items-center justify-between animate__animated animate__fadeInUp" style="animation-delay: ${index * 0.1}s">
-              <div class="flex items-center space-x-8 w-full md:w-auto">
-                <div class="h-28 w-28 bg-slate-50 rounded-[2rem] overflow-hidden p-4 flex items-center justify-center border border-slate-100 group-hover:bg-white transition-colors">
+            <div class="group bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 border border-slate-100 shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col md:flex-row items-center justify-between animate__animated animate__fadeInUp relative" style="animation-delay: ${index * 0.1}s">
+              
+              <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-8 w-full md:w-auto">
+                <div class="h-28 w-28 bg-slate-50 rounded-[2rem] overflow-hidden p-4 flex items-center justify-center border border-slate-100 group-hover:bg-white transition-colors shrink-0">
                   <img src="${imageSrc}" onerror="this.src='./images/logo.jpeg'" class="h-full w-full object-contain group-hover:scale-110 transition-transform duration-700">
                 </div>
-                <div>
-                  <div class="flex items-center space-x-2 mb-1">
+                <div class="text-center md:text-left">
+                  <div class="flex items-center justify-center md:justify-start space-x-2 mb-1">
                     <span class="bg-blue-50 text-blue-600 text-[8px] font-black px-2 py-0.5 rounded-full uppercase">Industrial</span>
                     <span class="bg-orange-50 text-orange-600 text-[8px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter">ISI Certified</span>
                   </div>
-                  <h4 class="font-black text-blue-900 text-2xl tracking-tighter mb-1">${item.name}</h4>
+                  <h4 class="font-black text-blue-900 text-xl md:text-2xl tracking-tighter mb-1">${item.name}</h4>
                   <p class="text-xs font-black text-slate-300 uppercase tracking-widest">Rate: ₹${price.toLocaleString("en-IN")}</p>
                 </div>
               </div>
-              <div class="flex items-center justify-between w-full md:w-auto mt-8 md:mt-0 space-x-12">
-                <div class="flex items-center bg-slate-100 rounded-2xl p-2 border border-slate-200 shadow-inner">
-                  <button onclick="updateQty('${item.name}', -1)" class="w-12 h-12 hover:bg-white rounded-xl transition-all font-black text-blue-900 shadow-sm active:scale-90">-</button>
-                  <span class="px-8 font-black text-blue-900 text-lg">${qty}</span>
-                  <button onclick="updateQty('${item.name}', 1)" class="w-12 h-12 hover:bg-white rounded-xl transition-all font-black text-blue-900 shadow-sm active:scale-90">+</button>
+
+              <div class="flex flex-col md:flex-row items-center justify-between w-full md:w-auto mt-6 md:mt-0 space-y-4 md:space-y-0 md:space-x-8 lg:space-x-12 border-t md:border-none pt-6 md:pt-0">
+                <div class="flex items-center bg-slate-100 rounded-2xl p-1.5 border border-slate-200 shadow-inner">
+                  <button onclick="updateQty('${item.name}', -1)" class="w-10 h-10 md:w-12 md:h-12 hover:bg-white rounded-xl transition-all font-black text-blue-900 shadow-sm active:scale-90">-</button>
+                  <span class="px-6 md:px-8 font-black text-blue-900 text-base md:text-lg">${qty}</span>
+                  <button onclick="updateQty('${item.name}', 1)" class="w-10 h-10 md:w-12 md:h-12 hover:bg-white rounded-xl transition-all font-black text-blue-900 shadow-sm active:scale-90">+</button>
                 </div>
-                <div class="text-right min-w-[120px]">
-                  <p class="text-[10px] text-slate-300 font-bold line-through mb-1">₹${itemOriginal.toLocaleString("en-IN")}</p>
-                  <p class="font-black text-2xl text-blue-900 tracking-tighter">₹${itemDiscounted.toLocaleString("en-IN")}</p>
+                
+                <div class="text-center md:text-right min-w-[120px]">
+                  <p class="text-[10px] text-slate-300 font-bold line-through mb-0.5">₹${itemOriginal.toLocaleString("en-IN")}</p>
+                  <p class="font-black text-xl md:text-2xl text-blue-900 tracking-tighter">₹${itemDiscounted.toLocaleString("en-IN")}</p>
                 </div>
-                <button onclick="removeItem('${item.name}')" class="w-14 h-14 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all duration-500">
-                  <i class="fas fa-trash-alt text-lg"></i>
+
+                <button onclick="removeItem('${item.name}')" class="absolute top-4 right-4 md:static w-10 h-10 md:w-14 md:h-14 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-2xl transition-all duration-500 flex items-center justify-center">
+                  <i class="fas fa-trash-alt text-base"></i>
                 </button>
               </div>
             </div>`;

@@ -28,15 +28,17 @@ function loadCheckoutDetails() {
   document.getElementById("custPin").value = user.pincode || "";
 
   const container = document.getElementById("orderReviewItems");
+
+  // UPDATED: Added 'gap-4' and 'pr-2' for better spacing on mobile widths
   container.innerHTML = cart
     .map(
       (item) => `
-    <div class="flex justify-between items-center text-[11px] font-bold bg-white/5 p-4 rounded-2xl border border-white/5">
-        <div class="flex flex-col">
-          <span>${item.name}</span>
-          <span class="text-[9px] opacity-50 font-normal">Qty: ${item.quantity}</span>
+    <div class="flex justify-between items-center text-[11px] font-bold bg-white/5 p-4 rounded-2xl border border-white/5 gap-4">
+        <div class="flex flex-col flex-1 min-w-0">
+          <span class="truncate sm:whitespace-normal">${item.name}</span>
+          <span class="text-[9px] opacity-50 font-normal tracking-wider">Quantity: ${item.quantity}</span>
         </div>
-        <span>₹${(item.price * item.quantity).toLocaleString()}</span>
+        <span class="whitespace-nowrap">₹${(item.price * item.quantity).toLocaleString()}</span>
     </div>`,
     )
     .join("");

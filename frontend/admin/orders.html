@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Order Management | Mishra Industries Admin</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -15,12 +18,26 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap");
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        overflow-x: hidden;
+      }
       .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
       }
       .custom-scrollbar::-webkit-scrollbar-thumb {
         background: #1e3a8a;
         border-radius: 10px;
+      }
+
+      /* Mobile Nav Logic */
+      #mobileNav {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateY(-110%);
+      }
+      #mobileNav.active {
+        transform: translateY(0);
       }
 
       /* Professional Invoice Print Layout */
@@ -46,10 +63,10 @@
       }
     </style>
   </head>
-  <body class="bg-slate-50 flex min-h-screen font-sans custom-scrollbar">
+  <body class="bg-slate-50 lg:flex min-h-screen custom-scrollbar">
     <div
       id="invoiceContainer"
-      class="hidden bg-white p-12 font-sans border border-slate-200"
+      class="hidden bg-white p-12 border border-slate-200"
     >
       <div
         class="flex justify-between items-start border-b-4 border-blue-900 pb-8"
@@ -75,7 +92,6 @@
           </p>
         </div>
       </div>
-
       <div class="grid grid-cols-2 gap-12 my-10">
         <div>
           <p class="text-[10px] font-black uppercase text-blue-900 mb-2">
@@ -113,7 +129,6 @@
           </div>
         </div>
       </div>
-
       <table class="w-full text-left border-collapse">
         <thead>
           <tr class="bg-blue-900 text-white">
@@ -134,46 +149,25 @@
         </thead>
         <tbody id="invItemsBody" class="divide-y divide-slate-100"></tbody>
       </table>
-
       <div class="mt-10 flex justify-end">
         <div class="w-72 space-y-3">
           <div class="flex justify-between text-sm font-bold text-slate-500">
-            <span>Taxable Value</span>
-            <span id="invSubtotal">₹0</span>
+            <span>Taxable Value</span><span id="invSubtotal">₹0</span>
           </div>
           <div class="flex justify-between text-sm font-bold text-slate-500">
-            <span>GST (18% Statutory)</span>
-            <span id="invGst">₹0</span>
+            <span>GST (18% Statutory)</span><span id="invGst">₹0</span>
           </div>
           <div
             class="flex justify-between text-2xl font-black text-blue-900 border-t-2 border-blue-900 pt-3"
           >
-            <span>Grand Total</span>
-            <span id="invGrandTotal">₹0</span>
+            <span>Grand Total</span><span id="invGrandTotal">₹0</span>
           </div>
         </div>
-      </div>
-
-      <div
-        class="mt-24 border-t border-slate-100 pt-8 flex justify-between items-end"
-      >
-        <div class="text-left">
-          <p class="text-[8px] font-black text-slate-300 uppercase">
-            Authorized Signatory
-          </p>
-          <div class="h-10"></div>
-          <p class="text-[10px] font-bold text-slate-800">
-            For Mishra Industries Ltd.
-          </p>
-        </div>
-        <p class="text-[9px] text-slate-400 italic">
-          Generated via Mishra Atlas Cloud Fulfillment System
-        </p>
       </div>
     </div>
 
     <aside
-      class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col z-50 no-print"
+      class="hidden lg:flex w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex-col shrink-0 no-print"
     >
       <div class="flex items-center space-x-3 mb-12">
         <h2 class="text-2xl font-bold tracking-tighter">
@@ -188,8 +182,7 @@
           <i
             class="fas fa-layer-group text-slate-500 group-hover:text-orange-500"
           ></i>
-          <span
-            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+          <span class="font-bold text-sm text-slate-400 group-hover:text-white"
             >Site Editor</span
           >
         </a>
@@ -200,8 +193,7 @@
           <i
             class="fas fa-boxes text-slate-500 group-hover:text-orange-500"
           ></i>
-          <span
-            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+          <span class="font-bold text-sm text-slate-400 group-hover:text-white"
             >Inventory</span
           >
         </a>
@@ -212,8 +204,7 @@
           <i
             class="fas fa-users text-slate-500 group-hover:text-orange-500"
           ></i>
-          <span
-            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+          <span class="font-bold text-sm text-slate-400 group-hover:text-white"
             >Users</span
           >
         </a>
@@ -222,9 +213,7 @@
           class="flex items-center space-x-4 p-4 bg-orange-500/10 rounded-2xl transition-all group"
         >
           <i class="fas fa-shopping-cart text-orange-500"></i>
-          <span class="font-bold text-sm tracking-wide text-white"
-            >Orders List</span
-          >
+          <span class="font-bold text-sm text-white">Orders List</span>
         </a>
         <a
           href="queries.html"
@@ -233,8 +222,7 @@
           <i
             class="fas fa-question-circle text-slate-500 group-hover:text-orange-500"
           ></i>
-          <span
-            class="font-bold text-sm tracking-wide text-slate-400 group-hover:text-white"
+          <span class="font-bold text-sm text-slate-400 group-hover:text-white"
             >Query</span
           >
         </a>
@@ -248,30 +236,77 @@
       </a>
     </aside>
 
-    <main class="flex-1 p-12 overflow-y-auto no-print">
-      <header class="flex justify-between items-end mb-12">
+    <div
+      class="lg:hidden w-full bg-slate-900 p-5 flex justify-between items-center sticky top-0 z-[2500] no-print"
+    >
+      <h2 class="text-white font-bold tracking-tighter">
+        MISHRA <span class="text-orange-500">IND.</span>
+      </h2>
+      <button
+        onclick="toggleMobileMenu()"
+        class="text-white text-2xl focus:outline-none"
+      >
+        <i id="menuIcon" class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <div
+      id="mobileNav"
+      class="lg:hidden fixed top-0 left-0 w-full bg-slate-900 z-[2400] pt-20 pb-10 px-6 shadow-2xl border-b border-white/10 no-print"
+    >
+      <nav class="flex flex-col space-y-4 text-center">
+        <a
+          href="site-editor.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Site Editor</a
+        >
+        <a
+          href="stock-dashboard.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Inventory</a
+        >
+        <a
+          href="users.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Users</a
+        >
+        <a
+          href="orders.html"
+          class="text-orange-500 font-bold py-3 border-b border-white/5"
+          >Orders List</a
+        >
+        <a href="../index.html" class="text-red-400 font-bold py-3"
+          >Exit Admin</a
+        >
+      </nav>
+    </div>
+
+    <main class="flex-1 p-6 md:p-12 overflow-x-hidden no-print">
+      <header
+        class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6 animate__animated animate__fadeIn"
+      >
         <div>
           <h1
-            class="text-5xl font-black text-slate-900 tracking-tighter uppercase"
+            class="text-4xl md:text-5xl font-black text-slate-900 tracking-tighter uppercase leading-none"
           >
             Fulfillment
           </h1>
           <p
-            class="text-slate-400 font-bold text-xs mt-2 uppercase tracking-[0.3em]"
+            class="text-slate-400 font-bold text-[10px] mt-2 uppercase tracking-[0.3em]"
           >
             Live Order & Billing Stream
           </p>
         </div>
-        <div class="flex space-x-4">
+        <div class="flex gap-3 w-full md:w-auto">
           <button
             onclick="downloadOrderReport()"
-            class="bg-emerald-600 text-white px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-xl"
+            class="flex-1 md:flex-none bg-emerald-600 text-white px-6 py-4 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg"
           >
             <i class="fas fa-file-excel mr-2"></i> Manifest
           </button>
           <button
             onclick="loadOrders()"
-            class="bg-white p-4 rounded-2xl shadow-sm hover:text-orange-500 transition-all border border-slate-100"
+            class="bg-white p-4 rounded-xl shadow-sm hover:text-orange-500 transition-all border border-slate-100"
           >
             <i class="fas fa-sync-alt"></i>
           </button>
@@ -279,22 +314,24 @@
       </header>
 
       <section
-        class="bg-white rounded-[3rem] shadow-xl border border-slate-100 overflow-hidden"
+        class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden"
       >
-        <table class="w-full text-left border-collapse">
-          <thead class="bg-slate-50 border-b">
-            <tr
-              class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
-            >
-              <th class="p-8">Order Info</th>
-              <th class="p-8">Customer & Address</th>
-              <th class="p-8">Payment Details</th>
-              <th class="p-8">Status</th>
-              <th class="p-8 text-right">Operations</th>
-            </tr>
-          </thead>
-          <tbody id="orderTableBody" class="divide-y divide-slate-50"></tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left min-w-[900px]">
+            <thead class="bg-slate-50 border-b">
+              <tr
+                class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
+              >
+                <th class="p-8">Order Info</th>
+                <th class="p-8">Customer & Address</th>
+                <th class="p-8">Payment Details</th>
+                <th class="p-8">Status</th>
+                <th class="p-8 text-right">Operations</th>
+              </tr>
+            </thead>
+            <tbody id="orderTableBody" class="divide-y divide-slate-50"></tbody>
+          </table>
+        </div>
       </section>
     </main>
 
@@ -303,10 +340,19 @@
         "https://mishra-industries-ltd-yjfr.onrender.com/api/orders";
       let allOrders = [];
 
+      function toggleMobileMenu() {
+        const nav = document.getElementById("mobileNav");
+        const icon = document.getElementById("menuIcon");
+        nav.classList.toggle("active");
+        icon.className =
+          nav.classList.contains("active") ? "fas fa-times" : "fas fa-bars";
+        document.body.style.overflow =
+          nav.classList.contains("active") ? "hidden" : "auto";
+      }
+
       async function loadOrders() {
         const tableBody = document.getElementById("orderTableBody");
         tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
-
         try {
           const res = await fetch(`${API_BASE}/all`);
           allOrders = await res.json();
@@ -319,7 +365,6 @@
       function renderOrders(orders) {
         const tableBody = document.getElementById("orderTableBody");
         tableBody.innerHTML = "";
-
         orders.forEach((order) => {
           const orderDate = new Date(order.createdAt).toLocaleDateString(
             "en-IN",
@@ -369,12 +414,9 @@
         });
       }
 
-      // AUTOMATED BILL GENERATOR
       function generateBill(id) {
         const order = allOrders.find((o) => o._id === id);
         if (!order) return;
-
-        // Populate Invoice Data
         document.getElementById("invId").innerText =
           `#MI-${order._id.slice(-6).toUpperCase()}`;
         document.getElementById("invDate").innerText =
@@ -387,40 +429,32 @@
           `Method: ${order.paymentMethod || "COD"}`;
         document.getElementById("invTxnId").innerText =
           `TXN ID: ${order.transactionId || "N/A"}`;
-
         const badge = document.getElementById("invStatusBadge");
         badge.innerText =
           order.status === "Paid" || order.paymentMethod === "Razorpay" ?
             "PAYMENT RECEIVED"
           : "PAYMENT DUE";
         badge.className = `inline-block mt-3 px-4 py-1 rounded-full text-[10px] font-black uppercase ${order.status === "Paid" ? "bg-green-100 text-green-700" : "bg-orange-100 text-orange-700"}`;
-
-        // Calculate Totals
         const subtotal = order.totalAmount / 1.18;
         const gst = order.totalAmount - subtotal;
-
         document.getElementById("invItemsBody").innerHTML = order.items
           .map(
             (item, i) => `
-              <tr>
-                  <td class="p-4 text-xs text-slate-400 font-bold">${i + 1}</td>
-                  <td class="p-4 text-xs font-bold text-slate-800">${item.name}</td>
-                  <td class="p-4 text-xs text-center font-bold text-slate-600">${item.quantity}</td>
-                  <td class="p-4 text-xs text-right text-slate-600">₹${item.price.toLocaleString()}</td>
-                  <td class="p-4 text-xs font-black text-blue-900 text-right">₹${(item.price * item.quantity).toLocaleString()}</td>
-              </tr>
-          `,
+            <tr>
+                <td class="p-4 text-xs text-slate-400 font-bold">${i + 1}</td>
+                <td class="p-4 text-xs font-bold text-slate-800">${item.name}</td>
+                <td class="p-4 text-xs text-center font-bold text-slate-600">${item.quantity}</td>
+                <td class="p-4 text-xs text-right text-slate-600">₹${item.price.toLocaleString()}</td>
+                <td class="p-4 text-xs font-black text-blue-900 text-right">₹${(item.price * item.quantity).toLocaleString()}</td>
+            </tr>`,
           )
           .join("");
-
         document.getElementById("invSubtotal").innerText =
           `₹${subtotal.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
         document.getElementById("invGst").innerText =
           `₹${gst.toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
         document.getElementById("invGrandTotal").innerText =
           `₹${order.totalAmount.toLocaleString()}`;
-
-        // Trigger Print
         const inv = document.getElementById("invoiceContainer");
         inv.classList.remove("hidden");
         window.print();

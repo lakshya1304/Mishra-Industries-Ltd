@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const orderSchema = new mongoose.Schema(
   {
     // Link to User model
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    admin: { type: mongoose.Schema.Types.ObjectId, ref: "admin", required: true },
     customerName: { type: String, required: true },
     phone: { type: String, required: true },
     address: { type: String, required: true },

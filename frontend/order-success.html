@@ -2,64 +2,244 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Order Confirmed | Mishra Industries</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap");
-      body { font-family: "Plus Jakarta Sans", sans-serif; background: #f8fafc; }
-      .success-card { background: white; border-radius: 4rem; box-shadow: 0 40px 100px -20px rgba(30, 58, 138, 0.1); }
-      .confetti-icon { color: #f97316; animation: bounce 2s infinite; }
-      @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+      html,
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        background: #f8fafc;
+        overflow-x: hidden;
+        width: 100%;
+      }
+
+      .success-card {
+        background: white;
+        border-radius: 2.5rem;
+        box-shadow: 0 40px 100px -20px rgba(30, 58, 138, 0.1);
+      }
+
+      /* Ghost Render Area: Hidden from user but visible to the PDF crawler */
+      #invoice-ghost-render {
+        position: absolute;
+        left: -9999px;
+        top: 0;
+        width: 800px;
+        background: white !important;
+      }
+
+      @media (max-width: 640px) {
+        .mobile-stack {
+          flex-direction: column;
+        }
+        .success-card {
+          border-radius: 2rem;
+          padding: 2rem !important;
+        }
+      }
     </style>
   </head>
-  <body class="min-h-screen flex items-center justify-center p-6">
-    <div class="max-w-2xl w-full success-card p-12 text-center animate__animated animate__zoomIn">
-      <div class="w-24 h-24 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 animate__animated animate__heartBeat animate__infinite">
-        <i class="fas fa-check text-4xl"></i>
+  <body class="min-h-screen flex items-center justify-center p-4">
+    <div
+      class="max-w-xl w-full success-card p-10 text-center animate__animated animate__zoomIn"
+    >
+      <div
+        class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 animate__animated animate__heartBeat animate__infinite"
+      >
+        <i class="fas fa-check text-3xl"></i>
       </div>
-      
-      <h1 class="text-4xl font-black text-blue-900 uppercase tracking-tighter mb-4">Payment Successful</h1>
-      <p class="text-slate-400 font-bold text-sm mb-10 uppercase tracking-widest">Order has been logged</p>
-      
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-12">
-        <div class="bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Estimated Dispatch</p>
-          <p class="text-blue-900 font-black">Within 48 Hours</p>
+
+      <h1
+        class="text-3xl font-black text-blue-900 uppercase tracking-tighter mb-2 leading-none"
+      >
+        Order Confirmed
+      </h1>
+      <p
+        class="text-slate-400 font-bold text-[10px] mb-8 uppercase tracking-widest"
+      >
+        Digital Invoice Generated Successfully
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <p class="text-[8px] font-black text-slate-400 uppercase mb-1">
+            Payment
+          </p>
+          <p class="text-emerald-600 font-black text-xs uppercase">Verified</p>
         </div>
-        <div class="bg-slate-50 p-6 rounded-[2rem] border border-slate-100">
-          <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Support Node</p>
-          <p class="text-blue-900 font-black">+91 9473056840</p>
+        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+          <p class="text-[8px] font-black text-slate-400 uppercase mb-1">
+            Dispatch
+          </p>
+          <p class="text-blue-900 font-black text-xs">Under 48hrs</p>
         </div>
       </div>
 
-      <div class="flex flex-col md:flex-row gap-4 justify-center">
-        <button onclick="downloadInvoice()" class="bg-blue-900 text-white px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-orange-500 transition-all shadow-xl active:scale-95">
-          <i class="fas fa-file-invoice mr-2"></i> Download Invoice
-        </button>
-        <button onclick="location.href='shop.html'" class="bg-slate-100 text-slate-600 px-10 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-all active:scale-95">
-          Back to Showroom
+      <div class="flex flex-col gap-3">
+        <div class="flex mobile-stack gap-3">
+          <button
+            id="downloadBtn"
+            onclick="generateAndDownloadBill()"
+            class="flex-1 bg-blue-900 text-white px-6 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-orange-500 transition-all shadow-lg active:scale-95 flex items-center justify-center"
+          >
+            <i class="fas fa-file-invoice mr-2"></i> Download Bill
+          </button>
+          <button
+            onclick="shareToWhatsApp()"
+            class="flex-1 bg-[#25D366] text-white px-6 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:opacity-90 transition-all shadow-lg active:scale-95 flex items-center justify-center"
+          >
+            <i class="fab fa-whatsapp mr-2 text-base"></i> WhatsApp Alert
+          </button>
+        </div>
+        <button
+          onclick="location.href = 'shop.html'"
+          class="w-full bg-slate-100 text-slate-600 px-6 py-4 rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-all"
+        >
+          Continue Shopping
         </button>
       </div>
 
-      <p class="mt-12 text-[9px] font-bold text-slate-300 uppercase tracking-[0.4em]">Node Secured: Mishra Industries Ltd.</p>
+      <p
+        class="mt-10 text-[8px] font-bold text-slate-300 uppercase tracking-[0.4em]"
+      >
+        Transaction Node: Mishra Industries Ltd.
+      </p>
     </div>
 
-    <div id="invoiceFrame" class="hidden"></div>
+    <div id="invoice-ghost-render"></div>
 
     <script>
-      // Function to trigger the automated bill generator we built in orders.html
-      async function downloadInvoice() {
-          const lastOrder = JSON.parse(localStorage.getItem('last_order_customer'));
-          if(!lastOrder) {
-              alert("Invoice data expired. Please check your email or contact support.");
-              return;
-          }
-          // In a real production app, this would fetch the specific PDF from the backend
-          alert("✅ Generating Tax Invoice... Opening Print Dialog.");
-          window.print();
+      // Retrieve the order data saved during checkout
+      const lastOrder = JSON.parse(localStorage.getItem("last_order_customer"));
+
+      async function generateAndDownloadBill() {
+        if (!lastOrder) {
+          alert("Order details not found. Please contact support.");
+          return;
+        }
+
+        const btn = document.getElementById("downloadBtn");
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fas fa-circle-notch fa-spin mr-2"></i> Processing Bill...`;
+
+        // Professional Tax Invoice Layout
+        const billTemplate = `
+            <div style="padding: 40px; background: white; color: #333; font-family: sans-serif; line-height: 1.5;">
+              <table style="width: 100%; margin-bottom: 30px;">
+                <tr>
+                  <td style="width: 60%;">
+                    <h1 style="color: #1e3a8a; margin: 0; font-size: 28px; font-weight: 900;">MISHRA INDUSTRIES LTD.</h1>
+                    <p style="font-size: 11px; color: #555; margin: 5px 0;">Official Industrial & Residential Electrical Supplier</p>
+                    <p style="font-size: 11px; color: #555; margin: 0;">GSTIN: 29AAFCM5975L1ZO | Ranchi, Jharkhand</p>
+                  </td>
+                  <td style="text-align: right; vertical-align: top;">
+                    <h2 style="color: #f97316; margin: 0; font-size: 22px; font-weight: 900;">TAX INVOICE</h2>
+                    <p style="font-size: 12px; margin: 5px 0;"><b>Date:</b> ${new Date().toLocaleDateString()}</p>
+                    <p style="font-size: 12px; margin: 0;"><b>Invoice No:</b> #MI-INV-${Date.now().toString().slice(-6)}</p>
+                  </td>
+                </tr>
+              </table>
+
+              <div style="margin-bottom: 30px; border: 1px solid #eee; padding: 20px; border-radius: 8px; background: #fafafa;">
+                <p style="font-size: 10px; color: #1e3a8a; font-weight: 900; text-transform: uppercase; margin: 0 0 10px 0;">Consignee Details (Bill To):</p>
+                <p style="font-size: 14px; font-weight: 900; margin: 0;">${lastOrder.customerName}</p>
+                <p style="font-size: 11px; color: #444; margin: 5px 0;">${lastOrder.address}</p>
+                <p style="font-size: 11px; color: #444; margin: 0;"><b>Contact:</b> ${lastOrder.phone}</p>
+              </div>
+
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                <thead>
+                  <tr style="background: #1e3a8a; color: white;">
+                    <th style="padding: 12px; text-align: left; font-size: 11px;">ITEM DESCRIPTION</th>
+                    <th style="padding: 12px; text-align: center; font-size: 11px;">QUANTITY</th>
+                    <th style="padding: 12px; text-align: right; font-size: 11px;">UNIT PRICE</th>
+                    <th style="padding: 12px; text-align: right; font-size: 11px;">TOTAL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${lastOrder.items
+                    .map(
+                      (item) => `
+                    <tr style="border-bottom: 1px solid #eee;">
+                      <td style="padding: 12px; font-size: 11px;"><b>${item.name}</b><br><span style="font-size: 9px; color: #888;">HSN: 8536 (ISI Certified)</span></td>
+                      <td style="padding: 12px; text-align: center; font-size: 11px;">${item.quantity}</td>
+                      <td style="padding: 12px; text-align: right; font-size: 11px;">₹${item.price.toLocaleString()}</td>
+                      <td style="padding: 12px; text-align: right; font-size: 11px;">₹${(item.price * item.quantity).toLocaleString()}</td>
+                    </tr>
+                  `,
+                    )
+                    .join("")}
+                </tbody>
+              </table>
+
+              <div style="text-align: right;">
+                <div style="display: inline-block; width: 280px; border-top: 2px solid #1e3a8a; padding-top: 10px;">
+                  <div style="display: flex; justify-content: space-between; font-size: 11px; padding: 5px 0;">
+                    <span>Total Taxable Value:</span>
+                    <span>₹${(lastOrder.totalAmount / 1.18).toFixed(2)}</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 11px; padding: 5px 0; color: #666;">
+                    <span>Statutory GST (18%):</span>
+                    <span>₹${(lastOrder.totalAmount - lastOrder.totalAmount / 1.18).toFixed(2)}</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: 900; color: #1e3a8a; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                    <span>GRAND TOTAL:</span>
+                    <span>₹${lastOrder.totalAmount.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="margin-top: 80px; text-align: center; border-top: 1px solid #eee; padding-top: 20px;">
+                <p style="font-size: 10px; color: #999; margin: 0;">This is a computer generated invoice powered by Mishra Atlas Node. No signature required.</p>
+                <p style="font-size: 11px; color: #1e3a8a; font-weight: 900; margin-top: 8px;">THANK YOU FOR YOUR BUSINESS!</p>
+              </div>
+            </div>
+          `;
+
+        const renderArea = document.getElementById("invoice-ghost-render");
+        renderArea.innerHTML = billTemplate;
+
+        const opt = {
+          margin: 0.2,
+          filename: `Mishra_Industries_Invoice_${Date.now()}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, backgroundColor: "#FFFFFF" },
+          jsPDF: { unit: "in", format: "a4", orientation: "portrait" },
+        };
+
+        // Small delay to ensure the DOM has painted the ghost content before capture
+        setTimeout(() => {
+          html2pdf()
+            .set(opt)
+            .from(renderArea)
+            .save()
+            .then(() => {
+              btn.disabled = false;
+              btn.innerHTML = `<i class="fas fa-file-invoice mr-2"></i> Download Bill`;
+              renderArea.innerHTML = ""; // Clear memory
+            });
+        }, 800);
+      }
+
+      function shareToWhatsApp() {
+        if (!lastOrder) return;
+        const msg = `*Mishra Industries - Order Update*%0A%0AHello, my order for *₹${lastOrder.totalAmount.toLocaleString()}* has been confirmed. Please share the dispatch timeline.%0A%0A*Name:* ${lastOrder.customerName}`;
+        window.open(`https://wa.me/919473056840?text=${msg}`, "_blank");
       }
     </script>
   </body>

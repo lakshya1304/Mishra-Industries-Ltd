@@ -24,6 +24,12 @@ async function loadProductDetails() {
       currentProduct.image,
     );
 
+    // Update Brand Name in the UI
+    if (document.getElementById("brandNameSpan")) {
+      document.getElementById("brandNameSpan").innerText =
+        currentProduct.company;
+    }
+
     const discount = currentProduct.discount || 0;
     const finalPrice = Math.floor(
       currentProduct.price - currentProduct.price * (discount / 100),
@@ -48,7 +54,14 @@ async function loadProductDetails() {
       `flex items-center text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-md ${available ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`;
 
     renderSpecs(currentProduct);
-    loadRecommendations(currentProduct.category, currentProduct._id);
+
+    // Now fetching both Category and Brand based recommendations
+    loadRecommendations(
+      currentProduct.category,
+      currentProduct.company,
+      currentProduct._id,
+    );
+
     updateCartBadge();
     AOS.init();
   } catch (err) {
@@ -80,30 +93,47 @@ function renderSpecs(product) {
     .join("");
 }
 
-async function loadRecommendations(category, currentId) {
+async function loadRecommendations(category, brand, currentId) {
   try {
     const response = await fetch(`${API_BASE}/api/products/all`);
     const allProducts = await response.json();
-    const recommended = allProducts
-      .filter((p) => p.category === category && p._id !== currentId)
-      .slice(0, 8);
-    document.getElementById("recommendationSlider").innerHTML = recommended
-      .map((p) => {
-        const disc = p.discount || 0;
-        const price = Math.floor(p.price - p.price * (disc / 100));
-        return `
-            <div onclick="location.href='product-details.html?id=${p._id}'" class="min-w-[280px] bg-white rounded-3xl border border-slate-100 p-5 hover:shadow-xl transition-all cursor-pointer group">
-                <div class="h-40 bg-slate-50 rounded-2xl mb-4 overflow-hidden flex items-center justify-center p-4">
-                    <img src="${getCleanImagePath(p.image)}" class="h-full object-contain group-hover:scale-110 transition-transform duration-500">
-                </div>
-                <h4 class="text-sm font-black text-blue-900 truncate mb-2">${p.name}</h4>
-                <p class="text-lg font-black text-blue-900">₹${price.toLocaleString()}</p>
-            </div>`;
-      })
+
+    // 1. Filter Same Category (Removing current product)
+    const categoryMatches = allProducts.filter(
+      (p) => p.category === category && p._id !== currentId,
+    );
+    document.getElementById("recommendationSlider").innerHTML = categoryMatches
+      .map((p) => renderCard(p))
       .join("");
+
+    // 2. Filter Same Brand (Removing current product)
+    const brandMatches = allProducts.filter(
+      (p) => p.company === brand && p._id !== currentId,
+    );
+
+    if (brandMatches.length > 0) {
+      document.getElementById("brandSection").classList.remove("hidden");
+      document.getElementById("brandSlider").innerHTML = brandMatches
+        .map((p) => renderCard(p))
+        .join("");
+    }
   } catch (err) {
     console.error(err);
   }
+}
+
+function renderCard(p) {
+  const disc = p.discount || 0;
+  const price = Math.floor(p.price - p.price * (disc / 100));
+  return `
+        <div onclick="location.href='product-details.html?id=${p._id}'" class="min-w-[280px] bg-white rounded-3xl border border-slate-100 p-5 hover:shadow-xl transition-all cursor-pointer group">
+            <div class="h-40 bg-slate-50 rounded-2xl mb-4 overflow-hidden flex items-center justify-center p-4">
+                <img src="${getCleanImagePath(p.image)}" class="h-full object-contain group-hover:scale-110 transition-transform duration-500">
+            </div>
+            <p class="text-[9px] font-black text-orange-500 uppercase tracking-widest mb-1">${p.company}</p>
+            <h4 class="text-sm font-black text-blue-900 truncate mb-2">${p.name}</h4>
+            <p class="text-lg font-black text-blue-900">₹${price.toLocaleString()}</p>
+        </div>`;
 }
 
 function updateQty(val) {
@@ -111,7 +141,6 @@ function updateQty(val) {
   document.getElementById("quantityDisplay").innerText = currentQty;
 }
 
-// FIXED: Connected to "mishra_cart" unified key
 const addToCartBtn = document.getElementById("addToCartBtn");
 if (addToCartBtn) {
   addToCartBtn.onclick = () => {
@@ -152,13 +181,46 @@ if (addToCartBtn) {
 
 function showToast(name) {
   const toast = document.getElementById("cartToast");
-  document.getElementById("toastProductName").innerText = name;
-  toast.classList.remove("opacity-0", "translate-x-10", "pointer-events-none");
-  setTimeout(
-    () =>
-      toast.classList.add("opacity-0", "translate-x-10", "pointer-events-none"),
-    3000,
-  );
+  if (toast) {
+    document.getElementById("toastProductName").innerText = name;
+
+    // Check screen width to determine animation
+    const isMobile = window.innerWidth < 768;
+
+    if (isMobile) {
+      // Mobile: Slide up from bottom center
+      toast.style.top = "auto";
+      toast.style.bottom = "2rem";
+      toast.style.right = "50%";
+      toast.style.transform = "translateX(50%) translateY(100%)";
+
+      // Force repaint to allow transition
+      setTimeout(() => {
+        toast.classList.remove("opacity-0", "pointer-events-none");
+        toast.style.transform = "translateX(50%) translateY(0)";
+      }, 10);
+    } else {
+      // Desktop: Slide in from right (original behavior)
+      toast.classList.remove(
+        "opacity-0",
+        "translate-x-10",
+        "pointer-events-none",
+      );
+    }
+
+    setTimeout(() => {
+      if (isMobile) {
+        toast.style.transform = "translateX(50%) translateY(100%)";
+        toast.classList.add("opacity-0", "pointer-events-none");
+      } else {
+        toast.classList.add(
+          "opacity-0",
+          "translate-x-10",
+          "pointer-events-none",
+        );
+      }
+    }, 3000);
+  }
 }
 
 function updateCartBadge() {

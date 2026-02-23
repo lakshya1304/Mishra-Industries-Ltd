@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const path = require("node:path"); // ✅ FIXED typo from "ath" to "path"
+const path = require("node:path");
 const fs = require("node:fs");
 const { protect } = require("../middleware/authMiddleware");
 
@@ -70,12 +70,11 @@ router.post("/forgot-password", forgotPassword);
 router.post("/verify-otp", verifyOTP);
 router.post("/reset-password", resetPassword);
 
-// Profile & Security Routes (With Multer Middleware)
+// ✅ FIXED: Added 'protect' back to update-profile to fix "Next is not a function"
 router.get("/profile", protect, getProfile);
-router.put("/update-profile", protect, cpUpload, updateProfile); // ✅ CORRECTLY uses cpUpload for files
+router.put("/update-profile", protect, cpUpload, updateProfile);
 router.put("/change-password", protect, changePassword);
 
-// Management Routes
 router.get("/all-users", async (req, res) => {
   try {
     const User = require("../models/User");

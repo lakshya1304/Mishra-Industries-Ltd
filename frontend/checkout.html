@@ -25,53 +25,70 @@
         background: #1e3a8a;
         border-radius: 10px;
       }
+
+      /* Mobile optimization for sticky elements */
+      @media (max-width: 1024px) {
+        .sticky {
+          position: static !important;
+        }
+      }
     </style>
   </head>
-  <body class="bg-slate-50 min-h-screen pb-20">
+  <body class="bg-slate-50 min-h-screen pb-12 md:pb-20">
     <div
       id="paymentSuccessOverlay"
       class="fixed inset-0 z-[100] bg-blue-900/95 backdrop-blur-md flex items-center justify-center hidden"
     >
-      <div class="text-center animate__animated animate__zoomIn">
+      <div class="text-center animate__animated animate__zoomIn p-6">
         <div
-          class="w-32 h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl"
+          class="w-24 h-24 md:w-32 md:h-32 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl"
         >
-          <i class="fas fa-spinner fa-spin text-5xl text-blue-900"></i>
+          <i
+            class="fas fa-spinner fa-spin text-3xl md:text-5xl text-blue-900"
+          ></i>
         </div>
-        <h2 class="text-3xl font-black text-white uppercase tracking-tighter">
+        <h2
+          class="text-2xl md:text-3xl font-black text-white uppercase tracking-tighter"
+        >
           Syncing Order
         </h2>
         <p
-          class="text-blue-200 font-bold text-[10px] uppercase tracking-[0.3em] mt-2"
+          class="text-blue-200 font-bold text-[8px] md:text-[10px] uppercase tracking-[0.3em] mt-2"
         >
           Connecting to Secure Mishra Node...
         </p>
       </div>
     </div>
 
-    <nav class="bg-white border-b border-slate-100 p-6 mb-12 sticky top-0 z-40">
+    <nav
+      class="bg-white border-b border-slate-100 p-4 md:p-6 mb-6 md:mb-12 sticky top-0 z-40"
+    >
       <div class="container mx-auto flex justify-between items-center">
         <h1
-          class="text-2xl font-black text-blue-900 tracking-tighter cursor-pointer"
+          class="text-xl md:text-2xl font-black text-blue-900 tracking-tighter cursor-pointer"
           onclick="location.href = 'index.html'"
         >
           MISHRA <span class="text-orange-500">IND.</span>
         </h1>
         <button
           onclick="location.href = 'shop.html'"
-          class="text-[10px] font-black uppercase text-slate-400 hover:text-blue-900 transition-all flex items-center"
+          class="text-[9px] md:text-[10px] font-black uppercase text-slate-400 hover:text-blue-900 transition-all flex items-center"
         >
-          <i class="fas fa-arrow-left mr-2"></i> Back to Shop
+          <i class="fas fa-arrow-left mr-2"></i>
+          <span class="hidden sm:inline">Back to Shop</span
+          ><span class="sm:hidden">Back</span>
         </button>
       </div>
     </nav>
 
-    <div class="container mx-auto px-6">
-      <div class="flex flex-col lg:flex-row gap-12 items-start justify-center">
+    <div class="container mx-auto px-4 md:px-6">
+      <div
+        class="flex flex-col lg:flex-row gap-8 md:gap-12 items-start justify-center"
+      >
         <div class="w-full lg:w-[60%]">
-          <div class="mb-10">
+          <div class="mb-6 md:mb-10">
             <h2
-              class="text-4xl font-black text-blue-900 uppercase tracking-tighter"
+              class="text-3xl md:text-4xl font-black text-blue-900 uppercase tracking-tighter"
             >
               Delivery Details
             </h2>
@@ -80,62 +97,62 @@
             </p>
           </div>
 
-          <form id="checkoutForm" class="space-y-6">
+          <form id="checkoutForm" class="space-y-4 md:space-y-6">
             <div
-              class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"
+              class="bg-white p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-slate-100 shadow-sm"
             >
               <h3
-                class="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] mb-6"
+                class="text-[9px] md:text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] mb-6"
               >
                 01. Recipient Information
               </h3>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                 <input
                   type="text"
                   id="custName"
                   placeholder="Full Name"
-                  class="w-full bg-slate-50 p-4 rounded-2xl outline-none font-bold text-slate-700"
+                  class="w-full bg-slate-50 p-4 rounded-xl md:rounded-2xl outline-none font-bold text-slate-700 text-sm md:text-base"
                   required
                 />
                 <input
                   type="tel"
                   id="custPhone"
                   placeholder="Mobile Number"
-                  class="w-full bg-slate-50 p-4 rounded-2xl outline-none font-bold text-slate-700"
+                  class="w-full bg-slate-50 p-4 rounded-xl md:rounded-2xl outline-none font-bold text-slate-700 text-sm md:text-base"
                   required
                 />
               </div>
             </div>
 
             <div
-              class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"
+              class="bg-white p-6 md:p-8 rounded-2xl md:rounded-[2.5rem] border border-slate-100 shadow-sm"
             >
               <h3
-                class="text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] mb-6"
+                class="text-[9px] md:text-[10px] font-black text-orange-500 uppercase tracking-[0.3em] mb-6"
               >
                 02. Shipping Destination
               </h3>
-              <div class="space-y-6">
+              <div class="space-y-4 md:space-y-6">
                 <textarea
                   id="custAddress"
                   placeholder="Full Street Address"
                   rows="2"
-                  class="w-full bg-slate-50 p-4 rounded-2xl outline-none font-bold text-slate-700 resize-none"
+                  class="w-full bg-slate-50 p-4 rounded-xl md:rounded-2xl outline-none font-bold text-slate-700 resize-none text-sm md:text-base"
                   required
                 ></textarea>
-                <div class="grid grid-cols-2 gap-6">
+                <div class="grid grid-cols-2 gap-4 md:gap-6">
                   <input
                     type="text"
                     id="custCity"
                     placeholder="City"
-                    class="w-full bg-slate-50 p-4 rounded-2xl outline-none font-bold text-slate-700"
+                    class="w-full bg-slate-50 p-4 rounded-xl md:rounded-2xl outline-none font-bold text-slate-700 text-sm md:text-base"
                     required
                   />
                   <input
                     type="text"
                     id="custPin"
                     placeholder="Pincode"
-                    class="w-full bg-slate-50 p-4 rounded-2xl outline-none font-bold text-slate-700"
+                    class="w-full bg-slate-50 p-4 rounded-xl md:rounded-2xl outline-none font-bold text-slate-700 text-sm md:text-base"
                     required
                   />
                 </div>
@@ -144,55 +161,59 @@
           </form>
         </div>
 
-        <div class="w-full lg:w-[420px] sticky top-28">
-          <div class="bg-blue-900 text-white rounded-[3rem] p-10 shadow-2xl">
+        <div class="w-full lg:w-[420px] lg:sticky lg:top-28">
+          <div
+            class="bg-blue-900 text-white p-8 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-2xl"
+          >
             <h3
-              class="text-lg font-black uppercase tracking-widest mb-10 border-b border-blue-800 pb-6"
+              class="text-base md:text-lg font-black uppercase tracking-widest mb-6 md:mb-10 border-b border-blue-800 pb-6"
             >
               Final Bill
             </h3>
+
             <div
               id="orderReviewItems"
-              class="space-y-4 mb-8 max-h-64 overflow-y-auto pr-2 custom-scrollbar"
+              class="space-y-4 mb-8 max-h-48 md:max-h-64 overflow-y-auto pr-2 custom-scrollbar"
             ></div>
 
             <div class="space-y-4 pt-6 border-t border-blue-800">
               <div
-                class="flex justify-between text-[10px] font-bold opacity-50 uppercase tracking-widest"
+                class="flex justify-between text-[9px] md:text-[10px] font-bold opacity-50 uppercase tracking-widest"
               >
                 <span>Subtotal</span>
                 <span id="displaySubtotal">₹0</span>
               </div>
               <div
-                class="flex justify-between text-[10px] font-black text-green-400 uppercase tracking-widest"
+                class="flex justify-between text-[9px] md:text-[10px] font-black text-green-400 uppercase tracking-widest"
               >
-                <span>Shipping Charge</span>
-                <span class="text-green-1000 font-black uppercase text-[10px]"
-                  >Free</span
-                >
+                <span>Shipping</span>
+                <span class="font-black uppercase">Free</span>
               </div>
               <div
-                class="flex justify-between text-[10px] font-black text-green-400 uppercase tracking-widest"
+                class="flex justify-between text-[9px] md:text-[10px] font-black text-green-400 uppercase tracking-widest"
               >
                 <span>GST (18% Statutory)</span>
                 <span id="displayGst">₹0</span>
               </div>
               <div
-                class="flex justify-between text-3xl font-black pt-8 mt-4 border-t-2 border-white/10"
+                class="flex justify-between items-baseline pt-6 md:pt-8 mt-4 border-t-2 border-white/10"
               >
-                <span class="text-xs uppercase opacity-40">Total</span>
-                <span id="displayTotal">₹0</span>
+                <span class="text-[10px] uppercase opacity-40">Total</span>
+                <span id="displayTotal" class="text-2xl md:text-3xl font-black"
+                  >₹0</span
+                >
               </div>
             </div>
 
             <button
               onclick="placeOrder()"
-              class="w-full bg-orange-500 text-white font-black py-6 rounded-2xl mt-10 hover:bg-orange-600 transition-all shadow-xl uppercase tracking-[0.2em] text-[10px]"
+              class="w-full bg-orange-500 text-white font-black py-5 md:py-6 rounded-xl md:rounded-2xl mt-8 md:mt-10 hover:bg-orange-600 transition-all shadow-xl uppercase tracking-[0.2em] text-[10px]"
             >
               Confirm & Pay <i class="fas fa-arrow-right ml-2"></i>
             </button>
+
             <p
-              class="text-center text-[8px] font-bold text-blue-400 mt-6 uppercase tracking-[0.4em]"
+              class="text-center text-[7px] md:text-[8px] font-bold text-blue-400 mt-6 uppercase tracking-[0.4em]"
             >
               Node Secured via Mishra Industries
             </p>
