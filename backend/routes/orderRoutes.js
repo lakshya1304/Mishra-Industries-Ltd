@@ -3,7 +3,9 @@ const router = express.Router();
 const Order = require("../models/Order");
 const { protect } = require("../middleware/authMiddleware");
 
-// POST: Add new verified order
+// ===============================
+// ✅ POST: Add New Order
+// ===============================
 router.post("/add", protect, async (req, res) => {
   try {
     const newOrder = new Order({
@@ -19,14 +21,21 @@ router.post("/add", protect, async (req, res) => {
       status: req.body.status || "Pending",
     });
 
-    await newOrder.save();
-    res.status(201).json({ success: true, message: "Order saved to Atlas" });
+    const savedOrder = await newOrder.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Order saved to Atlas",
+      order: savedOrder,
+    });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// ✅ Admin: Fetch all orders
+// ===============================
+// ✅ ADMIN: Fetch All Orders
+// ===============================
 router.get("/all", protect, async (req, res) => {
   try {
     if (req.user.accountType !== "admin") {
@@ -34,13 +43,31 @@ router.get("/all", protect, async (req, res) => {
     }
 
     const orders = await Order.find().sort({ createdAt: -1 });
-    res.json(orders);
+
+    res.status(200).json(orders);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// ✅ Admin: Update Order Status
+// ===============================
+// ✅ USER: Fetch Own Orders
+// ===============================
+router.get("/my-orders", protect, async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.user._id }).sort({
+      createdAt: -1,
+    });
+
+    res.status(200).json(orders);
+  } catch (error) {
+    res.status(500).json({ message: "Order Sync Failed" });
+  }
+});
+
+// ===============================
+// ✅ ADMIN: Update Order Status
+// ===============================
 router.put("/status/:id", protect, async (req, res) => {
   try {
     if (req.user.accountType !== "admin") {
@@ -56,13 +83,15 @@ router.put("/status/:id", protect, async (req, res) => {
     if (!updatedOrder)
       return res.status(404).json({ message: "Order not found" });
 
-    res.json(updatedOrder);
+    res.status(200).json(updatedOrder);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-// ✅ Admin Analytics
+// ===============================
+// ✅ ADMIN: Analytics
+// ===============================
 router.get("/stats/total-sales", protect, async (req, res) => {
   try {
     if (req.user.accountType !== "admin") {
@@ -82,26 +111,19 @@ router.get("/stats/total-sales", protect, async (req, res) => {
     const result =
       stats.length > 0 ? stats[0] : { totalRevenue: 0, totalOrders: 0 };
 
-    res.json({ success: true, ...result });
+    res.status(200).json({
+      success: true,
+      totalRevenue: result.totalRevenue,
+      totalOrders: result.totalOrders,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// ✅ User: Fetch own orders
-router.get("/my-orders", protect, async (req, res) => {
-  try {
-    const orders = await Order.find({ user: req.user._id }).sort({
-      createdAt: -1,
-    });
-
-    res.json(orders);
-  } catch (error) {
-    res.status(500).json({ message: "Order Sync Failed" });
-  }
-});
-
-// ✅ Admin Delete
+// ===============================
+// ✅ ADMIN: Delete Order
+// ===============================
 router.delete("/delete/:id", protect, async (req, res) => {
   try {
     if (req.user.accountType !== "admin") {
@@ -113,7 +135,7 @@ router.delete("/delete/:id", protect, async (req, res) => {
     if (!deletedOrder)
       return res.status(404).json({ message: "Order not found" });
 
-    res.json({ message: "Order deleted" });
+    res.status(200).json({ message: "Order deleted successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

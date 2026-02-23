@@ -5,17 +5,6 @@ let iti;
 document.addEventListener("DOMContentLoaded", function () {
   const phoneInput = document.querySelector("#regPhone");
 
-  // Fixed country to India and removed dropdown
-  iti = window.intlTelInput(phoneInput, {
-    separateDialCode: true,
-    initialCountry: "in",
-    allowDropdown: false,
-    nationalMode: false,
-    autoHideDialCode: false,
-    formatOnDisplay: false,
-    utilsScript:
-      "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/utils.js",
-  });
 
   // ✅ Allow ONLY digits while typing
   phoneInput.addEventListener("input", function () {
@@ -47,24 +36,25 @@ async function handleRegistration() {
   const email = document.getElementById("regEmail").value.trim();
   const password = document.getElementById("regPass").value;
   const businessName = document.getElementById("regBusiness").value.trim();
+
   const phoneInput = document.getElementById("regPhone");
 
-  // Prepare standard code and phone digits for backend
-  const stdCode = `+${iti.getSelectedCountryData().dialCode}`;
-  const phone = phoneInput.value.trim();
+  const phone = iti.getNumber();
 
   const gstNumber =
     document.getElementById("regGST") ?
       document.getElementById("regGST").value.toUpperCase().trim()
     : "";
 
-  if (!fullName || !email || !password || !phone) {
+  if (!fullName || !email || !password || !phoneInput.value.trim()) {
     return alert("Please fill in all required fields.");
   }
 
-  // ✅ Validates based on Indian 10-digit standard
+  // ✅ Strict phone validation
   if (!iti.isValidNumber()) {
-    return alert("Please enter a valid 10-digit Indian phone number.");
+    return alert(
+      "Please enter a valid phone number according to selected country code.",
+    );
   }
 
   if (selectedType === "retailer") {
@@ -88,7 +78,6 @@ async function handleRegistration() {
           fullName,
           email,
           password,
-          stdCode,
           phone,
           accountType: selectedType,
           businessName: selectedType === "retailer" ? businessName : undefined,
@@ -99,20 +88,15 @@ async function handleRegistration() {
 
     const data = await response.json();
 
-    // ✅ CHECK FOR SUCCESS (Status 201)
-    if (response.status === 201 || response.ok) {
-      console.log("Registration Successful, redirecting...");
+    if (response.ok) {
       localStorage.setItem("mishraUser", JSON.stringify(data));
       window.location.href = "shop.html";
     } else {
-      // ✅ Handle Duplicates or Validation errors from Backend
-      alert(
-        data.message || "Registration error: Email or Phone already exists.",
-      );
+      alert(data.message || "Registration failed");
     }
   } catch (err) {
     console.error("Connection Error:", err);
-    alert("Connection to Atlas failed. Ensure backend is running.");
+    alert("Cannot connect to server. Ensure backend is running.");
   }
 }
 

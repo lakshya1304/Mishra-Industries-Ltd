@@ -15,11 +15,7 @@ const userSchema = new mongoose.Schema({
       "Please add a valid email",
     ],
   },
-  // Added stdCode field for country dial codes
-  stdCode: {
-    type: String,
-    default: "+91",
-  },
+  
   phone: {
     type: String,
     required: [true, "Please add a phone number"],
