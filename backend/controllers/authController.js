@@ -38,7 +38,6 @@ exports.registerUser = async (req, res) => {
     const user = await User.create({
       fullName,
       email,
-      stdCode,
       phone,
       password,
       accountType,
@@ -62,7 +61,6 @@ exports.registerUser = async (req, res) => {
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
-      stdCode: user.stdCode,
       phone: user.phone,
       accountType: user.accountType,
       token: generateToken(user._id),
@@ -89,7 +87,6 @@ exports.loginUser = async (req, res) => {
         _id: user._id,
         fullName: user.fullName,
         email: user.email,
-        stdCode: user.stdCode,
         phone: user.phone,
         accountType: user.accountType,
         businessName: user.businessName,
@@ -131,7 +128,6 @@ exports.updateProfile = async (req, res) => {
 
     // Update Text Fields
     user.fullName = req.body.fullName || user.fullName;
-    user.stdCode = req.body.stdCode || user.stdCode;
     user.phone = req.body.phone || user.phone;
     user.address = req.body.address || user.address;
     user.pincode = req.body.pincode || user.pincode;
