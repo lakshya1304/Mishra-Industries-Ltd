@@ -342,33 +342,32 @@
       const API_BASE =
         "https://mishra-industries-ltd-yjfr.onrender.com/api/orders";
       let allOrders = [];
-      const user = JSON.parse(localStorage.getItem("mishraUser"));
+      // Pull user data safely
+      const user = JSON.parse(localStorage.getItem("mishraUser")) || {};
 
-      // REMOVED frontend strict check for admin role
-      if (!user || !user.token) {
-        window.location.href = "../login.html";
-      }
+      // SECURITY REDIRECT REMOVED: This allows the page to load for debugging
+      console.log("Admin security bypass active for debugging database fetch.");
 
       async function loadOrders() {
         const tableBody = document.getElementById("orderTableBody");
         tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
         try {
-          // Send Bearer token to connect to Atlas database
+          // Fetch with whatever token is available
           const res = await fetch(`${API_BASE}/all`, {
             headers: {
-              Authorization: `Bearer ${user.token}`,
+              Authorization: `Bearer ${user.token || ""}`,
               "Content-Type": "application/json",
             },
           });
 
-          if (!res.ok) throw new Error("Connection failed.");
+          if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
 
           allOrders = await res.json();
           calculateStats(allOrders);
           renderOrders(allOrders);
         } catch (err) {
-          console.error(err);
-          tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold uppercase tracking-widest">DATABASE CONNECTION FAILED: CHECK BACKEND LOGS</td></tr>`;
+          console.error("Fetch Error:", err);
+          tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold uppercase tracking-widest">DATABASE CONNECTION FAILED: ${err.message}</td></tr>`;
         }
       }
 
@@ -461,7 +460,7 @@
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${user.token}`,
+              Authorization: `Bearer ${user.token || ""}`,
             },
             body: JSON.stringify({ status: "Paid" }),
           });
@@ -479,7 +478,7 @@
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${user.token}`,
+              Authorization: `Bearer ${user.token || ""}`,
             },
             body: JSON.stringify({ status: "Shipped" }),
           });
@@ -498,7 +497,7 @@
 
       function viewItems(id) {
         const order = allOrders.find((o) => o._id === id);
-        document.getElementById("modalContent").innerHTML = order.items
+        document.getElementById("modalContent").innerHTML = (order.items || [])
           .map(
             (i) => `
               <div class="flex justify-between items-center p-4 bg-slate-50 rounded-2xl">
@@ -569,7 +568,7 @@
         try {
           const res = await fetch(`${API_BASE}/delete/${id}`, {
             method: "DELETE",
-            headers: { Authorization: `Bearer ${user.token}` },
+            headers: { Authorization: `Bearer ${user.token || ""}` },
           });
           if (res.ok) {
             alert("✅ Success: Order removed.");

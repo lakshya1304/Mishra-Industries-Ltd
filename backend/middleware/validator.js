@@ -4,7 +4,7 @@ const registerValidation = (data) => {
   const schema = Joi.object({
     fullName: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
-    stdCode: Joi.string().required(),
+    
     phone: Joi.string()
       .pattern(/^[0-9]{7,15}$/)
       .required(),
@@ -31,5 +31,4 @@ const registerValidation = (data) => {
   return schema.validate(data);
 };
 
-// CRITICAL: Must be an object to support destructured require
 module.exports = { registerValidation };
