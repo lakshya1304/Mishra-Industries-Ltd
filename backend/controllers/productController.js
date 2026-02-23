@@ -30,7 +30,7 @@ export const editProduct = asyncHandler(async (req, res) => {
     product.image = `/uploads/${req.file.filename}`;
   }
   await product.save();
-  return success(res, "Product updated", 200, product);
+  return success(res, "Product successfully updated", 200, product);
 });
 
 // ... keep your other functions (getProducts, deleteProduct) as they are
