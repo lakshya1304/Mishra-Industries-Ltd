@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const path = require("node:ath");
+const path = require("node:path"); // ✅ keep only ONE path import
 const fs = require("node:fs");
 const { protect } = require("../middleware/authMiddleware");
 
@@ -42,6 +42,7 @@ const fileFilter = (req, file, cb) => {
     path.extname(file.originalname).toLowerCase(),
   );
   const mimetype = allowedTypes.test(file.mimetype);
+
   if (extname && mimetype) {
     return cb(null, true);
   } else {

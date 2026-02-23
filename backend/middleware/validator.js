@@ -5,16 +5,11 @@ const registerValidation = (data) => {
     fullName: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
 
-    // Explicitly allowing the two separate fields sent by frontend
-    stdCode: Joi.string().required().messages({
-      "any.required": "Country code is required",
-    }),
+    // These must match exactly what your frontend sends
+    stdCode: Joi.string().required(),
     phone: Joi.string()
       .pattern(/^[0-9]{7,12}$/)
-      .required()
-      .messages({
-        "string.pattern.base": "Phone must be 7-12 digits",
-      }),
+      .required(),
 
     password: Joi.string()
       .min(8)
