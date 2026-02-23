@@ -1,12 +1,9 @@
 let selectedType = "customer";
-let iti;
 
-// Initialize the global phone selector
 document.addEventListener("DOMContentLoaded", function () {
   const phoneInput = document.querySelector("#regPhone");
 
-
-  // ✅ Allow ONLY digits while typing
+  // Only allow digits for the mobile number field
   phoneInput.addEventListener("input", function () {
     this.value = this.value.replace(/[^0-9]/g, "");
   });
@@ -36,25 +33,20 @@ async function handleRegistration() {
   const email = document.getElementById("regEmail").value.trim();
   const password = document.getElementById("regPass").value;
   const businessName = document.getElementById("regBusiness").value.trim();
+  const phone = document.getElementById("regPhone").value.trim();
 
-  const phoneInput = document.getElementById("regPhone");
+  // GST extraction fix
+  const gstInput = document.getElementById("regGST");
+  const gstNumber = gstInput ? gstInput.value.toUpperCase().trim() : "";
 
-  const phone = iti.getNumber();
-
-  const gstNumber =
-    document.getElementById("regGST") ?
-      document.getElementById("regGST").value.toUpperCase().trim()
-    : "";
-
-  if (!fullName || !email || !password || !phoneInput.value.trim()) {
+  // Field validation
+  if (!fullName || !email || !password || !phone) {
     return alert("Please fill in all required fields.");
   }
 
-  // ✅ Strict phone validation
-  if (!iti.isValidNumber()) {
-    return alert(
-      "Please enter a valid phone number according to selected country code.",
-    );
+  // Basic validation (10 digits)
+  if (phone.length !== 10) {
+    return alert("Please enter a valid 10-digit mobile number.");
   }
 
   if (selectedType === "retailer") {
@@ -63,7 +55,6 @@ async function handleRegistration() {
 
     const gstRegex =
       /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
-
     if (!gstRegex.test(gstNumber))
       return alert("Please enter a valid 15-digit GST number.");
   }
@@ -78,7 +69,7 @@ async function handleRegistration() {
           fullName,
           email,
           password,
-          phone,
+          phone: phone,
           accountType: selectedType,
           businessName: selectedType === "retailer" ? businessName : undefined,
           gstNumber: selectedType === "retailer" ? gstNumber : undefined,
@@ -88,15 +79,22 @@ async function handleRegistration() {
 
     const data = await response.json();
 
-    if (response.ok) {
-      localStorage.setItem("mishraUser", JSON.stringify(data));
-      window.location.href = "shop.html";
+    if (response.status === 201 || response.ok) {
+      // SUCCESS: Clear localStorage just in case and redirect
+      alert("Registration Successful! Please login.");
+      window.location.href = "login.html";
     } else {
-      alert(data.message || "Registration failed");
+      // ERROR: Show the exact message from the backend
+      alert(
+        data.message ||
+          "Registration failed. Please try a different email or phone.",
+      );
     }
   } catch (err) {
     console.error("Connection Error:", err);
-    alert("Cannot connect to server. Ensure backend is running.");
+    alert(
+      "Cannot connect to server. Ensure backend is running and Atlas IP is whitelisted.",
+    );
   }
 }
 
@@ -128,7 +126,6 @@ function checkPasswordStrength() {
   });
 
   bar.style.width = strength + "%";
-
   bar.className =
     strength <= 40 ? "h-full transition-all duration-500 bg-red-500"
     : strength <= 80 ? "h-full transition-all duration-500 bg-orange-500"

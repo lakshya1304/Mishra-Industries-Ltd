@@ -5,11 +5,6 @@ const registerValidation = (data) => {
     fullName: Joi.string().min(3).required(),
     email: Joi.string().email().required(),
 
-   stdCode: {
-    type: String,
-    required: true,
-    default: "+91"
-  },
     // FIX 2: Update regex to allow an optional '+' sign at the start
     phone: Joi.string()
       .pattern(/^\+?[0-9]{7,15}$/)

@@ -7,10 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/css/intlTelInput.css"
-    />
-    <link
-      rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
     />
     <link
@@ -50,21 +46,6 @@
       }
       .requirement-item.unmet {
         color: #94a3b8;
-      }
-      .requirement-item i {
-        margin-right: 4px;
-      }
-
-      /* International Input Styling */
-      .iti {
-        width: 100%;
-        display: block;
-      }
-      .iti__flag-container {
-        padding: 2px;
-      }
-      .floating-input-phone {
-        padding-left: 90px !important;
       }
     </style>
   </head>
@@ -174,16 +155,17 @@
           </div>
         </div>
 
-       <div class="floating-label-group">
+        <div class="floating-label-group relative">
           <input
             type="tel"
             id="regPhone"
             placeholder=" "
+            maxlength="10"
             class="floating-input w-full p-5 bg-white border-2 border-gray-100 rounded-2xl outline-none focus:border-blue-900 transition-all font-bold text-sm peer"
           />
           <label
             class="floating-label absolute top-5 left-5 text-gray-400 font-bold transition-all pointer-events-none uppercase tracking-widest text-xs"
-            >Enter a valid phone</label
+            >Mobile Number</label
           >
         </div>
 
@@ -252,8 +234,6 @@
         </p>
       </footer>
     </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.19/js/intlTelInput.min.js"></script>
     <script src="js/register.js"></script>
   </body>
 </html>

@@ -11,7 +11,7 @@ const generateToken = (id) => {
 
 // Register User
 exports.registerUser = async (req, res) => {
-  // This line triggers the error if the import above is incorrect
+  // Check validation results from Joi first
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
@@ -27,13 +27,17 @@ exports.registerUser = async (req, res) => {
     } = req.body;
 
     // Check for existing users to prevent database crashes
+    // Uses $or to check if either email OR phone already exists in the collection
     const userExists = await User.findOne({ $or: [{ email }, { phone }] });
+
     if (userExists) {
+      // Direct message if record found in Atlas
       return res
         .status(400)
         .json({ message: "Email or Phone already registered" });
     }
 
+    // Create user without stdCode as per your request
     const user = await User.create({
       fullName,
       email,
@@ -65,6 +69,7 @@ exports.registerUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
+    // If the database connection fails here, it is likely a 'bad auth' or IP whitelist issue
     res.status(500).json({ message: error.message });
   }
 };
