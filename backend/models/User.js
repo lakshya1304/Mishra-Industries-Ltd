@@ -15,12 +15,17 @@ const userSchema = new mongoose.Schema({
       "Please add a valid email",
     ],
   },
+  // Added stdCode field for country dial codes
+  stdCode: {
+    type: String,
+    default: "+91",
+  },
   phone: {
     type: String,
     required: [true, "Please add a phone number"],
     unique: true,
-    // Flexible validation for international phone digits
-    match: [/^[0-9]{7,12}$/, "Please add a valid phone number (7-12 digits)"],
+    // Adjusted regex to allow flexible international lengths
+    match: [/^[0-9]{7,15}$/, "Please add a valid phone number"],
   },
   password: {
     type: String,
@@ -38,7 +43,8 @@ const userSchema = new mongoose.Schema({
   },
   accountType: {
     type: String,
-    enum: ["customer", "retailer"],
+    // Added 'admin' to the allowed list to fix access denied issues
+    enum: ["customer", "retailer", "admin"],
     default: "customer",
   },
   businessName: {
