@@ -70,10 +70,12 @@ router.post("/forgot-password", forgotPassword);
 router.post("/verify-otp", verifyOTP);
 router.post("/reset-password", resetPassword);
 
+// Profile & Security Routes (With Multer Middleware)
 router.get("/profile", protect, getProfile);
-router.put("/update-profile", protect, cpUpload, updateProfile);
+router.put("/update-profile", protect, cpUpload, updateProfile); // ✅ CORRECTLY uses cpUpload for files
 router.put("/change-password", protect, changePassword);
 
+// Management Routes
 router.get("/all-users", async (req, res) => {
   try {
     const User = require("../models/User");

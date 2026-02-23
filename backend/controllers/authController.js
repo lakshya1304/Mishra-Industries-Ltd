@@ -25,6 +25,7 @@ exports.registerUser = async (req, res) => {
       gstNumber,
     } = req.body;
 
+    // Check for existing users to prevent database crashes
     const userExists = await User.findOne({ $or: [{ email }, { phone }] });
     if (userExists) {
       return res
@@ -77,11 +78,9 @@ exports.loginUser = async (req, res) => {
 
     if (user && (await user.matchPassword(password))) {
       if (user.accountType !== accountType) {
-        return res
-          .status(401)
-          .json({
-            message: `Access denied: This is a ${user.accountType} account`,
-          });
+        return res.status(401).json({
+          message: `Access denied: This is a ${user.accountType} account`,
+        });
       }
 
       res.json({
@@ -128,6 +127,7 @@ exports.updateProfile = async (req, res) => {
     const user = await User.findById(req.user._id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    // Update Text Fields
     user.fullName = req.body.fullName || user.fullName;
     user.stdCode = req.body.stdCode || user.stdCode;
     user.phone = req.body.phone || user.phone;
@@ -143,6 +143,7 @@ exports.updateProfile = async (req, res) => {
       user.msmeNumber = req.body.msmeNumber || user.msmeNumber;
     }
 
+    // Update Files
     if (req.files) {
       if (req.files.profilePic)
         user.profilePic = `/uploads/${req.files.profilePic[0].filename}`;

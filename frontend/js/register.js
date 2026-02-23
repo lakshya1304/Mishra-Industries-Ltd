@@ -48,9 +48,10 @@ async function handleRegistration() {
     : "";
   const phoneInput = document.getElementById("regPhone");
 
-  // CHANGE: Split STD Code and Phone Number for backend considerations
-  const stdCode = `+${iti.getSelectedCountryData().dialCode}`; // Extracts dial code (e.g., +91)
-  const phone = phoneInput.value.trim(); // Extracts the raw phone number (e.g., 8815318679)
+  // Get Dial Code and Number separately
+  const countryData = iti.getSelectedCountryData();
+  const stdCode = `+${countryData.dialCode}`;
+  const phone = phoneInput.value.trim();
 
   const gstNumber =
     document.getElementById("regGST") ?
@@ -81,8 +82,8 @@ async function handleRegistration() {
           fullName,
           email,
           password,
-          stdCode, // New separate field
-          phone, // Now sends raw digits as requested
+          stdCode,
+          phone,
           accountType: selectedType,
           businessName: selectedType === "retailer" ? businessName : undefined,
           gstNumber: selectedType === "retailer" ? gstNumber : undefined,
