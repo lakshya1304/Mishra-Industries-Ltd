@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import err from "../utils/err.js";
+import err from "../utils/error.js";
 import { verify } from "../utils/token.js";
 
 export const protect = asyncHandler(async (req, res, next) => {

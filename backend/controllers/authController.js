@@ -85,6 +85,12 @@ export const loginUser = asyncHandler(async (req, res) => {
       401,
     );
   }
+  res.cookie("user_session", token(user._id), {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
 
   success(res, "Successfully logged in", {
     _id: user._id,

@@ -1,5 +1,4 @@
 import express from "express";
-import ejs from "ejs";
 import dotenv from "dotenv";
 import cors from "cors";
 import path from "node:path";
@@ -12,7 +11,7 @@ import orderRoutes from "../routes/orderRoutes.js";
 import queryRoutes from "../routes/queryRoutes.js";
 import quotationRoutes from "../routes/quotationRoutes.js";
 import { fileURLToPath } from "url";
-import errorMiddleware from "../middleware/errorMiddleware.js";
+import { errorHandler } from "../middleware/errorMiddleware.js";
 // 1. Load Environment Variables (MUST BE FIRST)
 // 2. Initialize Express
 const app = express();
@@ -63,7 +62,7 @@ app.get("/", (req, res) => {
 });
 
 // 8. Error Handling Middleware (Custom & Global)
-app.use(errorMiddleware); // Uncomment and import if you have a custom error handler
+app.use(errorHandler); // Use the actual error handler function
 // Final catch-all error handling
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;

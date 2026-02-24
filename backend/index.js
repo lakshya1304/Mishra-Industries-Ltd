@@ -1,6 +1,6 @@
 import db from "./config/db.js";
 import app from "./config/server.js";
-
+import "dotenv/config"
 // Immediately Invoked Async Function Expression
 (async () => {
   await db();
