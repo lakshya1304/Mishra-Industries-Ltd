@@ -1,7 +1,6 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const sendEmail = require("../utils/sendEmail");
-// Ensure this destructured import matches the object export in validator.js
 const { registerValidation } = require("../middleware/validator");
 
 // Helper to create Token
@@ -11,7 +10,6 @@ const generateToken = (id) => {
 
 // Register User
 exports.registerUser = async (req, res) => {
-  // Check validation results from Joi first
   const { error } = registerValidation(req.body);
   if (error) return res.status(400).json({ message: error.details[0].message });
 
@@ -26,18 +24,14 @@ exports.registerUser = async (req, res) => {
       gstNumber,
     } = req.body;
 
-    // Check for existing users to prevent database crashes
-    // Uses $or to check if either email OR phone already exists in the collection
     const userExists = await User.findOne({ $or: [{ email }, { phone }] });
 
     if (userExists) {
-      // Direct message if record found in Atlas
       return res
         .status(400)
         .json({ message: "Email or Phone already registered" });
     }
 
-    // Create user without stdCode as per your request
     const user = await User.create({
       fullName,
       email,
@@ -49,6 +43,7 @@ exports.registerUser = async (req, res) => {
     });
 
     try {
+      // ✅ FIXED: Passing object to match the updated sendEmail utility
       await sendEmail({
         email: user.email,
         subject: "Welcome to Mishra Industries Limited",
@@ -69,7 +64,6 @@ exports.registerUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } catch (error) {
-    // If the database connection fails here, it is likely a 'bad auth' or IP whitelist issue
     res.status(500).json({ message: error.message });
   }
 };
@@ -194,12 +188,62 @@ exports.changePassword = async (req, res) => {
   }
 };
 
-exports.forgotPassword = async (req, res) =>
-  res.status(501).json({ message: "Not implemented" });
-exports.verifyOTP = async (req, res) =>
-  res.status(501).json({ message: "Not implemented" });
-exports.resetPassword = async (req, res) =>
-  res.status(501).json({ message: "Not implemented" });
+// ✅ FIXED: Implemented Forgot Password
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.resetPasswordOTP = otp;
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 mins
+    await user.save();
+
+    await sendEmail({
+      email: user.email,
+      subject: "Your OTP for Mishra Industries",
+      message: `Your OTP for password reset is: ${otp}. It expires in 10 minutes.`,
+    });
+
+    res.json({ message: "OTP sent to your email" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ✅ FIXED: Implemented Verify OTP
+exports.verifyOTP = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({
+      email,
+      resetPasswordOTP: otp,
+      resetPasswordExpire: { $gt: Date.now() },
+    });
+    if (!user) return res.status(400).json({ message: "Invalid or expired OTP" });
+    res.json({ message: "OTP verified. You can now reset password." });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// ✅ FIXED: Implemented Reset Password
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    user.password = newPassword;
+    user.resetPasswordOTP = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+    res.json({ message: "Password reset successful" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 exports.deleteUser = async (req, res) => {
   try {

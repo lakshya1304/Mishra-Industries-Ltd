@@ -30,8 +30,6 @@
         background: #1e3a8a;
         border-radius: 10px;
       }
-
-      /* Mobile Nav Logic */
       #mobileNav {
         transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         transform: translateY(-110%);
@@ -39,8 +37,6 @@
       #mobileNav.active {
         transform: translateY(0);
       }
-
-      /* Professional Invoice Print Layout */
       @media print {
         body * {
           visibility: hidden;
@@ -338,6 +334,7 @@
     <script>
       const API_BASE =
         "https://mishra-industries-ltd-yjfr.onrender.com/api/orders";
+      const adminToken = localStorage.getItem("adminToken"); // Ensure this matches your login variable name
       let allOrders = [];
 
       function toggleMobileMenu() {
@@ -354,11 +351,14 @@
         const tableBody = document.getElementById("orderTableBody");
         tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
         try {
-          const res = await fetch(`${API_BASE}/all`);
+          const res = await fetch(`${API_BASE}/all`, {
+            headers: { Authorization: `Bearer ${adminToken}` }, // FIX: Added token to header
+          });
+          if (!res.ok) throw new Error("Unauthorized");
           allOrders = await res.json();
           renderOrders(allOrders);
         } catch (err) {
-          tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold">DATABASE OFFLINE</td></tr>`;
+          tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold">DATABASE OFFLINE (UNAUTHORIZED)</td></tr>`;
         }
       }
 
@@ -377,7 +377,6 @@
             Shipped: "bg-blue-100 text-blue-600 border-blue-200",
             Delivered: "bg-slate-100 text-slate-400",
           };
-
           tableBody.innerHTML += `
             <tr class="hover:bg-slate-50/80 transition-all group">
                 <td class="p-8">
@@ -465,6 +464,7 @@
         if (!confirm("Permanently delete this order?")) return;
         const res = await fetch(`${API_BASE}/delete/${id}`, {
           method: "DELETE",
+          headers: { Authorization: `Bearer ${adminToken}` }, // FIX: Token added
         });
         if (res.ok) loadOrders();
       }
@@ -487,7 +487,6 @@
           `Mishra_Orders_${new Date().toISOString().split("T")[0]}.xlsx`,
         );
       }
-
       document.addEventListener("DOMContentLoaded", loadOrders);
     </script>
   </body>

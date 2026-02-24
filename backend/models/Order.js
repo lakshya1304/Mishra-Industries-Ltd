@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const orderSchema = new mongoose.Schema(
   {
-    // Link to User model
-    admin: { type: mongoose.Schema.Types.ObjectId, ref: "admin", required: true },
+    // Changed from admin to user for clarity between customer and admin login
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     customerName: { type: String, required: true },
     phone: { type: String, required: true },
     address: { type: String, required: true },
@@ -19,9 +19,9 @@ const orderSchema = new mongoose.Schema(
     gstAmount: { type: Number, default: 0 },
     paymentMethod: { type: String, required: true },
     transactionId: { type: String, default: "N/A" },
-    status: { type: String, default: "Pending" }, // Pending, Paid, Shipped, Delivered
+    status: { type: String, default: "Pending" },
   },
   { timestamps: true },
-); // Added timestamps for createdAt/updatedAt
+);
 
 module.exports = mongoose.model("Order", orderSchema);
