@@ -26,6 +26,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <script src="../js/fetch_fallback.js"></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap");
       body {
@@ -387,6 +388,7 @@
       const API_URL =
         "https://mishra-industries-ltd-yjfr.onrender.com/api/products";
       const SERVER_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
+      const adminToken = localStorage.getItem("adminToken");
       let isEditing = false;
       let currentEditId = null;
 
@@ -476,6 +478,9 @@
           const response = await fetch(url, {
             method: isEditing ? "PUT" : "POST",
             body: formData,
+            headers: {
+              Authorization: `Bearer ${adminToken || ""}`,
+            },
           });
           if (response.ok) {
             alert("✅ Data Synced Successfully");
@@ -562,7 +567,10 @@
 
       async function deleteProduct(id) {
         if (confirm("⚠️ Remove from Atlas?")) {
-          await fetch(`${API_URL}/delete/${id}`, { method: "DELETE" });
+          await fetch(`${API_URL}/delete/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${adminToken || ""}` },
+          });
           location.reload();
         }
       }

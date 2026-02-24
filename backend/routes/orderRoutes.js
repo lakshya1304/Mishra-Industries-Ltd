@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import Order from "../models/Order.js";
+import { protect } from "../middleware/authMiddleware.js";
+
 const router = express.Router();
-const Order = require("../models/Order");
-const { protect } = require("../middleware/authMiddleware");
 
 // @route   POST /api/orders/add
 router.post("/add", protect, async (req, res) => {
@@ -66,4 +67,4 @@ router.delete("/delete/:id", protect, async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

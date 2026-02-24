@@ -1,7 +1,8 @@
-const express = require("express");
+import express from "express";
+import Query from "../models/Query.js";
+import sendEmail from "../utils/sendEmail.js";
+
 const router = express.Router();
-const Query = require("../models/Query");
-const sendEmail = require("../utils/sendEmail"); // Assuming your email util exists
 
 // @route   POST /api/queries/add
 router.post("/add", async (req, res) => {
@@ -49,4 +50,4 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

@@ -1,6 +1,7 @@
-const express = require("express");
+import express from "express";
+import mongoose from "mongoose";
+
 const router = express.Router();
-const mongoose = require("mongoose");
 
 // Schema for Bulk Quotations
 const quotationSchema = new mongoose.Schema({
@@ -45,4 +46,4 @@ router.delete("/delete/:id", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;

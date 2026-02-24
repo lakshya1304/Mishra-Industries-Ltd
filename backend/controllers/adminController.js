@@ -1,31 +1,46 @@
-const Admin = require('../models/Admin');
-const jwt = require('jsonwebtoken');
+import Admin from "../models/Admin.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import err from "../utils/error.js";
+import bcrypt from "bcryptjs";
+import token from "../utils/token.js";
 
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
-};
+// Generate JWT Token
 
-const loginAdmin = async (req, res) => {
-    const { email, password } = req.body;
+export const loginAdmin = asyncHandler(async (req, res) => {
+  if (req?.user && req?.user?.id) {
+    return err(res, "Kindly logout before loggin in", 400);
+  }
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return err(res, "Both email and password are required", 400);
+  }
+  const admin = await Admin.findOne({ email });
+  if (!admin) {
+    return err(res, "No user was found", 404);
+  }
 
-    // Fixed credentials as requested
-    if (email === "admin@mishra.com" && password === "Mishra@716") {
-        // Find or Create the admin record in DB to get an ID for JWT
-        let admin = await Admin.findOne({ email });
-        if (!admin) {
-            admin = await Admin.create({ email, password, name: "Super Admin" });
-        }
+  const isMatch = await bcrypt.compare(password, admin.password);
+  if (!isMatch) {
+    return err(res, "Invalid password", 400);
+  }
+  // Set an admin-specific cookie
+  res.cookie("admin_session", token(admin._id), {
+    httpOnly: true,
+    secure: true,
+    sameSite: "strict",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+  });
+  return success(
+    res,
+    `Welcome back ${admin?.username ?? admin?.name ?? "Admin"}`,
+    200,
+    {
+      id: admin._id,
+      email: admin.email,
+      isAdmin: true,
+      token: token(admin._id),
+    },
+  );
+});
 
-        res.json({
-            _id: admin._id,
-            email: admin.email,
-            accountType: "admin", // Crucial for frontend logic
-            isAdmin: true,
-            token: generateToken(admin._id)
-        });
-    } else {
-        res.status(401).json({ message: 'Invalid Admin Credentials' });
-    }
-};
-
-module.exports = { loginAdmin };
+export default loginAdmin;

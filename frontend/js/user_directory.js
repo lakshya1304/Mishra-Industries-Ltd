@@ -1,5 +1,6 @@
 let allUsersData = [];
 const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com/api";
+const adminToken = localStorage.getItem("adminToken");
 
 async function fetchUsers() {
   try {
@@ -181,6 +182,7 @@ async function deleteUser(userId, userName) {
   try {
     const response = await fetch(`${API_BASE}/auth/delete-user/${userId}`, {
       method: "DELETE",
+      headers: { Authorization: `Bearer ${adminToken || ""}` },
     });
     if (response.ok) fetchUsers();
   } catch (err) {
@@ -194,7 +196,10 @@ async function deleteAllUsers() {
     confirm("Are you sure? This cannot be undone.")
   ) {
     try {
-      await fetch(`${API_BASE}/auth/delete-all-users`, { method: "DELETE" });
+      await fetch(`${API_BASE}/auth/delete-all-users`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${adminToken || ""}` },
+      });
       fetchUsers();
     } catch (err) {
       console.error(err);

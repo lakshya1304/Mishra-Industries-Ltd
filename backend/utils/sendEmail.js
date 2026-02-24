@@ -1,36 +1,57 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
+import debugStore from "./debugStore.js";
 
-// Changed to accept an object so it matches your controller calls
-const sendEmail = async ({
-  email,
-  subject,
-  message,
-  type,
-  name,
-  accountType,
-}) => {
+/**
+ * sendEmail accepts either (to, subject, text) or a single object
+ * { email, subject, message, type, name }
+ */
+export const sendEmail = async (toOrObj, subject, text) => {
+  // Normalize arguments
+  let to = toOrObj;
+  let msg = text || "";
+  if (typeof toOrObj === "object") {
+    to = toOrObj.email || toOrObj.to;
+    subject = toOrObj.subject || subject;
+    msg = toOrObj.message || toOrObj.text || toOrObj.body || msg;
+  }
+
+  // Console fallback for local development or missing mail credentials
+  if (
+    !process.env.MAIL ||
+    !process.env.MAIL_PASS ||
+    process.env.NODE_ENV !== "production"
+  ) {
+    console.log("[EMAIL-FALLBACK] To:", to);
+    console.log("[EMAIL-FALLBACK] Subject:", subject);
+    console.log("[EMAIL-FALLBACK] Message:", msg);
+    // If message contains a 6-digit OTP, store it in debug store for test retrieval
+    try {
+      const m = String(msg).match(/\b(\d{6})\b/);
+      if (m && m[1]) {
+        // store under email key
+        debugStore.setOTP(to, m[1]);
+      }
+    } catch (e) {
+      // ignore
+    }
+    return true;
+  }
+
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "mishraindustriesltd@gmail.com",
-      pass: process.env.GMAIL_APP_PASSWORD,
+      user: process.env.MAIL,
+      pass: process.env.MAIL_PASS,
     },
   });
 
-  // Dynamic template selection
-  let body = message;
-  if (type === "welcome") {
-    body = `Hello ${name},\n\nWelcome to Mishra Industries Limited! Your ${accountType} account has been successfully created.\n\nBest Regards,\nTeam Mishra Atlas`;
-  }
-
-  const mailOptions = {
-    from: '"Mishra Industries" <mishraindustriesltd@gmail.com>',
-    to: email,
-    subject: subject,
-    text: body,
-  };
-
-  await transporter.sendMail(mailOptions);
+  await transporter.sendMail({
+    from: `Mishra Industries <${process.env.MAIL}>`,
+    to,
+    subject,
+    text: msg,
+  });
+  return true;
 };
 
-module.exports = sendEmail;
+export default sendEmail;

@@ -1,9 +1,10 @@
-const express = require("express");
+import express from "express";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import Product from "../models/Product.js";
+
 const productRouter = express.Router();
-const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
-const Product = require("../models/Product");
 
 // 1. Configure Local Disk Storage for temporary processing
 const storage = multer.diskStorage({
@@ -171,4 +172,4 @@ productRouter.delete("/danger/delete-all", async (req, res) => {
   }
 });
 
-module.exports = productRouter;
+export default productRouter;

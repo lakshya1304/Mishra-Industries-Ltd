@@ -9,6 +9,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <script src="../js/fetch_fallback.js"></script>
     <style>
       .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
@@ -86,10 +87,8 @@
             >Client Queries</span
           >
         </a>
-
-        
       </nav>
- <a
+      <a
         href="../index.html"
         class="flex items-center space-x-4 p-4 text-slate-500 hover:text-red-400 transition-all border-t border-slate-800"
       >
@@ -167,7 +166,16 @@
     </main>
 
     <script>
-      const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com/api";
+      const REMOTE_API = "https://mishra-industries-ltd-yjfr.onrender.com/api";
+      const API_BASE =
+        (
+          location.protocol === "file:" ||
+          location.hostname === "127.0.0.1" ||
+          location.hostname === "localhost"
+        ) ?
+          "http://localhost:5000/api"
+        : REMOTE_API;
+      const adminToken = localStorage.getItem("adminToken");
 
       async function loadAllData() {
         loadQueries();
@@ -240,7 +248,10 @@
 
       async function deleteItem(id, type) {
         if (confirm(`Remove this ${type} record?`)) {
-          await fetch(`${API_BASE}/${type}/delete/${id}`, { method: "DELETE" });
+          await fetch(`${API_BASE}/${type}/delete/${id}`, {
+            method: "DELETE",
+            headers: { Authorization: `Bearer ${adminToken || ""}` },
+          });
           loadAllData();
         }
       }

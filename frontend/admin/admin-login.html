@@ -13,6 +13,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <script src="../js/fetch_fallback.js"></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap");
       body {
@@ -22,7 +23,6 @@
         background: rgba(255, 255, 255, 0.95);
         backdrop-filter: blur(10px);
       }
-      
     </style>
   </head>
   <body
@@ -117,7 +117,15 @@
     </div>
 
     <script>
-      const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
+      const REMOTE_API = "https://mishra-industries-ltd-yjfr.onrender.com";
+      const API_BASE =
+        (
+          location.protocol === "file:" ||
+          location.hostname === "127.0.0.1" ||
+          location.hostname === "localhost"
+        ) ?
+          "http://localhost:5000"
+        : REMOTE_API;
 
       async function checkAtlasNode() {
         try {

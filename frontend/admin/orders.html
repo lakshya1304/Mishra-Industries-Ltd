@@ -17,6 +17,16 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <script src="../js/fetch_fallback.js"></script>
+    <script type="module">
+      // Import timeout helpers
+      import {
+        fetchWithTimeout,
+        fetchWithRetry,
+      } from "../js/fetch_with_timeout.js";
+      window.fetchWithTimeout = fetchWithTimeout;
+      window.fetchWithRetry = fetchWithRetry;
+    </script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap");
       body {
@@ -332,7 +342,8 @@
     </main>
 
     <script>
-      const API_BASE =
+      const API_BASE_LOCAL = "http://localhost:5000/api/orders";
+      const API_BASE_REMOTE =
         "https://mishra-industries-ltd-yjfr.onrender.com/api/orders";
       const adminToken = localStorage.getItem("adminToken"); // Ensure this matches your login variable name
       let allOrders = [];
@@ -349,16 +360,67 @@
 
       async function loadOrders() {
         const tableBody = document.getElementById("orderTableBody");
-        tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center"><i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i></td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center">
+          <div class="flex flex-col items-center gap-4">
+            <i class="fas fa-circle-notch fa-spin text-orange-500 text-3xl"></i>
+            <p class="text-slate-500 text-sm">Connecting to database...</p>
+          </div>
+        </td></tr>`;
+
         try {
-          const res = await fetch(`${API_BASE}/all`, {
-            headers: { Authorization: `Bearer ${adminToken}` }, // FIX: Added token to header
-          });
-          if (!res.ok) throw new Error("Unauthorized");
-          allOrders = await res.json();
-          renderOrders(allOrders);
+          const headers =
+            adminToken ? { Authorization: `Bearer ${adminToken}` } : {};
+          let res;
+
+          // Try local API first with reasonable timeout
+          try {
+            res = await window.fetchWithTimeout(
+              `${API_BASE_LOCAL}/all`,
+              { headers },
+              8000,
+            );
+          } catch (localErr) {
+            console.log(
+              "Local API unavailable, trying remote...",
+              localErr.message,
+            );
+            // Fallback to remote (45s timeout for slow Atlas connections)
+            tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center">
+              <div class="flex flex-col items-center gap-4">
+                <i class="fas fa-cloud text-blue-500 text-3xl"></i>
+                <p class="text-slate-500 text-sm">Connecting to MongoDB Atlas...</p>
+                <p class="text-slate-400 text-xs">This may take a moment...</p>
+              </div>
+            </td></tr>`;
+            res = await window.fetchWithTimeout(
+              `${API_BASE_REMOTE}/all`,
+              { headers },
+              45000,
+            );
+          }
+
+          if (!res.ok)
+            throw new Error(`HTTP ${res.status} - ${res.statusText}`);
+          const data = await res.json();
+          allOrders = Array.isArray(data) ? data : data.payload || [];
+          if (allOrders.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-slate-400 font-bold">No orders found</td></tr>`;
+          } else {
+            renderOrders(allOrders);
+          }
         } catch (err) {
-          tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-red-500 font-bold">DATABASE OFFLINE (UNAUTHORIZED)</td></tr>`;
+          console.error("loadOrders error:", err);
+          let errorMsg =
+            "Database connection timeout - Please check your internet connection";
+          if (err.message.includes("HTTP")) {
+            errorMsg = `Database error: ${err.message}`;
+          }
+          tableBody.innerHTML = `<tr><td colspan="5" class="p-20 text-center">
+            <div class="text-red-500">
+              <p class="font-bold">⚠ ${errorMsg}</p>
+              <p class="text-xs mt-2 text-slate-500">Try refreshing the page or contact support</p>
+            </div>
+          </td></tr>`;
         }
       }
 
@@ -462,11 +524,23 @@
 
       async function deleteOrder(id) {
         if (!confirm("Permanently delete this order?")) return;
-        const res = await fetch(`${API_BASE}/delete/${id}`, {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${adminToken}` }, // FIX: Token added
-        });
-        if (res.ok) loadOrders();
+        try {
+          const headers =
+            adminToken ? { Authorization: `Bearer ${adminToken}` } : {};
+          let res = await window.fetchWithTimeout(
+            `${API_BASE_LOCAL}/delete/${id}`,
+            {
+              method: "DELETE",
+              headers,
+            },
+            10000,
+          );
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          loadOrders();
+        } catch (err) {
+          console.error("deleteOrder error:", err);
+          alert(`Failed to delete order: ${err.message}`);
+        }
       }
 
       function downloadOrderReport() {

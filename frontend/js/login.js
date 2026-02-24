@@ -185,17 +185,30 @@ async function handleResetPassword() {
   }
 
   try {
+    // First verify OTP
+    const verify = await fetch(
+      "https://mishra-industries-ltd-yjfr.onrender.com/api/auth/verify-otp",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      },
+    );
+    if (!verify.ok) {
+      const d = await verify.json().catch(() => ({}));
+      return alert(d.message || "OTP verification failed");
+    }
+
+    // Then reset the password
     const response = await fetch(
       "https://mishra-industries-ltd-yjfr.onrender.com/api/auth/reset-password",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp, newPassword }),
+        body: JSON.stringify({ email, newPassword }),
       },
     );
-
     const data = await response.json();
-
     if (response.ok) {
       alert(
         "Password updated permanently! Please login with your new credentials.",
@@ -203,7 +216,7 @@ async function handleResetPassword() {
       closeForgotModal();
       location.reload();
     } else {
-      alert(data.message || "Invalid or expired OTP.");
+      alert(data.message || "Reset failed");
     }
   } catch (err) {
     console.error("Reset Error:", err);

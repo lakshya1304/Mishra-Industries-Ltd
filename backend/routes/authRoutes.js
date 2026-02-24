@@ -1,11 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const multer = require("multer");
-const path = require("node:path");
-const fs = require("node:fs");
-const { protect } = require("../middleware/authMiddleware");
-
-const {
+import express from "express";
+import multer from "multer";
+import path from "node:path";
+import fs from "node:fs";
+import { protect } from "../middleware/authMiddleware.js";
+import {
   registerUser,
   loginUser,
   forgotPassword,
@@ -16,7 +14,9 @@ const {
   getProfile,
   deleteUser,
   deleteAllUsers,
-} = require("../controllers/authController");
+} from "../controllers/authController.js";
+
+const router = express.Router();
 
 // ================== MULTER CONFIGURATION ==================
 const uploadDir = "uploads/";
@@ -88,4 +88,4 @@ router.get("/all-users", async (req, res) => {
 router.delete("/delete-user/:id", deleteUser);
 router.delete("/delete-all-users", deleteAllUsers);
 
-module.exports = router;
+export default router;

@@ -14,6 +14,7 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
+    <script src="../js/fetch_fallback.js"></script>
     <style>
       @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap");
       body {
@@ -209,7 +210,16 @@
     </div>
 
     <script>
-      const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
+      const REMOTE_API = "https://mishra-industries-ltd-yjfr.onrender.com";
+      const API_BASE =
+        (
+          location.protocol === "file:" ||
+          location.hostname === "127.0.0.1" ||
+          location.hostname === "localhost"
+        ) ?
+          "http://localhost:5000"
+        : REMOTE_API;
+      const adminToken = localStorage.getItem("adminToken");
 
       async function loadAnalytics() {
         const statusNode = document.querySelector(".bg-white span");
@@ -217,6 +227,7 @@
         try {
           const response = await fetch(
             `${API_BASE}/api/orders/stats/total-sales`,
+            { headers: { Authorization: `Bearer ${adminToken || ""}` } },
           );
           const stats = await response.json();
 
@@ -233,7 +244,9 @@
             );
           }
 
-          const prodRes = await fetch(`${API_BASE}/api/products/all`);
+          const prodRes = await fetch(`${API_BASE}/api/products/all`, {
+            headers: { Authorization: `Bearer ${adminToken || ""}` },
+          });
           const products = await prodRes.json();
           document.getElementById("totalProducts").innerText = products.length;
         } catch (err) {
@@ -254,8 +267,12 @@
 
         try {
           const [prodRes, orderRes] = await Promise.all([
-            fetch(`${API_BASE}/api/products/all`),
-            fetch(`${API_BASE}/api/orders/all`),
+            fetch(`${API_BASE}/api/products/all`, {
+              headers: { Authorization: `Bearer ${adminToken || ""}` },
+            }),
+            fetch(`${API_BASE}/api/orders/all`, {
+              headers: { Authorization: `Bearer ${adminToken || ""}` },
+            }),
           ]);
 
           const products = await prodRes.json();
@@ -271,9 +288,9 @@
             Company: p.company || "N/A",
             Price: p.price,
             Stock: p.stock,
-            Discount: p.discount || 0
+            Discount: p.discount || 0,
           }));
-          
+
           XLSX.utils.book_append_sheet(
             wb,
             XLSX.utils.json_to_sheet(cleanProds),
@@ -298,9 +315,9 @@
 
           XLSX.writeFile(
             wb,
-            `Mishra_Report_${new Date().toLocaleDateString().replace(/\//g, '-')}.xlsx`,
+            `Mishra_Report_${new Date().toLocaleDateString().replace(/\//g, "-")}.xlsx`,
           );
-          
+
           btn.innerHTML = '<i class="fas fa-check mr-2"></i> Download Ready';
           setTimeout(
             () =>
@@ -320,7 +337,10 @@
         try {
           const res = await fetch(
             `${API_BASE}/api/products/danger/delete-all`,
-            { method: "DELETE" },
+            {
+              method: "DELETE",
+              headers: { Authorization: `Bearer ${adminToken || ""}` },
+            },
           );
           const data = await res.json();
           alert(`Success: ${data.count} items deleted.`);
@@ -339,7 +359,10 @@
             const json = JSON.parse(e.target.result);
             const res = await fetch(`${API_BASE}/api/products/backup/import`, {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${adminToken || ""}`,
+              },
               body: JSON.stringify(json),
             });
             const result = await res.json();
