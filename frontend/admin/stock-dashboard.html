@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Stock & Revenue Manager | Mishra Industries Limited</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,6 +19,11 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap");
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        overflow-x: hidden;
+      }
       .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
       }
@@ -28,11 +36,26 @@
         overflow-y: auto;
         padding-right: 8px;
       }
+
+      /* Mobile Nav Animation */
+      #mobileNav {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateY(-110%);
+      }
+      #mobileNav.active {
+        transform: translateY(0);
+      }
+
+      @media (max-width: 1024px) {
+        .main-content-area {
+          padding: 1.5rem !important;
+        }
+      }
     </style>
   </head>
-  <body class="bg-slate-50 flex min-h-screen font-sans custom-scrollbar">
+  <body class="bg-slate-50 lg:flex min-h-screen custom-scrollbar">
     <aside
-      class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col"
+      class="hidden lg:flex w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex-col shrink-0"
     >
       <div class="flex items-center space-x-3 mb-12">
         <h2 class="text-2xl font-bold tracking-tighter">
@@ -85,7 +108,7 @@
             >Orders List</span
           >
         </a>
-          <a
+        <a
           href="queries.html"
           class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
         >
@@ -107,46 +130,98 @@
       </a>
     </aside>
 
-    <main class="flex-1 p-12 overflow-y-auto">
+    <div
+      class="lg:hidden w-full bg-slate-900 p-5 flex justify-between items-center sticky top-0 z-[2500]"
+    >
+      <h2 class="text-white font-bold tracking-tighter">
+        MISHRA <span class="text-orange-500">IND.</span>
+      </h2>
+      <button
+        onclick="toggleMobileMenu()"
+        class="text-white text-2xl focus:outline-none"
+      >
+        <i id="menuIcon" class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <div
+      id="mobileNav"
+      class="lg:hidden fixed top-0 left-0 w-full bg-slate-900 z-[2400] pt-20 pb-10 px-6 shadow-2xl border-b border-white/10"
+    >
+      <nav class="flex flex-col space-y-4 text-center">
+        <a
+          href="site-editor.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Site Editor</a
+        >
+        <a
+          href="stock-dashboard.html"
+          class="text-orange-500 font-bold py-3 border-b border-white/5"
+          >Inventory</a
+        >
+        <a
+          href="users.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Users</a
+        >
+        <a
+          href="orders.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Orders List</a
+        >
+        <a
+          href="queries.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Queries</a
+        >
+        <a href="../index.html" class="text-red-400 font-bold py-3"
+          >Exit Admin</a
+        >
+      </nav>
+    </div>
+
+    <main class="flex-1 p-6 md:p-12 main-content-area overflow-y-auto">
       <header
-        class="flex justify-between items-center mb-12 animate__animated animate__fadeIn"
+        class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6 animate__animated animate__fadeIn"
       >
         <div>
           <h1
-            class="text-4xl font-black text-slate-800 uppercase tracking-tight"
+            class="text-3xl md:text-4xl font-black text-slate-800 uppercase tracking-tight"
           >
             Revenue & Inventory
           </h1>
           <p
-            class="text-slate-400 font-bold text-sm mt-1 uppercase tracking-widest"
+            class="text-slate-400 font-bold text-xs mt-1 uppercase tracking-widest"
           >
             Live Control Center
           </p>
         </div>
-        <div class="flex gap-4">
+        <div class="flex flex-wrap gap-4 w-full md:w-auto">
           <div
-            class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-gray-100 text-center"
+            class="bg-white px-6 py-4 rounded-3xl shadow-sm border border-gray-100 text-center flex-1 md:flex-none"
           >
             <span
               class="text-gray-400 text-[10px] font-black uppercase tracking-widest block mb-1"
               >Total Stock Value</span
             >
-            <span id="totalRevenue" class="font-black text-blue-900 text-2xl"
+            <span
+              id="totalRevenue"
+              class="font-black text-blue-900 text-xl md:text-2xl"
               >₹0</span
             >
           </div>
           <button
             onclick="generateExcelReport()"
-            class="bg-blue-900 text-white px-6 py-4 rounded-3xl font-black text-sm hover:bg-orange-500 transition shadow-xl no-print"
+            class="bg-blue-900 text-white px-6 py-4 rounded-3xl font-black text-xs hover:bg-orange-500 transition shadow-xl no-print flex-1 md:flex-none justify-center flex items-center"
           >
-            <i class="fas fa-file-excel mr-2"></i> Excel Report
+            <i class="fas fa-file-excel mr-2"></i> Excel
           </button>
         </div>
       </header>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         <div
-          class="lg:col-span-2 bg-white p-8 rounded-[2rem] shadow-xl border border-gray-50"
+          class="lg:col-span-2 bg-white p-6 md:p-8 rounded-[2rem] shadow-xl border border-gray-50"
         >
           <h3
             class="text-xl font-black text-slate-800 mb-6 uppercase tracking-tight"
@@ -165,7 +240,7 @@
             <p id="totalStockCount" class="text-4xl font-black">0</p>
           </div>
           <div
-            class="bg-white p-8 rounded-[2rem] border border-red-100 shadow-sm"
+            class="bg-white p-6 md:p-8 rounded-[2rem] border border-red-100 shadow-sm"
           >
             <h4
               class="text-red-500 font-black uppercase text-[10px] tracking-widest mb-4"
@@ -184,33 +259,35 @@
         <input
           type="text"
           id="tableSearch"
-          placeholder="Search product name or brand..."
+          placeholder="Search SKU or Name..."
           oninput="renderStockTable()"
-          class="w-full bg-white border-2 border-slate-100 pl-16 pr-4 py-5 rounded-[2rem] outline-none focus:border-orange-500 shadow-xl transition-all text-lg font-medium"
+          class="w-full bg-white border-2 border-slate-100 pl-16 pr-4 py-4 md:py-5 rounded-2xl md:rounded-[2rem] outline-none focus:border-orange-500 shadow-xl transition-all text-base md:text-lg font-medium"
         />
       </div>
 
       <div
         class="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden"
       >
-        <table class="w-full text-left">
-          <thead class="bg-slate-50 border-b">
-            <tr
-              class="text-xs font-black text-slate-400 uppercase tracking-widest"
-            >
-              <th class="p-8">Product Details</th>
-              <th class="p-8">Current Inventory</th>
-              <th class="p-8 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="stockTableBody"></tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left min-w-[700px]">
+            <thead class="bg-slate-50 border-b">
+              <tr
+                class="text-xs font-black text-slate-400 uppercase tracking-widest"
+              >
+                <th class="p-8">Product Details</th>
+                <th class="p-8 text-center">Current Inventory</th>
+                <th class="p-8 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="stockTableBody"></tbody>
+          </table>
+        </div>
       </div>
     </main>
 
     <div
       id="editModal"
-      class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[100] backdrop-blur-md p-4"
+      class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[3000] backdrop-blur-md p-4"
     >
       <div
         class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 animate__animated animate__zoomIn animate__faster"
@@ -236,11 +313,7 @@
             class="space-y-4"
           >
             <input type="hidden" id="editId" />
-
             <div class="relative group">
-              <label class="block text-sm font-bold text-slate-700 mb-2"
-                >Product Image</label
-              >
               <div
                 id="imagePreviewContainer"
                 class="hidden mb-4 relative h-40 w-full rounded-2xl overflow-hidden border"
@@ -268,9 +341,7 @@
                   <i
                     class="fas fa-cloud-upload-alt text-slate-400 text-3xl mb-3"
                   ></i>
-                  <p class="text-xs font-bold text-slate-500">
-                    Replace Product Image
-                  </p>
+                  <p class="text-xs font-bold text-slate-500">Replace Image</p>
                 </div>
                 <input
                   type="file"
@@ -281,68 +352,42 @@
                 />
               </label>
             </div>
-
             <div class="space-y-4">
               <input
                 type="text"
                 id="editName"
-                placeholder="Product Name"
-                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                placeholder="Name"
+                class="w-full bg-slate-50 border p-3 rounded-xl font-bold outline-none focus:border-orange-500"
                 required
               />
               <div class="grid grid-cols-2 gap-4">
                 <input
                   type="number"
                   id="editPrice"
-                  placeholder="Price (₹)"
-                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                  placeholder="Price"
+                  class="w-full bg-slate-50 border p-3 rounded-xl font-bold"
                   required
                 />
                 <input
                   type="number"
-                  id="editDiscount"
-                  placeholder="Discount %"
-                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                  id="editStock"
+                  placeholder="Stock"
+                  class="w-full bg-slate-50 border p-3 rounded-xl font-bold"
+                  required
                 />
               </div>
-              <div class="grid grid-cols-2 gap-4">
-                <select
-                  id="editCategory"
-                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
-                >
-                  <option>Switches</option>
-                  <option>Cables</option>
-                  <option>Lighting</option>
-                </select>
-                <select
-                  id="editCompany"
-                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
-                >
-                  <option value="SIEMENS">SIEMENS</option>
-                  <option value="ANCHOR">ANCHOR</option>
-                  <option value="HAVELLS">HAVELLS</option>
-                  <option value="POLYCAB">POLYCAB</option>
-                </select>
-              </div>
-              <input
-                type="number"
-                id="editStock"
-                placeholder="Current Stock"
-                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
-                required
-              />
               <textarea
                 id="editDesc"
-                placeholder="Product Description"
-                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl h-24 outline-none focus:border-orange-500 transition font-bold"
+                placeholder="Description"
+                class="w-full bg-slate-50 border p-3 rounded-xl h-24 font-bold"
               ></textarea>
             </div>
             <button
               type="submit"
               id="updateBtn"
-              class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase tracking-widest hover:bg-orange-500 shadow-xl transition-all"
+              class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase hover:bg-orange-500 transition-all"
             >
-              Update & Sync Atlas
+              Sync Atlas
             </button>
           </form>
         </div>
@@ -356,36 +401,72 @@
         "https://mishra-industries-ltd-yjfr.onrender.com/api/products";
       const SERVER_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
 
+      function toggleMobileMenu() {
+        const nav = document.getElementById("mobileNav");
+        const icon = document.getElementById("menuIcon");
+        nav.classList.toggle("active");
+        icon.className =
+          nav.classList.contains("active") ? "fas fa-times" : "fas fa-bars";
+        document.body.style.overflow =
+          nav.classList.contains("active") ? "hidden" : "auto";
+      }
+
       document.addEventListener("DOMContentLoaded", initDashboard);
 
       async function initDashboard() {
         try {
           const response = await fetch(`${API_URL}/all`);
           allProducts = await response.json();
+
+          // Trigger Auto Stock Maintenance
+          await syncInventoryWithOrders();
+
           refreshUI();
         } catch (err) {
           console.error("Sync Failed:", err);
         }
       }
 
+      /**
+       * Auto-Stock Maintenance Engine
+       * Deducts stock in database for shipped orders automatically
+       */
+      async function syncInventoryWithOrders() {
+        try {
+          const res = await fetch(`${SERVER_BASE}/api/orders/all`);
+          const orders = await res.json();
+
+          // Identify Shipped orders that need stock deduction
+          for (const order of orders) {
+            if (order.status === "Shipped" && !order.stockDeducted) {
+              for (const item of order.items) {
+                const product = allProducts.find((p) => p.name === item.name);
+                if (product) {
+                  const newStock = Math.max(0, product.stock - item.quantity);
+                  // Update Backend permanently
+                  await fetch(`${API_URL}/edit/${product._id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      stock: newStock,
+                      stockDeducted: true,
+                    }),
+                  });
+                  product.stock = newStock;
+                }
+              }
+            }
+          }
+        } catch (e) {
+          console.warn("Stock auto-maintenance bypassed:", e);
+        }
+      }
+
       function getProductImage(image) {
-  if (!image) return "../images/logo.jpeg";
-
-  // If it's a Base64 string from the database, use it directly
-  if (image.startsWith("data:")) {
-    return image;
-  }
-
-  // If it's a manual filename (like 'image1.jpg'), convert it to a full URL
-  // We check if it already starts with http to avoid double-prefixing
-  if (image.startsWith("http")) {
-    return image;
-  }
-  
-  // Ensure the path starts with a slash
-  const cleanPath = image.startsWith("/") ? image : `/${image}`;
-  return `${SERVER_BASE}${cleanPath}`;
-}
+        if (!image) return "../images/logo.jpeg";
+        if (image.startsWith("data:") || image.startsWith("http")) return image;
+        return `${SERVER_BASE}${image.startsWith("/") ? image : "/" + image}`;
+      }
 
       function renderStockTable() {
         const tableBody = document.getElementById("stockTableBody");
@@ -399,42 +480,40 @@
         const filtered = allProducts.filter(
           (p) =>
             p.name.toLowerCase().includes(searchTerm) ||
-            p.category.toLowerCase().includes(searchTerm) ||
-            (p.company && p.company.toLowerCase().includes(searchTerm)),
+            p.category.toLowerCase().includes(searchTerm),
         );
 
         filtered.forEach((product) => {
           const isLow = product.stock < 10;
           if (isLow) {
-            alertList.innerHTML += `<div class="flex items-center text-red-600"><i class="fas fa-exclamation-triangle mr-2 text-xs"></i><span class="text-xs font-bold">${product.name} (${product.stock})</span></div>`;
+            alertList.innerHTML += `<div class="flex items-center text-red-600"><i class="fas fa-exclamation-triangle mr-2 text-[10px]"></i><span class="text-[11px] font-bold uppercase">${product.name} (${product.stock})</span></div>`;
           }
           const imgPath = getProductImage(product.image);
 
           tableBody.innerHTML += `
-            <tr class="border-b hover:bg-slate-50 transition group">
+            <tr class="border-b hover:bg-slate-50 transition">
                 <td class="p-8">
                     <div class="flex items-center gap-6">
-                        <img src="${imgPath}" onerror="this.src='../images/logo.jpeg'" class="w-16 h-16 rounded-2xl object-cover shadow-md">
-                        <div>
-                            <p class="font-black text-slate-800 uppercase tracking-tighter text-lg">${product.name}</p>
+                        <img src="${imgPath}" onerror="this.src='../images/logo.jpeg'" class="w-16 h-16 rounded-2xl object-cover shadow-sm shrink-0">
+                        <div class="min-w-0">
+                            <p class="font-black text-slate-800 uppercase tracking-tighter text-lg truncate">${product.name}</p>
                             <p class="text-[10px] font-bold text-blue-500 uppercase tracking-widest">${product.category} | ₹${product.price}</p>
                         </div>
                     </div>
                 </td>
-                <td class="p-8">
-                    <div class="flex items-center gap-3">
-                        <div class="w-24 bg-gray-100 h-2 rounded-full overflow-hidden">
-                            <div class="h-full ${isLow ? "bg-red-500" : "bg-green-500"} transition-all" style="width: ${Math.min((product.stock / 50) * 100, 100)}%"></div>
+                <td class="p-8 text-center">
+                    <div class="flex flex-col items-center gap-2">
+                        <span class="font-black ${isLow ? "text-red-500" : "text-slate-700"}">${product.stock} Units</span>
+                        <div class="w-24 bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                            <div class="h-full ${isLow ? "bg-red-500" : "bg-green-500"}" style="width: ${Math.min((product.stock / 50) * 100, 100)}%"></div>
                         </div>
-                        <span class="font-black text-slate-700">${product.stock} Units</span>
                     </div>
                 </td>
                 <td class="p-8 text-right">
                     <div class="flex items-center justify-end gap-2">
-                        <input type="number" id="input-${product._id}" value="${product.stock}" class="w-16 border-2 border-slate-100 p-2.5 rounded-xl text-center font-black outline-none transition bg-slate-50">
-                        <button onclick="handleDashboardUpdate('${product._id}')" class="bg-blue-900/10 text-blue-900 p-3 rounded-xl hover:bg-blue-900 hover:text-white transition"><i class="fas fa-sync-alt"></i></button>
-                        <button onclick="openEditModal('${product._id}')" class="bg-orange-500/10 text-orange-500 p-3 rounded-xl hover:bg-orange-500 hover:text-white transition"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteProduct('${product._id}', '${product.name}')" class="bg-red-500/10 text-red-500 p-3 rounded-xl hover:bg-red-500 hover:text-white transition"><i class="fas fa-trash-alt"></i></button>
+                        <input type="number" id="input-${product._id}" value="${product.stock}" class="w-16 border-2 border-slate-100 p-2 rounded-xl text-center font-black bg-slate-50">
+                        <button onclick="handleDashboardUpdate('${product._id}')" class="bg-blue-900 text-white p-3 rounded-xl hover:bg-orange-500 transition"><i class="fas fa-sync-alt"></i></button>
+                        <button onclick="openEditModal('${product._id}')" class="bg-orange-100 text-orange-600 p-3 rounded-xl hover:bg-orange-500 hover:text-white transition"><i class="fas fa-edit"></i></button>
                     </div>
                 </td>
             </tr>`;
@@ -459,47 +538,18 @@
         }
       }
 
-      // MODAL SYNC LOGIC
-      function previewFile() {
-        const preview = document.getElementById("imagePreview");
-        const file = document.getElementById("editImageInput").files[0];
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          preview.src = reader.result;
-          document
-            .getElementById("imagePreviewContainer")
-            .classList.remove("hidden");
-          document.getElementById("uploadLabel").classList.add("hidden");
-        };
-        if (file) reader.readAsDataURL(file);
-      }
-
-      function resetImage() {
-        document.getElementById("editImageInput").value = "";
-        document
-          .getElementById("imagePreviewContainer")
-          .classList.add("hidden");
-        document.getElementById("uploadLabel").classList.remove("hidden");
-      }
-
       function openEditModal(id) {
         const p = allProducts.find((item) => item._id === id);
         document.getElementById("editId").value = p._id;
         document.getElementById("editName").value = p.name;
         document.getElementById("editPrice").value = p.price;
-        document.getElementById("editDiscount").value = p.discount || 0;
         document.getElementById("editStock").value = p.stock;
-        document.getElementById("editCategory").value = p.category;
-        document.getElementById("editCompany").value = p.company || "SIEMENS";
         document.getElementById("editDesc").value = p.description || "";
-
-        const previewImg = document.getElementById("imagePreview");
-        previewImg.src = getProductImage(p.image);
+        document.getElementById("imagePreview").src = getProductImage(p.image);
         document
           .getElementById("imagePreviewContainer")
           .classList.remove("hidden");
         document.getElementById("uploadLabel").classList.add("hidden");
-
         document
           .getElementById("editModal")
           .classList.replace("hidden", "flex");
@@ -509,69 +559,6 @@
         document
           .getElementById("editModal")
           .classList.replace("flex", "hidden");
-      }
-
-      async function saveProductEdit(e) {
-        if (e) e.preventDefault();
-        const id = document.getElementById("editId").value;
-        const updateBtn = document.getElementById("updateBtn");
-        updateBtn.disabled = true;
-        updateBtn.innerText = "Syncing...";
-
-        const formData = new FormData();
-        formData.append("name", document.getElementById("editName").value);
-        formData.append("price", document.getElementById("editPrice").value);
-        formData.append(
-          "discount",
-          document.getElementById("editDiscount").value,
-        );
-        formData.append("stock", document.getElementById("editStock").value);
-        formData.append(
-          "category",
-          document.getElementById("editCategory").value,
-        );
-        formData.append(
-          "company",
-          document.getElementById("editCompany").value,
-        );
-        formData.append(
-          "description",
-          document.getElementById("editDesc").value,
-        );
-
-        const imgFile = document.getElementById("editImageInput").files[0];
-        if (imgFile) formData.append("image", imgFile);
-
-        try {
-          const res = await fetch(`${API_URL}/edit/${id}`, {
-            method: "PUT",
-            body: formData,
-          });
-          if (res.ok) {
-            alert("✅ Data Synced Successfully");
-            location.reload();
-          }
-        } catch (err) {
-          alert("Sync Failed");
-        } finally {
-          updateBtn.disabled = false;
-          updateBtn.innerText = "Update & Sync Atlas";
-        }
-      }
-
-      async function deleteProduct(id, name) {
-        if (!confirm(`⚠️ Remove ${name} permanently?`)) return;
-        try {
-          const response = await fetch(`${API_URL}/delete/${id}`, {
-            method: "DELETE",
-          });
-          if (response.ok) {
-            allProducts = allProducts.filter((p) => p._id !== id);
-            refreshUI();
-          }
-        } catch (err) {
-          alert("Deletion Failed");
-        }
       }
 
       function refreshUI() {
@@ -599,7 +586,6 @@
                 backgroundColor: "#003366",
                 hoverBackgroundColor: "#f97316",
                 borderRadius: 12,
-                barThickness: 40,
               },
             ],
           },
@@ -619,19 +605,17 @@
           (sum, p) => sum + p.price * p.stock,
           0,
         );
-        const totalItems = allProducts.reduce((sum, p) => sum + p.stock, 0);
         document.getElementById("totalRevenue").innerText =
           "₹" + totalVal.toLocaleString();
-        document.getElementById("totalStockCount").innerText =
-          totalItems.toLocaleString();
+        document.getElementById("totalStockCount").innerText = allProducts
+          .reduce((sum, p) => sum + p.stock, 0)
+          .toLocaleString();
       }
 
       function generateExcelReport() {
         const reportData = allProducts.map((p, i) => ({
           "Sl No.": i + 1,
           Product: p.name,
-          Category: p.category,
-          Brand: p.company,
           Stock: p.stock,
           Price: p.price,
           Value: p.price * p.stock,
@@ -639,7 +623,7 @@
         const ws = XLSX.utils.json_to_sheet(reportData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Inventory");
-        XLSX.writeFile(wb, `Mishra_Inventory_Report.xlsx`);
+        XLSX.writeFile(wb, `Mishra_Stock_Report.xlsx`);
       }
     </script>
   </body>

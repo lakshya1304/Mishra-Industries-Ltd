@@ -218,7 +218,7 @@ img {
     top: 100%;
     /* Use left: 50% and transform to center the menu perfectly */
     left: 50%;
-    content: counter(name);
+    content: co;
     transform: translateX(-50%); 
     width: 100vw; /* Spans the full width of the mobile screen */
     

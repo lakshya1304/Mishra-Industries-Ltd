@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Registered Users | Mishra Industries</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link
@@ -18,6 +21,7 @@
       @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap");
       body {
         font-family: "Plus Jakarta Sans", sans-serif;
+        overflow-x: hidden;
       }
       .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
@@ -26,43 +30,63 @@
         background: #1e3a8a;
         border-radius: 10px;
       }
+
+      /* Mobile Hamburger Animation */
+      #mobileNav {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateY(-110%);
+      }
+      #mobileNav.active {
+        transform: translateY(0);
+      }
+
+      @media (max-width: 1024px) {
+        .main-content {
+          padding: 1.5rem !important;
+        }
+        .header-stack {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1.5rem;
+        }
+      }
     </style>
   </head>
 
-  <body class="bg-slate-50 flex min-h-screen custom-scrollbar">
+  <body class="bg-slate-50 lg:flex min-h-screen custom-scrollbar">
     <div
       id="orderHistoryModal"
-      class="fixed inset-0 z-[2000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden p-6"
+      class="fixed inset-0 z-[3000] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center hidden p-4"
     >
       <div
-        class="bg-white w-full max-w-xl rounded-[3rem] shadow-2xl overflow-hidden animate__animated animate__zoomIn"
+        class="bg-white w-full max-w-xl rounded-[2rem] md:rounded-[3rem] shadow-2xl overflow-hidden animate__animated animate__zoomIn"
       >
         <div
-          class="bg-blue-900 p-8 text-white flex justify-between items-center"
+          class="bg-blue-900 p-6 md:p-8 text-white flex justify-between items-center"
         >
           <div>
             <h3
               id="modalUserName"
-              class="font-black uppercase tracking-widest text-lg leading-none"
+              class="font-black uppercase tracking-widest text-base md:text-lg leading-none"
             >
               Customer Orders
             </h3>
             <p
               class="text-[10px] text-blue-300 font-bold uppercase mt-2 tracking-[0.2em]"
             >
-              Historical Purchase Records
+              Historical Records
             </p>
           </div>
           <button
             onclick="closeOrderModal()"
-            class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20 transition-all text-2xl"
+            class="w-10 h-10 flex items-center justify-center bg-white/10 rounded-full hover:bg-white/20 text-2xl"
           >
             &times;
           </button>
         </div>
         <div
           id="modalOrderList"
-          class="p-8 space-y-4 max-h-[60vh] overflow-y-auto custom-scrollbar bg-slate-50/50"
+          class="p-6 md:p-8 space-y-4 max-h-[50vh] overflow-y-auto custom-scrollbar bg-slate-50/50"
         ></div>
         <div
           class="p-6 border-t border-slate-100 bg-white flex justify-between items-center"
@@ -70,9 +94,12 @@
           <p
             class="text-[10px] font-black text-slate-400 uppercase tracking-widest"
           >
-            Total Lifetime Spend
+            Lifetime Spend
           </p>
-          <p id="modalLifetimeValue" class="text-xl font-black text-blue-900">
+          <p
+            id="modalLifetimeValue"
+            class="text-lg md:text-xl font-black text-blue-900"
+          >
             ₹0
           </p>
         </div>
@@ -80,7 +107,7 @@
     </div>
 
     <aside
-      class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col"
+      class="hidden lg:flex w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex-col shrink-0"
     >
       <div class="flex items-center space-x-3 mb-12">
         <h2 class="text-2xl font-bold tracking-tighter">
@@ -131,7 +158,7 @@
             >Orders List</span
           >
         </a>
-         <a
+        <a
           href="queries.html"
           class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
         >
@@ -153,30 +180,84 @@
       </a>
     </aside>
 
-    <main class="flex-1 p-12 overflow-y-auto">
-      <header class="flex justify-between items-center mb-12">
+    <div
+      class="lg:hidden w-full bg-slate-900 p-5 flex justify-between items-center sticky top-0 z-[2500]"
+    >
+      <h2 class="text-white font-bold tracking-tighter">
+        MISHRA <span class="text-orange-500">IND.</span>
+      </h2>
+      <button
+        onclick="toggleMobileMenu()"
+        class="text-white text-2xl focus:outline-none"
+      >
+        <i id="menuIcon" class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <div
+      id="mobileNav"
+      class="lg:hidden fixed top-0 left-0 w-full bg-slate-900 z-[2400] pt-20 pb-10 px-6 shadow-2xl border-b border-white/10"
+    >
+      <nav class="flex flex-col space-y-4 text-center">
+        <a
+          href="site-editor.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Site Editor</a
+        >
+        <a
+          href="stock-dashboard.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Inventory</a
+        >
+        <a
+          href="users.html"
+          class="text-orange-500 font-bold py-3 border-b border-white/5"
+          >User Directory</a
+        >
+        <a
+          href="orders.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Orders List</a
+        >
+        <a
+          href="queries.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Queries</a
+        >
+        <a href="../index.html" class="text-red-400 font-bold py-3"
+          >Exit Admin</a
+        >
+      </nav>
+    </div>
+
+    <main class="flex-1 p-6 md:p-12 main-content overflow-x-hidden">
+      <header
+        class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6"
+      >
         <div>
           <h1
-            class="text-4xl font-black text-blue-900 uppercase tracking-tighter"
+            class="text-3xl md:text-4xl font-black text-blue-900 uppercase tracking-tighter"
           >
             Directory
           </h1>
-          <p class="text-gray-400 font-bold text-xs uppercase tracking-[0.3em]">
+          <p
+            class="text-gray-400 font-bold text-[10px] uppercase tracking-[0.3em]"
+          >
             User Database
           </p>
         </div>
-        <div class="flex gap-4">
+        <div class="flex flex-wrap gap-3 w-full md:w-auto">
           <button
             onclick="exportToExcel()"
-            class="bg-emerald-600 text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg"
+            class="flex-1 md:flex-none bg-emerald-600 text-white px-5 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-emerald-700 transition-all shadow-lg"
           >
-            <i class="fas fa-file-excel mr-2"></i> Export Excel
+            <i class="fas fa-file-excel mr-2"></i> Export
           </button>
           <button
             onclick="deleteAllUsers()"
-            class="border-2 border-red-500 text-red-500 px-6 py-3 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
+            class="flex-1 md:flex-none border-2 border-red-500 text-red-500 px-5 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all"
           >
-            <i class="fas fa-user-slash mr-2"></i> Delete All
+            <i class="fas fa-user-slash mr-2"></i> Wipe All
           </button>
         </div>
       </header>
@@ -194,64 +275,92 @@
           id="directorySearch"
           onkeyup="filterUsers()"
           placeholder="Search by Name, Email, or GST..."
-          class="w-full bg-white border-2 border-slate-100 rounded-[2rem] py-5 pl-16 pr-8 outline-none focus:border-orange-500 shadow-sm transition-all font-bold text-sm text-blue-900 placeholder:text-slate-300"
+          class="w-full bg-white border-2 border-slate-100 rounded-2xl md:rounded-[2rem] py-4 md:py-5 pl-14 md:pl-16 pr-8 outline-none focus:border-orange-500 shadow-sm transition-all font-bold text-sm text-blue-900 placeholder:text-slate-300"
         />
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-10">
         <section
-          class="bg-white rounded-[2.5rem] p-8 shadow-xl border-t-8 border-blue-900"
+          class="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-xl border-t-8 border-blue-900"
         >
           <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
               <div
-                class="w-12 h-12 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center text-xl"
+                class="w-10 h-10 md:w-12 md:h-12 bg-blue-50 text-blue-900 rounded-full flex items-center justify-center text-lg"
               >
                 <i class="fas fa-users"></i>
               </div>
-              <h2 class="text-2xl font-black text-blue-900 uppercase">
+              <h2
+                class="text-xl md:text-2xl font-black text-blue-900 uppercase"
+              >
                 Customers
               </h2>
             </div>
             <span
               id="customerCount"
-              class="bg-blue-900 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase"
+              class="bg-blue-900 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase"
               >0 Total</span
             >
           </div>
           <div
             id="customerList"
-            class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"
+            class="space-y-4 max-h-[500px] lg:max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"
           ></div>
         </section>
 
         <section
-          class="bg-white rounded-[2.5rem] p-8 shadow-xl border-t-8 border-orange-500"
+          class="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 md:p-8 shadow-xl border-t-8 border-orange-500"
         >
           <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
               <div
-                class="w-12 h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-xl"
+                class="w-10 h-10 md:w-12 md:h-12 bg-orange-50 text-orange-500 rounded-full flex items-center justify-center text-lg"
               >
                 <i class="fas fa-store"></i>
               </div>
-              <h2 class="text-2xl font-black text-blue-900 uppercase">
+              <h2
+                class="text-xl md:text-2xl font-black text-blue-900 uppercase"
+              >
                 Retailers
               </h2>
             </div>
             <span
               id="retailerCount"
-              class="bg-orange-500 text-white px-4 py-1 rounded-full text-[10px] font-black uppercase"
+              class="bg-orange-500 text-white px-3 py-1 rounded-full text-[9px] font-black uppercase"
               >0 Total</span
             >
           </div>
           <div
             id="retailerList"
-            class="space-y-4 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"
+            class="space-y-4 max-h-[500px] lg:max-h-[600px] overflow-y-auto pr-2 custom-scrollbar"
           ></div>
         </section>
       </div>
     </main>
+
+    <script>
+      function toggleMobileMenu() {
+        const nav = document.getElementById("mobileNav");
+        const icon = document.getElementById("menuIcon");
+        nav.classList.toggle("active");
+        if (nav.classList.contains("active")) {
+          icon.className = "fas fa-times";
+          document.body.style.overflow = "hidden";
+        } else {
+          icon.className = "fas fa-bars";
+          document.body.style.overflow = "auto";
+        }
+      }
+
+      // Close menu when clicking links
+      document.querySelectorAll("#mobileNav a").forEach((link) => {
+        link.addEventListener("click", () => {
+          document.getElementById("mobileNav").classList.remove("active");
+          document.getElementById("menuIcon").className = "fas fa-bars";
+          document.body.style.overflow = "auto";
+        });
+      });
+    </script>
     <script src="../js/user_directory.js"></script>
   </body>
 </html>

@@ -16,12 +16,22 @@ if (!pendingOrder) {
 
 /* ---------------- UPI INPUT FIX ---------------- */
 
+/**
+ * Mobile-Optimized: Toggle UPI input area and prevent parent clicks
+ */
 function showUpiInput() {
   const area = document.getElementById("upiInputArea");
-  area.classList.toggle("hidden");
+  if (area) {
+    area.classList.toggle("hidden");
+    // Ensure the input scrolls into view on small screens
+    if (!area.classList.contains("hidden")) {
+      area.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }
 
   // Allow typing without parent click interference
-  document.getElementById("upiMainCard").onclick = null;
+  const upiCard = document.getElementById("upiMainCard");
+  if (upiCard) upiCard.onclick = null;
 }
 
 /* ---------------- RAZORPAY ---------------- */
@@ -44,6 +54,12 @@ function initiateRazorpay() {
       email: pendingOrder.email || "",
     },
     theme: { color: "#1e3a8a" },
+    // Enable better modal behavior on mobile browsers
+    modal: {
+      ondismiss: function () {
+        console.log("Checkout form closed by user");
+      },
+    },
   };
 
   const rzp = new Razorpay(options);
@@ -57,6 +73,9 @@ function initiateRazorpay() {
 
 /* ---------------- UPI DIRECT ---------------- */
 
+/**
+ * Optimized for Mobile Deep Linking: Handles redirects to UPI apps
+ */
 async function initiateUPI() {
   const userUpi = document.getElementById("userUpiId").value.trim();
 
@@ -67,10 +86,14 @@ async function initiateUPI() {
 
   const upiUrl = `upi://pay?pa=${COMPANY_UPI}&pn=Mishra%20Industries&am=${pendingOrder.totalAmount}&cu=INR&tn=OrderPayment`;
 
+  // Visual feedback for mobile user
+  const upiBtn = document.querySelector("#upiInputArea button");
+  if (upiBtn) upiBtn.innerText = "Redirecting...";
+
   // Open UPI App
   window.location.href = upiUrl;
 
-  // Wait for user confirmation
+  // Wait for user confirmation (Increased delay for mobile task-switching)
   setTimeout(async () => {
     const confirmed = confirm(
       "Have you completed the payment in your UPI app?",
@@ -78,15 +101,27 @@ async function initiateUPI() {
     if (confirmed) {
       await finalizeTransaction("UPI", `UPI_${Date.now()}`);
       location.href = "order-success.html";
+    } else {
+      if (upiBtn) upiBtn.innerText = "Pay via UPI App";
     }
-  }, 4000);
+  }, 5000);
 }
 
 /* ---------------- FINAL ORDER PROCESS ---------------- */
 
+/**
+ * Responsive Transition: Hides method container and shows centered status box
+ */
 async function finalizeTransaction(method, transactionId = "N/A") {
-  document.getElementById("methodContainer").classList.add("hidden");
-  document.getElementById("statusBox").classList.remove("hidden");
+  const container = document.getElementById("methodContainer");
+  const statusBox = document.getElementById("statusBox");
+
+  if (container) container.classList.add("hidden");
+  if (statusBox) {
+    statusBox.classList.remove("hidden");
+    // Ensure the status box is centered on mobile viewports
+    statusBox.scrollIntoView({ behavior: "smooth" });
+  }
 
   const finalOrderData = {
     ...pendingOrder,
@@ -117,6 +152,7 @@ async function finalizeTransaction(method, transactionId = "N/A") {
       alert("Order saving failed in backend.");
     }
   } catch (err) {
+    console.error("Order Sync Error:", err);
     alert("Server error while saving order.");
   }
 }
@@ -124,6 +160,23 @@ async function finalizeTransaction(method, transactionId = "N/A") {
 /* ---------------- COD ---------------- */
 
 async function finalizeTransactionCOD() {
+  // Mobile touch feedback
+  const codBtn = document.querySelector(
+    "button[onclick='finalizeTransactionCOD()']",
+  );
+  if (codBtn) codBtn.innerText = "Processing COD...";
+
   await finalizeTransaction("COD", "COD_ORDER");
   location.href = "order-success.html";
 }
+
+// Ensure proper mobile focus management
+document.addEventListener("DOMContentLoaded", () => {
+  const upiInput = document.getElementById("userUpiId");
+  if (upiInput) {
+    upiInput.addEventListener("focus", () => {
+      // Prevent mobile keyboard from squashing the UI
+      window.scrollTo(0, document.body.scrollHeight);
+    });
+  }
+});

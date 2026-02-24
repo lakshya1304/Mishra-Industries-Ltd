@@ -1,111 +1,136 @@
 let currentBrand = "All";
 let currentCategory = null;
+let allProductsCache = []; // NEW: Global cache for instant filtering
 const API_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
 
-// Debounce timer for smooth price sliding
 let sliderTimeout;
 
-async function renderShop() {
+// NEW: Function to show shimmering skeletons
+function showSkeletons() {
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = "";
+  for (let i = 0; i < 8; i++) {
+    grid.innerHTML += `
+      <div class="bg-white rounded-[1.5rem] border border-slate-100 overflow-hidden shadow-sm">
+        <div class="h-56 bg-slate-100 animate-pulse"></div>
+        <div class="p-6 space-y-3">
+          <div class="h-3 w-1/3 bg-slate-100 rounded animate-pulse"></div>
+          <div class="h-5 w-3/4 bg-slate-100 rounded animate-pulse"></div>
+          <div class="flex justify-between items-center pt-4">
+            <div class="h-6 w-1/4 bg-slate-100 rounded animate-pulse"></div>
+            <div class="h-10 w-10 bg-slate-100 rounded-xl animate-pulse"></div>
+          </div>
+        </div>
+      </div>`;
+  }
+}
+
+// Optimized: Renders from cache for instant response
+async function renderShop(isInitialLoad = false) {
   const grid = document.getElementById("productGrid");
   const countDisplay = document.getElementById("productCount");
   const priceRange = document.getElementById("priceRange");
   const priceDisplay = document.getElementById("priceDisplay");
   const searchInput = document.getElementById("searchInput");
 
-  try {
-    const response = await fetch(`${API_BASE}/api/products/all`);
-    const products = await response.json();
-
-    const maxPrice = parseInt(priceRange.value);
-    priceDisplay.innerText = `₹${maxPrice.toLocaleString()}`;
-    const searchTerm = searchInput.value.toLowerCase();
-    const sortValue = document.getElementById("sortSelect").value;
-
-    const selectedCategories = Array.from(
-      document.querySelectorAll(".cat-check:checked"),
-    ).map((cb) => cb.value.toLowerCase());
-
-    let filtered = products.filter((p) => {
-      const finalPrice = p.price - (p.price * (p.discount || 0)) / 100;
-      const matchesSearch =
-        p.name.toLowerCase().includes(searchTerm) ||
-        p.category.toLowerCase().includes(searchTerm);
-      const matchesBrand =
-        currentBrand === "All" ||
-        (p.company && p.company.toLowerCase() === currentBrand.toLowerCase());
-      const matchesPrice = finalPrice <= maxPrice;
-      const matchesCategory =
-        selectedCategories.length === 0 ||
-        selectedCategories.some((c) => p.category.toLowerCase().includes(c));
-      return matchesSearch && matchesBrand && matchesPrice && matchesCategory;
-    });
-
-    if (sortValue === "low") filtered.sort((a, b) => a.price - b.price);
-    else if (sortValue === "high") filtered.sort((a, b) => b.price - a.price);
-    else
-      filtered.sort((a, b) => new Error(b.createdAt) - new Date(a.createdAt));
-
-    countDisplay.innerText = `${filtered.length} Items Found Under ₹${maxPrice.toLocaleString()}`;
-
-    grid.innerHTML = "";
-    if (filtered.length === 0) {
-      grid.innerHTML = `<div class="col-span-full h-64 flex flex-col items-center justify-center space-y-4">
-                <i class="fas fa-search text-4xl text-slate-200"></i>
-                <p class="text-slate-300 font-black uppercase tracking-widest text-[10px]">No results match your filters</p>
-            </div>`;
+  // Initial fetch only
+  if (allProductsCache.length === 0 || isInitialLoad) {
+    showSkeletons();
+    try {
+      const response = await fetch(`${API_BASE}/api/products/all`);
+      allProductsCache = await response.json();
+    } catch (err) {
+      console.error("Fetch failed:", err);
       return;
     }
-
-    filtered.forEach((product, i) => {
-      const finalPrice =
-        product.price - (product.price * (product.discount || 0)) / 100;
-      let finalImgSrc =
-        product.image && product.image.startsWith("data:") ?
-          product.image
-        : `${API_BASE}${product.image.startsWith("/") ? product.image : "/" + product.image}`;
-
-      grid.innerHTML += `
-                <div onclick="location.href='product-details.html?id=${product._id}'" 
-                     class="group bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-2xl hover:-translate-y-3 transition-all duration-700 animate__animated animate__fadeInUp relative"
-                     style="animation-delay: ${i * 0.05}s">
-                    <div class="h-72 bg-slate-50 p-12 flex items-center justify-center relative overflow-hidden">
-                        <img src="${finalImgSrc}" onerror="this.src='./images/logo.jpeg'" class="h-full w-full object-contain group-hover:scale-110 transition-transform duration-1000">
-                        ${product.discount > 0 ? `<div class="absolute top-6 left-6 bg-orange-500 text-white text-[9px] font-black px-3 py-1 rounded-full shadow-lg z-10">-${product.discount}%</div>` : ""}
-                    </div>
-                    <div class="p-8">
-                        <div class="flex justify-between items-start mb-4">
-                            <div>
-                                <p class="text-[9px] font-black text-orange-500 uppercase tracking-widest mb-1">${product.company || "Mishra Atlas"}</p>
-                                <h3 class="text-blue-900 font-black text-base leading-tight group-hover:text-orange-600 transition-colors">${product.name}</h3>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between mt-8 border-t border-slate-50 pt-6">
-                            <div>
-                                <p class="text-2xl font-black text-blue-900">₹${finalPrice.toLocaleString()}</p>
-                                ${product.discount > 0 ? `<p class="text-[10px] text-slate-300 line-through font-bold">₹${product.price.toLocaleString()}</p>` : ""}
-                            </div>
-                            <button onclick="event.stopPropagation(); addToCart('${product.name}', ${finalPrice}, 1, '${finalImgSrc}', ${product.price})" 
-                                    class="bg-blue-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-xl active:scale-90">
-                                <i class="fas fa-cart-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>`;
-    });
-  } catch (err) {
-    console.error("Fetch failed:", err);
   }
+
+  const maxPrice = parseInt(priceRange.value);
+  priceDisplay.innerText = `₹${maxPrice.toLocaleString()}`;
+  const searchTerm = searchInput.value.toLowerCase();
+  const sortValue = document.getElementById("sortSelect").value;
+
+  const selectedCategories = Array.from(
+    document.querySelectorAll(".cat-check:checked"),
+  ).map((cb) => cb.value.toLowerCase());
+
+  // Instant filtering from memory
+  let filtered = allProductsCache.filter((p) => {
+    const finalPrice = p.price - (p.price * (p.discount || 0)) / 100;
+    const matchesSearch =
+      p.name.toLowerCase().includes(searchTerm) ||
+      p.category.toLowerCase().includes(searchTerm);
+    const matchesBrand =
+      currentBrand === "All" ||
+      (p.company && p.company.toLowerCase() === currentBrand.toLowerCase());
+    const matchesPrice = finalPrice <= maxPrice;
+    const matchesCategory =
+      selectedCategories.length === 0 ||
+      selectedCategories.some((c) => p.category.toLowerCase().includes(c));
+    return matchesSearch && matchesBrand && matchesPrice && matchesCategory;
+  });
+
+  if (sortValue === "low") filtered.sort((a, b) => a.price - b.price);
+  else if (sortValue === "high") filtered.sort((a, b) => b.price - a.price);
+  else filtered.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  countDisplay.innerText = `${filtered.length} Items Found Under ₹${maxPrice.toLocaleString()}`;
+
+  grid.innerHTML = "";
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="col-span-full h-64 flex flex-col items-center justify-center space-y-4">
+              <i class="fas fa-search text-4xl text-slate-200"></i>
+              <p class="text-slate-300 font-black uppercase tracking-widest text-[10px]">No results match your filters</p>
+          </div>`;
+    return;
+  }
+
+  filtered.forEach((product, i) => {
+    const finalPrice =
+      product.price - (product.price * (product.discount || 0)) / 100;
+    let finalImgSrc =
+      product.image && product.image.startsWith("data:") ?
+        product.image
+      : `${API_BASE}${product.image.startsWith("/") ? product.image : "/" + product.image}`;
+
+    // REMOVED fadeInUp animation class to fix zoom/jump glitch during sliding
+    grid.innerHTML += `
+              <div onclick="location.href='product-details.html?id=${product._id}'" 
+                   class="group bg-white rounded-[1.5rem] md:rounded-[2.5rem] border border-slate-100 overflow-hidden hover:shadow-2xl transition-all duration-300 relative">
+                  <div class="h-56 md:h-72 bg-slate-50 p-6 md:p-12 flex items-center justify-center relative overflow-hidden">
+                      <img src="${finalImgSrc}" onerror="this.src='./images/logo.jpeg'" class="h-full w-full object-contain group-hover:scale-110 transition-transform duration-700">
+                      ${product.discount > 0 ? `<div class="absolute top-4 left-4 md:top-6 md:left-6 bg-orange-500 text-white text-[8px] md:text-[9px] font-black px-3 py-1 rounded-full shadow-lg z-10">-${product.discount}%</div>` : ""}
+                  </div>
+                  <div class="p-6 md:p-8">
+                      <div class="flex justify-between items-start mb-4">
+                          <div>
+                              <p class="text-[8px] md:text-[9px] font-black text-orange-500 uppercase tracking-widest mb-1">${product.company || "Mishra Atlas"}</p>
+                              <h3 class="text-blue-900 font-black text-sm md:text-base leading-tight group-hover:text-orange-600 transition-colors">${product.name}</h3>
+                          </div>
+                      </div>
+                      <div class="flex items-center justify-between mt-4 md:mt-8 border-t border-slate-50 pt-4 md:pt-6">
+                          <div>
+                              <p class="text-lg md:text-2xl font-black text-blue-900">₹${finalPrice.toLocaleString()}</p>
+                              ${product.discount > 0 ? `<p class="text-[9px] md:text-[10px] text-blue-900 line-through font-bold">₹${product.price.toLocaleString()}</p>` : ""}
+                          </div>
+                          <button onclick="event.stopPropagation(); addToCart('${product.name}', ${finalPrice}, 1, '${finalImgSrc}', ${product.price})" 
+                                  class="bg-blue-900 text-white w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center hover:bg-orange-500 transition-all shadow-xl active:scale-95">
+                              <i class="fas fa-cart-plus text-xs"></i>
+                          </button>
+                      </div>
+                  </div>
+              </div>`;
+  });
 }
 
-// BUG FIX: Debounced Slider to prevent glitching
+// FIXED: Slider now updates INSTANTLY using cache
 function handleSliderChange() {
+  const priceRange = document.getElementById("priceRange");
   const priceDisplay = document.getElementById("priceDisplay");
-  priceDisplay.innerText = `₹${parseInt(document.getElementById("priceRange").value).toLocaleString()}`;
+  priceDisplay.innerText = `₹${parseInt(priceRange.value).toLocaleString()}`;
 
-  clearTimeout(sliderTimeout);
-  sliderTimeout = setTimeout(() => {
-    renderShop();
-  }, 150);
+  // Removed long timeout for instant feel
+  renderShop();
 }
 
 function filterByBrand(button) {
@@ -125,13 +150,13 @@ function startVoiceSearch() {
   const searchInput = document.getElementById("searchInput");
   const SpeechRecognition =
     window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) return alert("Browser not supported");
+  if (!SpeechRecognition) return alert("Voice search not supported.");
   const recognition = new SpeechRecognition();
   recognition.lang = "en-IN";
   recognition.onstart = () =>
     micIcon.classList.add("fa-spin", "text-orange-500");
   recognition.onresult = (e) => {
-    searchInput.value = e.results[0][0].transcript;
+    searchInput.value = e.results[0][0].transcript.replace(/\.$/, "").trim();
     renderShop();
   };
   recognition.onend = () =>
@@ -139,19 +164,36 @@ function startVoiceSearch() {
   recognition.start();
 }
 
+function toggleMobileMenu() {
+  const menu = document.getElementById("navDropdown");
+  const btnIcon = document.querySelector("#mobileMenuBtn i");
+  menu.classList.toggle("hidden");
+  if (menu.classList.contains("hidden")) {
+    btnIcon.classList.replace("fa-times", "fa-bars");
+  } else {
+    btnIcon.classList.replace("fa-bars", "fa-times");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
-  renderShop();
+  renderShop(true); // Load cache on start
   updateCartDrawer();
 
-  // Connect smooth slider
+  const menuBtn = document.getElementById("mobileMenuBtn");
+  if (menuBtn) menuBtn.addEventListener("click", toggleMobileMenu);
+
   document
     .getElementById("priceRange")
     .addEventListener("input", handleSliderChange);
+  document
+    .getElementById("sortSelect")
+    .addEventListener("change", () => renderShop());
+  document
+    .getElementById("searchInput")
+    .addEventListener("input", () => renderShop());
 
-  document.getElementById("sortSelect").addEventListener("change", renderShop);
-  document.getElementById("searchInput").addEventListener("input", renderShop);
   document.querySelectorAll(".cat-check").forEach((check) => {
-    check.addEventListener("change", renderShop);
+    check.addEventListener("change", () => renderShop());
   });
 
   const user = JSON.parse(localStorage.getItem("mishraUser"));
@@ -161,16 +203,16 @@ document.addEventListener("DOMContentLoaded", () => {
       .map((n) => n[0])
       .join("")
       .toUpperCase();
-    document.getElementById("authNavWrapper").innerHTML =
-      `<div class="user-avatar" onclick="location.href='profile.html'" title="My Profile">${initials}</div>`;
+    const authWrapper = document.getElementById("authNavWrapper");
+    if (authWrapper) {
+      authWrapper.innerHTML = `<div class="user-avatar" onclick="location.href='profile.html'" title="My Profile">${initials}</div>`;
+    }
   }
 });
 
-// UNIFIED KEY: "mishra_cart"
 function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
   let cart = JSON.parse(localStorage.getItem("mishra_cart")) || [];
   const existingItem = cart.find((item) => item.name === name);
-
   if (existingItem) {
     existingItem.quantity += parseInt(qty);
   } else {
@@ -182,13 +224,13 @@ function addToCart(name, price, qty = 1, image = null, originalPrice = null) {
       image: image || "./images/logo.jpeg",
     });
   }
-
   localStorage.setItem("mishra_cart", JSON.stringify(cart));
   updateCartDrawer();
 }
 
 function toggleCart() {
   const drawer = document.getElementById("cartDrawer");
+  if (!drawer) return;
   const isVisible = !drawer.classList.contains("invisible");
   if (isVisible) {
     drawer.classList.add("invisible");
@@ -226,12 +268,12 @@ function updateCartDrawer() {
   cartList.innerHTML = "";
   cart.forEach((item, index) => {
     let imgSrc = item.image;
-    if (!imgSrc.startsWith("http") && !imgSrc.startsWith("data:")) {
+    if (imgSrc && !imgSrc.startsWith("http") && !imgSrc.startsWith("data:")) {
       imgSrc = API_BASE + (imgSrc.startsWith("/") ? imgSrc : "/" + imgSrc);
     }
     cartList.innerHTML += `
       <div class="flex items-center space-x-4 border-b pb-4">
-        <img src="${imgSrc}" onerror="this.src='./images/logo.jpeg'" class="w-16 h-16 object-contain rounded-xl bg-slate-50">
+        <img src="${imgSrc || "./images/logo.jpeg"}" onerror="this.src='./images/logo.jpeg'" class="w-16 h-16 object-contain rounded-xl bg-slate-50">
         <div class="flex-1">
           <h4 class="font-bold text-sm text-blue-900">${item.name}</h4>
           <div class="flex items-center space-x-2 mt-2">

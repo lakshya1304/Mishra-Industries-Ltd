@@ -4,143 +4,66 @@ import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-// ===============================
-// ✅ POST: Add New Order
-// ===============================
+// @route   POST /api/orders/add
 router.post("/add", protect, async (req, res) => {
   try {
     const newOrder = new Order({
-      user: req.user._id,
+      user: req.user._id, // Use req.user from middleware
       customerName: req.body.customerName,
       phone: req.body.phone,
       address: req.body.address,
       items: req.body.items,
       totalAmount: req.body.totalAmount,
       gstAmount: req.body.gstAmount || 0,
-      paymentMethod: req.body.paymentMethod || "Not Specified",
+      paymentMethod: req.body.paymentMethod || "Online",
       transactionId: req.body.transactionId || "N/A",
       status: req.body.status || "Pending",
     });
 
-    const savedOrder = await newOrder.save();
-
-    res.status(201).json({
-      success: true,
-      message: "Order saved to Atlas",
-      order: savedOrder,
-    });
+    await newOrder.save();
+    res.status(201).json({ success: true, message: "Order saved to Atlas" });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });
   }
 });
 
-// ===============================
-// ✅ ADMIN: Fetch All Orders
-// ===============================
+// @route   GET /api/orders/all (ADMIN ONLY)
 router.get("/all", protect, async (req, res) => {
   try {
-    // FIX: This check triggers the 403 error if your Atlas record says "customer"
+    // Check if the user is an admin
     if (req.user.accountType !== "admin") {
-      return res
-        .status(403)
-        .json({ message: "Access denied: Account type is not admin" });
+      return res.status(403).json({ message: "Access denied. Admins only." });
     }
 
     const orders = await Order.find().sort({ createdAt: -1 });
-    res.status(200).json(orders);
+    res.json(orders);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ error: "Server Error: Could not fetch orders" });
   }
 });
 
-// ===============================
-// ✅ USER: Fetch Own Orders
-// ===============================
+// @route   GET /api/orders/my-orders (USER ONLY)
 router.get("/my-orders", protect, async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id }).sort({
       createdAt: -1,
     });
-
-    res.status(200).json(orders);
+    res.json({ orders });
   } catch (error) {
     res.status(500).json({ message: "Order Sync Failed" });
   }
 });
 
-// ===============================
-// ✅ ADMIN: Update Order Status
-// ===============================
-router.put("/status/:id", protect, async (req, res) => {
-  try {
-    if (req.user.accountType !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    const updatedOrder = await Order.findByIdAndUpdate(
-      req.params.id,
-      { status: req.body.status },
-      { new: true },
-    );
-
-    if (!updatedOrder)
-      return res.status(404).json({ message: "Order not found" });
-
-    res.status(200).json(updatedOrder);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// ===============================
-// ✅ ADMIN: Analytics
-// ===============================
-router.get("/stats/total-sales", protect, async (req, res) => {
-  try {
-    if (req.user.accountType !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    const stats = await Order.aggregate([
-      {
-        $group: {
-          _id: null,
-          totalRevenue: { $sum: "$totalAmount" },
-          totalOrders: { $sum: 1 },
-        },
-      },
-    ]);
-
-    const result =
-      stats.length > 0 ? stats[0] : { totalRevenue: 0, totalOrders: 0 };
-
-    res.status(200).json({
-      success: true,
-      totalRevenue: result.totalRevenue,
-      totalOrders: result.totalOrders,
-    });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// ===============================
-// ✅ ADMIN: Delete Order
-// ===============================
+// @route   DELETE /api/orders/delete/:id
 router.delete("/delete/:id", protect, async (req, res) => {
   try {
     if (req.user.accountType !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
+      return res.status(403).json({ message: "Admin access required" });
     }
-
-    const deletedOrder = await Order.findByIdAndDelete(req.params.id);
-
-    if (!deletedOrder)
-      return res.status(404).json({ message: "Order not found" });
-
-    res.status(200).json({ message: "Order deleted successfully" });
+    await Order.findByIdAndDelete(req.params.id);
+    res.json({ message: "Order removed from Atlas" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ message: err.message });
   }
 });
 

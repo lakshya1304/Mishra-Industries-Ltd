@@ -2,7 +2,10 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <title>Super Admin | Site Editor | Mishra Industries</title>
     <script>
       (function () {
@@ -24,6 +27,11 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap");
+      body {
+        font-family: "Plus Jakarta Sans", sans-serif;
+        overflow-x: hidden;
+      }
       .custom-scrollbar::-webkit-scrollbar {
         width: 6px;
       }
@@ -36,11 +44,31 @@
         overflow-y: auto;
         padding-right: 8px;
       }
+
+      /* Mobile Hamburger Animation  */
+      #mobileNav {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        transform: translateY(-110%);
+      }
+      #mobileNav.active {
+        transform: translateY(0);
+      }
+
+      @media (max-width: 1024px) {
+        .main-p-reset {
+          padding: 1.5rem !important;
+        }
+        .header-stack {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1.5rem;
+        }
+      }
     </style>
   </head>
-  <body class="bg-slate-50 flex min-h-screen font-sans">
+  <body class="bg-slate-50 lg:flex min-h-screen custom-scrollbar">
     <aside
-      class="w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex flex-col"
+      class="hidden lg:flex w-72 bg-slate-900 sticky top-0 h-screen text-white p-8 shadow-2xl flex-col shrink-0"
     >
       <div class="flex items-center space-x-3 mb-12">
         <h2 class="text-2xl font-bold tracking-tighter">
@@ -93,7 +121,7 @@
             >Orders List</span
           >
         </a>
-          <a
+        <a
           href="queries.html"
           class="flex items-center space-x-4 p-4 hover:bg-white/5 rounded-2xl transition-all group"
         >
@@ -106,28 +134,6 @@
           >
         </a>
       </nav>
-      <div class="mt-10 pt-6 border-t border-slate-800">
-        <a
-          href="settings.html"
-          class="flex items-center space-x-4 p-4 rounded-2xl hover:bg-white/5 transition-all group"
-        >
-          <div
-            class="w-10 h-10 bg-slate-800 text-slate-400 group-hover:bg-orange-100 group-hover:text-orange-600 rounded-xl flex items-center justify-center transition-all"
-          >
-            <i class="fas fa-cog"></i>
-          </div>
-          <div>
-            <p
-              class="text-[10px] font-black uppercase text-slate-400 group-hover:text-orange-600 tracking-widest"
-            >
-              System Console
-            </p>
-            <p class="text-[9px] font-bold text-slate-500">
-              Backup & Analytics
-            </p>
-          </div>
-        </a>
-      </div>
       <a
         href="../index.html"
         class="flex items-center space-x-4 p-4 text-slate-500 hover:text-red-400 transition-all border-t border-slate-800 mt-4"
@@ -137,17 +143,66 @@
       </a>
     </aside>
 
-    <main class="flex-1 p-12 overflow-y-auto custom-scrollbar">
-      <header class="flex justify-between items-end mb-12">
+    <div
+      class="lg:hidden w-full bg-slate-900 p-5 flex justify-between items-center sticky top-0 z-[2500]"
+    >
+      <h2 class="text-white font-bold tracking-tighter">
+        MISHRA <span class="text-orange-500">IND.</span>
+      </h2>
+      <button
+        onclick="toggleMobileMenu()"
+        class="text-white text-2xl focus:outline-none"
+      >
+        <i id="menuIcon" class="fas fa-bars"></i>
+      </button>
+    </div>
+
+    <div
+      id="mobileNav"
+      class="lg:hidden fixed top-0 left-0 w-full bg-slate-900 z-[2400] pt-20 pb-10 px-6 shadow-2xl border-b border-white/10"
+    >
+      <nav class="flex flex-col space-y-4 text-center">
+        <a
+          href="site-editor.html"
+          class="text-orange-500 font-bold py-3 border-b border-white/5"
+          >Site Editor</a
+        >
+        <a
+          href="stock-dashboard.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Inventory</a
+        >
+        <a
+          href="users.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Users</a
+        >
+        <a
+          href="orders.html"
+          class="text-slate-300 font-bold py-3 border-b border-white/5"
+          >Orders List</a
+        >
+        <a href="../index.html" class="text-red-400 font-bold py-3"
+          >Exit Admin</a
+        >
+      </nav>
+    </div>
+
+    <main class="flex-1 p-6 md:p-12 main-p-reset overflow-x-hidden">
+      <header
+        class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6"
+      >
         <div>
-          <h1 class="text-4xl font-black text-slate-800 mb-2">
+          <h1
+            class="text-3xl md:text-4xl font-black text-slate-800 mb-2 leading-none"
+          >
             Product Manager
           </h1>
-          <p class="text-slate-500 font-medium">
-            Add or edit products in the Mishra Global Atlas.
+          <p class="text-slate-500 font-medium text-sm">
+            Update the Mishra Global Atlas showroom.
           </p>
         </div>
-        <div class="flex-1 max-w-md mx-8">
+        <div class="flex-1 w-full max-w-md md:mx-8">
           <div class="relative group">
             <i
               class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-orange-500 transition-colors"
@@ -155,7 +210,7 @@
             <input
               type="text"
               id="tableSearch"
-              placeholder="Search by name or category..."
+              placeholder="Search products..."
               oninput="loadProducts()"
               class="w-full bg-white border border-slate-200 pl-12 pr-4 py-3 rounded-2xl outline-none focus:border-orange-500 shadow-sm transition-all"
             />
@@ -163,37 +218,42 @@
         </div>
         <button
           onclick="toggleModal()"
-          class="bg-slate-900 hover:bg-orange-600 text-white px-8 py-4 rounded-2xl font-bold shadow-xl transition-all flex items-center space-x-3"
+          class="w-full md:w-auto bg-slate-900 hover:bg-orange-600 text-white px-6 py-4 rounded-2xl font-bold shadow-xl transition-all flex items-center justify-center space-x-3"
         >
-          <i class="fas fa-plus"></i> <span>Add New Product</span>
+          <i class="fas fa-plus"></i> <span>Add Product</span>
         </button>
       </header>
 
       <div
         class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden"
       >
-        <table class="w-full text-left">
-          <thead>
-            <tr
-              class="bg-slate-50/50 border-b border-slate-100 uppercase tracking-widest text-[10px] font-black text-slate-400"
-            >
-              <th class="p-6">Sl No.</th>
-              <th class="p-6">Product</th>
-              <th class="p-6">Brand</th>
-              <th class="p-6">Category</th>
-              <th class="p-6">Discount</th>
-              <th class="p-6">Pricing</th>
-              <th class="p-6 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="productTableBody" class="divide-y divide-slate-50"></tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left min-w-[800px]">
+            <thead>
+              <tr
+                class="bg-slate-50/50 border-b border-slate-100 uppercase tracking-widest text-[10px] font-black text-slate-400"
+              >
+                <th class="p-6">Sl No.</th>
+                <th class="p-6">Product</th>
+                <th class="p-6">Brand</th>
+                <th class="p-6">Category</th>
+                <th class="p-6">Discount</th>
+                <th class="p-6">Pricing</th>
+                <th class="p-6 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody
+              id="productTableBody"
+              class="divide-y divide-slate-50"
+            ></tbody>
+          </table>
+        </div>
       </div>
     </main>
 
     <div
       id="productModal"
-      class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[100] backdrop-blur-md p-4"
+      class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-[3000] backdrop-blur-md p-4"
     >
       <div
         class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-6 animate__animated animate__zoomIn animate__faster"
@@ -219,9 +279,6 @@
             class="space-y-4"
           >
             <div class="relative group">
-              <label class="block text-sm font-bold text-slate-700 mb-2"
-                >Product Image</label
-              >
               <div
                 id="imagePreviewContainer"
                 class="hidden mb-4 relative h-40 w-full rounded-2xl overflow-hidden border"
@@ -249,9 +306,7 @@
                   <i
                     class="fas fa-cloud-upload-alt text-slate-400 text-3xl mb-3"
                   ></i>
-                  <p class="text-xs font-bold text-slate-500">
-                    Upload Product Image
-                  </p>
+                  <p class="text-xs font-bold text-slate-500">Upload Image</p>
                 </div>
                 <input
                   type="file"
@@ -267,7 +322,7 @@
                 type="text"
                 id="prodName"
                 placeholder="Product Name"
-                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold outline-none focus:border-orange-500"
                 required
               />
               <div class="grid grid-cols-2 gap-4">
@@ -275,20 +330,20 @@
                   type="number"
                   id="prodPrice"
                   placeholder="Price (₹)"
-                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold"
                   required
                 />
                 <input
                   type="number"
                   id="prodDiscount"
                   placeholder="Discount %"
-                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold"
                 />
               </div>
               <div class="grid grid-cols-2 gap-4">
                 <select
                   id="prodCategory"
-                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold"
                 >
                   <option>Switches</option>
                   <option>Cables</option>
@@ -296,7 +351,7 @@
                 </select>
                 <select
                   id="prodCompany"
-                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                  class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold"
                 >
                   <option value="SIEMENS">SIEMENS</option>
                   <option value="ANCHOR">ANCHOR</option>
@@ -308,12 +363,12 @@
                 type="number"
                 id="prodStock"
                 placeholder="Initial Stock"
-                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl outline-none focus:border-orange-500 transition font-bold"
+                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold"
               />
               <textarea
                 id="prodDesc"
                 placeholder="Description"
-                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl h-24 outline-none focus:border-orange-500 transition font-bold"
+                class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl h-24 font-bold"
               ></textarea>
             </div>
             <button
@@ -334,6 +389,16 @@
       const SERVER_BASE = "https://mishra-industries-ltd-yjfr.onrender.com";
       let isEditing = false;
       let currentEditId = null;
+
+      function toggleMobileMenu() {
+        const nav = document.getElementById("mobileNav");
+        const icon = document.getElementById("menuIcon");
+        nav.classList.toggle("active");
+        icon.className =
+          nav.classList.contains("active") ? "fas fa-times" : "fas fa-bars";
+        document.body.style.overflow =
+          nav.classList.contains("active") ? "hidden" : "auto";
+      }
 
       function toggleModal() {
         const modal = document.getElementById("productModal");
@@ -373,7 +438,7 @@
       }
 
       async function handleProductForm(e) {
-        if (e) e.preventDefault();
+        e.preventDefault();
         const btn = document.getElementById("saveBtn");
         btn.disabled = true;
         btn.innerText = "Syncing...";
@@ -413,7 +478,7 @@
             body: formData,
           });
           if (response.ok) {
-            alert("✅ Data Synced with Global Showroom");
+            alert("✅ Data Synced Successfully");
             location.reload();
           }
         } catch (err) {
@@ -425,23 +490,10 @@
       }
 
       function getProductImage(image) {
-  if (!image) return "../images/logo.jpeg";
-
-  // If it's a Base64 string from the database, use it directly
-  if (image.startsWith("data:")) {
-    return image;
-  }
-
-  // If it's a manual filename (like 'image1.jpg'), convert it to a full URL
-  // We check if it already starts with http to avoid double-prefixing
-  if (image.startsWith("http")) {
-    return image;
-  }
-  
-  // Ensure the path starts with a slash
-  const cleanPath = image.startsWith("/") ? image : `/${image}`;
-  return `${SERVER_BASE}${cleanPath}`;
-}
+        if (!image) return "../images/logo.jpeg";
+        if (image.startsWith("data:") || image.startsWith("http")) return image;
+        return `${SERVER_BASE}${image.startsWith("/") ? image : "/" + image}`;
+      }
 
       async function loadProducts() {
         try {
@@ -462,21 +514,19 @@
           filtered.forEach((p, index) => {
             const imgPath = getProductImage(p.image);
             tableBody.innerHTML += `
-              <tr class="border-b border-slate-50 hover:bg-slate-50 transition group">
+              <tr class="border-b hover:bg-slate-50 transition">
                 <td class="p-6 font-bold text-slate-400 text-xs">${index + 1}</td>
                 <td class="p-6 flex items-center gap-4">
-                  <img src="${imgPath}" onerror="this.src='../images/logo.jpeg'" class="w-12 h-12 rounded-xl object-cover shadow-sm">
-                  <span class="font-bold text-slate-800">${p.name}</span>
+                  <img src="${imgPath}" onerror="this.src='../images/logo.jpeg'" class="w-12 h-12 rounded-xl object-cover">
+                  <span class="font-bold text-slate-800 text-sm md:text-base">${p.name}</span>
                 </td>
-                <td class="p-6 text-orange-500 font-black text-[10px] uppercase tracking-tighter">${p.company || "N/A"}</td>
+                <td class="p-6 text-orange-500 font-black text-[10px] uppercase">${p.company || "N/A"}</td>
                 <td class="p-6 text-slate-500 font-bold text-xs">${p.category}</td>
-                <td class="p-6">
-                    <span class="bg-orange-100 text-orange-600 px-2 py-1 rounded-lg text-[10px] font-black uppercase">${p.discount || 0}% OFF</span>
-                </td>
+                <td class="p-6"><span class="bg-orange-100 text-orange-600 px-2 py-1 rounded-lg text-[10px] font-black uppercase">${p.discount || 0}% OFF</span></td>
                 <td class="p-6 font-black text-blue-900">₹${p.price.toLocaleString()}</td>
                 <td class="p-6 text-right space-x-2">
-                  <button onclick="prepareEdit('${p._id}')" class="text-orange-500 hover:bg-orange-50 p-3 rounded-xl transition"><i class="fas fa-edit"></i></button>
-                  <button onclick="deleteProduct('${p._id}')" class="text-red-500 hover:bg-red-50 p-3 rounded-xl transition"><i class="fas fa-trash"></i></button>
+                  <button onclick="prepareEdit('${p._id}')" class="text-orange-500 hover:bg-orange-50 p-2 rounded-xl transition"><i class="fas fa-edit"></i></button>
+                  <button onclick="deleteProduct('${p._id}')" class="text-red-500 hover:bg-red-50 p-2 rounded-xl transition"><i class="fas fa-trash"></i></button>
                 </td>
               </tr>`;
           });
@@ -499,8 +549,9 @@
           document.getElementById("prodCompany").value = p.company || "SIEMENS";
           document.getElementById("prodStock").value = p.stock || 0;
           document.getElementById("prodDesc").value = p.description || "";
-          const imgPreview = document.getElementById("imagePreview");
-          imgPreview.src = getProductImage(p.image);
+          document.getElementById("imagePreview").src = getProductImage(
+            p.image,
+          );
           document
             .getElementById("imagePreviewContainer")
             .classList.remove("hidden");

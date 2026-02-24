@@ -23,6 +23,7 @@
       body {
         background-color: #f1f3f6;
         font-family: "Inter", sans-serif;
+        overflow-x: hidden;
       }
       .sidebar-item.active {
         background: white;
@@ -68,6 +69,18 @@
         width: 64px;
         height: 64px;
         border-radius: 9999px;
+      }
+      .custom-toast {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 30px;
+        border-radius: 10px;
+        color: white;
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        z-index: 9999;
       }
     </style>
   </head>
@@ -213,7 +226,6 @@
                 disabled
               />
             </div>
-
             <div
               id="retailerFields"
               class="hidden animate__animated animate__fadeIn border-t pt-8"
@@ -238,7 +250,6 @@
                 />
               </div>
             </div>
-
             <h3
               class="text-lg font-black text-blue-900 uppercase tracking-tight mb-8 border-t pt-8"
             >
@@ -294,7 +305,7 @@
               type="text"
               id="trackIdInput"
               class="smart-input"
-              placeholder="Enter Order ID (e.g. #MI-123456)"
+              placeholder="Enter Order ID"
             />
             <button
               onclick="trackOrder()"
@@ -386,11 +397,10 @@
       if (!user || !user.token) window.location.href = "login.html";
 
       document.addEventListener("DOMContentLoaded", () => {
-        fetchProfileData(); // Connects to database on load
-        fetchOrders(); // Fetches live orders from Atlas
+        fetchProfileData();
+        fetchOrders();
       });
 
-      // SYNC: Fetch Fresh Data from Atlas
       async function fetchProfileData() {
         try {
           const res = await fetch(`${API_URL}/api/auth/profile`, {
@@ -416,7 +426,6 @@
         document.getElementById("addrStreet").value = user.address || "";
         document.getElementById("addrPin").value = user.pincode || "";
         document.getElementById("addrCity").value = user.city || "";
-
         const previewImg = document.getElementById("profilePicPreview");
         if (user.profilePic) {
           previewImg.src =
@@ -426,7 +435,6 @@
         } else {
           previewImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=1e3a8a&color=fff`;
         }
-
         if (user.accountType === "retailer") {
           document.getElementById("retailerFields").classList.remove("hidden");
           document.getElementById("accountBadge").innerText = "Elite Retailer";
@@ -435,12 +443,10 @@
         }
       }
 
-      // UPDATE: Save Details & Photo to Database
       async function executeAutoUpdate() {
         const saveBtn = document.getElementById("saveBtn");
         saveBtn.disabled = true;
         saveBtn.innerText = "Syncing Atlas...";
-
         const formData = new FormData();
         formData.append(
           "fullName",
@@ -462,10 +468,8 @@
           "city",
           document.getElementById("addrCity").value.trim(),
         );
-
         const picInput = document.getElementById("profilePicInput");
         if (picInput.files[0]) formData.append("profilePic", picInput.files[0]);
-
         if (user.accountType === "retailer") {
           formData.append(
             "businessName",
@@ -476,52 +480,85 @@
             document.getElementById("bizGST").value.trim(),
           );
         }
-
         try {
           const res = await fetch(`${API_URL}/api/auth/update-profile`, {
             method: "PUT",
-            headers: { Authorization: `Bearer ${user.token}` },
-            body: formData, // FormData ensures image storage in DB
+            headers: { Authorization: `Bearer ${user.token}` }, // Note: No Content-Type for FormData
+            body: formData,
           });
+          const data = await res.json();
           if (res.ok) {
-            const data = await res.json();
-            user = { ...user, ...data.user };
-            localStorage.setItem("mishraUser", JSON.stringify(user));
-            showToast("Database Updated Successfully", "success");
-            document.getElementById("saveBanner").classList.add("hidden");
-            location.reload();
+            localStorage.setItem(
+              "mishraUser",
+              JSON.stringify({ ...user, ...data.user }),
+            );
+            showToast("Profile & Photo Synced", "success");
+            setTimeout(() => location.reload(), 1500);
+          } else {
+            showToast(data.message || "Update Failed", "error");
           }
         } catch (err) {
-          showToast("Sync Error", "error");
+          showToast("Server Connection Error", "error");
         } finally {
           saveBtn.disabled = false;
           saveBtn.innerText = "Save Changes";
         }
       }
 
-      // SYNC: Fetch live historical transactions
+      async function handlePasswordChange() {
+        const oldPassword = document.getElementById("oldPassword").value;
+        const newPassword = document.getElementById("newPassword").value;
+        const confirmPassword =
+          document.getElementById("confirmPassword").value;
+        if (newPassword !== confirmPassword)
+          return showToast("Passwords do not match", "error");
+        try {
+          const res = await fetch(`${API_URL}/api/auth/change-password`, {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${user.token}`,
+            },
+            body: JSON.stringify({ oldPassword, newPassword }),
+          });
+          const data = await res.json();
+          if (res.ok) {
+            showToast("Security Key Updated", "success");
+            document.getElementById("passwordForm").reset();
+          } else {
+            showToast(data.message || "Change Failed", "error");
+          }
+        } catch (err) {
+          showToast("Security Sync Error", "error");
+        }
+      }
+
+      /**
+       * FIX: Robust fetch for Order History
+       */
       async function fetchOrders() {
         const container = document.getElementById("orderLogContainer");
         container.innerHTML = `<div class="p-10 text-center"><i class="fas fa-spinner fa-spin text-blue-900"></i></div>`;
         try {
           const res = await fetch(`${API_URL}/api/orders/my-orders`, {
-            headers: { Authorization: `Bearer ${user.token}` },
+            headers: { Authorization: `Bearer ${user.token}` }, // FIX: Token added
           });
           const data = await res.json();
-          globalOrders = data.orders || data;
+
+          // Logic: Support both data.orders or raw array response
+          globalOrders = data.orders || (Array.isArray(data) ? data : []);
 
           if (!globalOrders.length) {
             container.innerHTML =
-              "<p class='text-center py-20 text-slate-400 font-bold'>No transactions found in database.</p>";
+              "<p class='text-center py-20 text-slate-400 font-bold'>No transactions found.</p>";
             return;
           }
-
           container.innerHTML = globalOrders
             .map(
               (o) => `
-            <div class="border rounded-xl p-6 flex justify-between items-center hover:border-blue-900 transition bg-slate-50 shadow-sm">
+            <div class="border rounded-xl p-6 flex justify-between items-center bg-slate-50 shadow-sm">
                 <div>
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">#MI-${o._id.slice(-6).toUpperCase()}</p>
+                    <p class="text-[10px] font-black text-slate-400 uppercase">#MI-${o._id.slice(-6).toUpperCase()}</p>
                     <h4 class="text-lg font-black text-blue-900">₹${Number(o.totalAmount).toLocaleString()}</h4>
                     <p class="text-xs text-slate-500 font-bold">${new Date(o.createdAt).toLocaleDateString()}</p>
                 </div>
@@ -533,11 +570,11 @@
             )
             .join("");
         } catch (err) {
-          console.error("Order fetch failed");
+          container.innerHTML =
+            "<p class='text-center py-20 text-red-500'>DATABASE OFFLINE (SYNC FAILED)</p>";
         }
       }
 
-      // TRACK: Real-time shipment status nodes
       function trackOrder() {
         const trackId = document
           .getElementById("trackIdInput")
@@ -546,27 +583,22 @@
           .replace("#MI-", "");
         const resultBox = document.getElementById("trackResult");
         if (!trackId) return showToast("Enter Ref ID", "error");
-
         const match = globalOrders.find((o) =>
           o._id.toUpperCase().endsWith(trackId),
         );
         if (match) {
           resultBox.classList.remove("hidden");
           const steps = ["Pending", "Paid", "Shipped", "Delivered"];
-          const currentIdx = steps.indexOf(match.status);
-
+          const cur = steps.indexOf(match.status);
           resultBox.innerHTML = steps
             .map(
               (s, i) => `
-                <div class="flex items-center gap-6 relative ml-4">
-                    <div class="w-10 h-10 rounded-full border-4 flex items-center justify-center z-10 transition-all ${i <= currentIdx ? "bg-orange-500 border-orange-100 text-white shadow-lg" : "bg-white border-slate-100 text-slate-200"}">
-                        <i class="fas ${i <= currentIdx ? "fa-check-circle" : "fa-circle"}"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs font-black uppercase tracking-widest ${i <= currentIdx ? "text-blue-900" : "text-slate-300"}">${s}</p>
-                        <p class="text-[9px] font-bold ${i <= currentIdx ? "text-slate-500" : "text-slate-300"}">${i <= currentIdx ? "Verified at Mishra Hub" : "Scheduled"}</p>
-                    </div>
-                </div>`,
+            <div class="flex items-center gap-6 relative ml-4">
+                <div class="w-10 h-10 rounded-full border-4 flex items-center justify-center ${i <= cur ? "bg-orange-500 border-orange-100 text-white" : "bg-white border-slate-100 text-slate-200"}">
+                    <i class="fas ${i <= cur ? "fa-check-circle" : "fa-circle"}"></i>
+                </div>
+                <div><p class="text-xs font-black uppercase ${i <= cur ? "text-blue-900" : "text-slate-300"}">${s}</p></div>
+            </div>`,
             )
             .join("");
         } else {
@@ -574,40 +606,6 @@
         }
       }
 
-      // SECURITY: Database Password Sync
-      async function handlePasswordChange() {
-        const oldPass = document.getElementById("oldPassword").value;
-        const newPass = document.getElementById("newPassword").value;
-        const confPass = document.getElementById("confirmPassword").value;
-
-        if (newPass !== confPass)
-          return showToast("Passwords do not match", "error");
-
-        try {
-          const res = await fetch(`${API_URL}/api/auth/change-password`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${user.token}`,
-            },
-            body: JSON.stringify({
-              oldPassword: oldPass,
-              newPassword: newPass,
-            }),
-          });
-          const data = await res.json();
-          if (res.ok) {
-            showToast("Database Access Key Updated", "success");
-            document.getElementById("passwordForm").reset();
-          } else {
-            showToast(data.message || "Change Failed", "error");
-          }
-        } catch (err) {
-          showToast("Security Sync Error", "error");
-        }
-      }
-
-      // UI Helpers
       function previewProfilePic(event) {
         const file = event.target.files[0];
         if (file) {
@@ -631,7 +629,6 @@
       function showSaveBanner() {
         document.getElementById("saveBanner").classList.remove("hidden");
       }
-
       function switchTab(id, btn) {
         document
           .querySelectorAll(".section-panel")
@@ -642,7 +639,6 @@
           .forEach((l) => l.classList.remove("active"));
         btn.classList.add("active");
       }
-
       function handleLogout() {
         localStorage.removeItem("mishraUser");
         window.location.href = "index.html";

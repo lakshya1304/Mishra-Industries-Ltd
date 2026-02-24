@@ -28,15 +28,16 @@ function renderUserLists(users) {
     if (isRetailer) rCount++;
     else cCount++;
 
+    // UPDATED: Added flex-col sm:flex-row and adjusted padding for mobile
     const userCard = `
-            <div class="p-5 bg-gray-50 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group relative animate__animated animate__fadeIn">
-                <div class="flex justify-between items-start">
-                    <div class="space-y-1 w-full">
+            <div class="p-4 md:p-5 bg-gray-50 rounded-2xl md:rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group relative animate__animated animate__fadeIn mb-4">
+                <div class="flex flex-col sm:flex-row justify-between items-start gap-4">
+                    <div class="space-y-1 w-full flex-1">
                         <div class="flex items-center gap-2">
-                            <h4 class="font-black text-blue-900 text-sm uppercase tracking-tight">${user.fullName}</h4>
-                            <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span>
+                            <h4 class="font-black text-blue-900 text-sm uppercase tracking-tight truncate">${user.fullName}</h4>
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 shrink-0"></span>
                         </div>
-                        <p class="text-[10px] text-gray-400 font-bold flex items-center gap-1">
+                        <p class="text-[10px] text-gray-400 font-bold flex items-center gap-1 break-all">
                             <i class="fas fa-envelope text-blue-300 w-3"></i> ${user.email}
                         </p>
                         <p class="text-[10px] text-gray-500 font-black flex items-center gap-1">
@@ -47,7 +48,7 @@ function renderUserLists(users) {
                             `
                             <div class="mt-3 grid grid-cols-1 gap-2">
                                 <div class="px-3 py-1.5 bg-orange-100 rounded-xl border border-orange-200">
-                                    <p class="text-[9px] text-orange-600 font-black uppercase"><i class="fas fa-building mr-1"></i> ${user.businessName || "Business"}</p>
+                                    <p class="text-[9px] text-orange-600 font-black uppercase truncate"><i class="fas fa-building mr-1"></i> ${user.businessName || "Business"}</p>
                                 </div>
                                 <div class="px-3 py-1.5 bg-blue-900 rounded-xl border border-blue-800">
                                     <p class="text-[8px] text-blue-200 font-black uppercase tracking-widest">GSTID</p>
@@ -57,13 +58,13 @@ function renderUserLists(users) {
                           : ""
                         }
                         
-                        <div class="mt-4 flex gap-2">
-                            <button onclick="viewUserOrders('${user._id}', '${user.fullName}')" class="px-4 py-1.5 bg-white text-blue-900 border border-blue-100 rounded-lg text-[9px] font-black uppercase hover:bg-blue-900 hover:text-white transition-all shadow-sm">
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <button onclick="viewUserOrders('${user._id}', '${user.fullName}')" class="flex-1 sm:flex-none px-4 py-2 bg-white text-blue-900 border border-blue-100 rounded-lg text-[9px] font-black uppercase hover:bg-blue-900 hover:text-white transition-all shadow-sm">
                                 <i class="fas fa-receipt mr-1"></i> View Orders
                             </button>
                         </div>
                     </div>
-                    <div class="flex flex-col items-end gap-2 ml-2">
+                    <div class="flex flex-row sm:flex-col items-center sm:items-end gap-2 w-full sm:w-auto justify-between sm:justify-start border-t sm:border-none pt-3 sm:pt-0">
                         <span class="text-[9px] font-black text-gray-300 uppercase bg-white px-2 py-1 rounded-lg border border-gray-100">ID: ${user._id.slice(-4)}</span>
                         <button onclick="deleteUser('${user._id}', '${user.fullName}')" class="w-8 h-8 flex items-center justify-center bg-red-50 text-red-400 rounded-full hover:bg-red-500 hover:text-white transition-all shadow-sm">
                             <i class="fas fa-trash-alt text-xs"></i>
@@ -89,7 +90,9 @@ async function viewUserOrders(userId, userName) {
 
   list.innerHTML = `<div class="p-10 text-center"><i class="fas fa-circle-notch fa-spin text-blue-900 text-2xl"></i></div>`;
   modal.classList.remove("hidden");
-  nameDisplay.innerText = `${userName}'s History`;
+  // Mobile Fix: Set modal flex to ensure centering
+  modal.style.display = "flex";
+  nameDisplay.innerText = `${userName.split(" ")[0]}'s History`;
 
   try {
     const response = await fetch(`${API_BASE}/orders/all`);
@@ -102,27 +105,26 @@ async function viewUserOrders(userId, userName) {
       list.innerHTML = `
                 <div class="py-12 text-center">
                     <i class="fas fa-box-open text-slate-200 text-5xl mb-4"></i>
-                    <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">No orders found for this user</p>
+                    <p class="text-slate-400 font-bold uppercase text-[10px] tracking-widest">No orders found</p>
                 </div>`;
       lifetimeDisplay.innerText = "₹0";
     } else {
       let lifetime = 0;
+      // UPDATED: Optimized order items for narrow width view
       list.innerHTML = userOrders
         .map((o) => {
           lifetime += o.totalAmount;
           const date = new Date(o.createdAt).toLocaleDateString("en-IN", {
             day: "2-digit",
             month: "short",
-            year: "numeric",
           });
           return `
-                    <div class="p-5 bg-white rounded-3xl border border-slate-100 shadow-sm flex justify-between items-center group hover:border-blue-900 transition-all">
-                        <div>
-                            <p class="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1">#MI-${o._id.slice(-6).toUpperCase()}</p>
+                    <div class="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center group hover:border-blue-900 transition-all gap-2">
+                        <div class="min-w-0">
+                            <p class="text-[8px] font-black text-slate-300 uppercase tracking-widest mb-1 truncate">#${o._id.slice(-6).toUpperCase()}</p>
                             <p class="text-xs font-black text-blue-900">${date}</p>
-                            <p class="text-[8px] font-bold text-slate-400 uppercase mt-1">${o.items.length} Items | ${o.paymentMethod || "COD"}</p>
                         </div>
-                        <div class="text-right">
+                        <div class="text-right shrink-0">
                             <p class="text-sm font-black text-blue-900 tracking-tighter">₹${o.totalAmount.toLocaleString()}</p>
                             <span class="text-[8px] font-black uppercase text-emerald-500">${o.status || "Pending"}</span>
                         </div>
@@ -137,7 +139,9 @@ async function viewUserOrders(userId, userName) {
 }
 
 function closeOrderModal() {
-  document.getElementById("orderHistoryModal").classList.add("hidden");
+  const modal = document.getElementById("orderHistoryModal");
+  modal.classList.add("hidden");
+  modal.style.display = "none";
 }
 
 function filterUsers() {

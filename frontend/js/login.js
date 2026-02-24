@@ -8,6 +8,9 @@ let countdown;
 
 // --- UI Toggle Functions ---
 
+/**
+ * Optimized for mobile: Ensures active states are clear on touch screens
+ */
 function setLoginType(type) {
   currentType = type;
   const btnCust = document.getElementById("btnCustomer");
@@ -28,14 +31,23 @@ function setLoginType(type) {
   }
 }
 
+/**
+ * Mobile Fix: Disables background scroll when modal is open for better UX
+ */
 function openForgotModal() {
-  document.getElementById("otpModal").classList.remove("hidden");
+  const modal = document.getElementById("otpModal");
+  modal.classList.remove("hidden");
+  modal.style.display = "flex"; // Ensures centering on mobile
   document.getElementById("emailStep").classList.remove("hidden");
   document.getElementById("otpStep").classList.add("hidden");
+  document.body.style.overflow = "hidden";
 }
 
 function closeForgotModal() {
-  document.getElementById("otpModal").classList.add("hidden");
+  const modal = document.getElementById("otpModal");
+  modal.classList.add("hidden");
+  modal.style.display = "none";
+  document.body.style.overflow = "auto"; // Restores scroll
   clearInterval(countdown);
 }
 
@@ -47,7 +59,7 @@ function closeForgotModal() {
 async function handleLogin() {
   const email = document.getElementById("loginEmail").value;
   const password = document.getElementById("loginPass").value;
-  const businessName = document.getElementById("loginBusiness").value;
+  const businessName = document.getElementById("loginBusiness")?.value || "";
 
   if (!email || !password) {
     return alert("Please enter both email and password.");
@@ -73,8 +85,6 @@ async function handleLogin() {
     if (response.ok) {
       // Corrected Key to 'mishraUser' to sync with Index/Shop navigation
       localStorage.setItem("mishraUser", JSON.stringify(data));
-
-      // Removed alert for a faster, more modern redirect experience
       window.location.href = "shop.html";
     } else {
       alert(data.message || "Invalid Credentials");
@@ -96,7 +106,9 @@ async function sendOTP() {
     return alert("Please enter a valid Gmail address.");
   }
 
+  // Visual feedback for mobile users
   sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+  sendBtn.disabled = true;
 
   try {
     const response = await fetch(
@@ -124,6 +136,7 @@ async function sendOTP() {
     alert("Failed to reach the email server.");
   } finally {
     sendBtn.innerHTML = "Send OTP";
+    sendBtn.disabled = false;
   }
 }
 
@@ -136,8 +149,9 @@ function startTimer(duration) {
     seconds;
   clearInterval(countdown);
   const timerDisplay = document.getElementById("timer");
-  const timerText = timerDisplay.parentElement;
+  if (!timerDisplay) return;
 
+  const timerText = timerDisplay.parentElement;
   timerText.classList.remove("hidden");
 
   countdown = setInterval(() => {
@@ -196,3 +210,8 @@ async function handleResetPassword() {
     alert("Reset failed. Server error.");
   }
 }
+
+// Global listener to ensure modal closes on ESC key for desktop admins
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeForgotModal();
+});
