@@ -5,7 +5,10 @@ import path from "node:path";
 import fs from "node:fs";
 import morgan from "morgan";
 import adminRoutes from "../routes/adminRoutes.js";
+<<<<<<< HEAD
 import mongoose from "mongoose";
+=======
+>>>>>>> d6af449afae658f3056276f162bee9b4028035ad
 import authRoutes from "../routes/authRoutes.js";
 import productRoutes from "../routes/productRoutes.js";
 import orderRoutes from "../routes/orderRoutes.js";
@@ -13,13 +16,17 @@ import queryRoutes from "../routes/queryRoutes.js";
 import quotationRoutes from "../routes/quotationRoutes.js";
 import { fileURLToPath } from "url";
 import { errorHandler } from "../middleware/errorMiddleware.js";
+<<<<<<< HEAD
 import debugStore from "../utils/debugStore.js";
+=======
+>>>>>>> d6af449afae658f3056276f162bee9b4028035ad
 // 1. Load Environment Variables (MUST BE FIRST)
 // 2. Initialize Express
 const app = express();
 app.use(morgan("dev"));
 
 // 3. Global Middleware
+<<<<<<< HEAD
 // CORS: allow local file:// requests (origin 'null') during development and
 // permit configured origins otherwise.
 const allowedOrigins = [
@@ -35,6 +42,15 @@ app.use(
       if (allowedOrigins.includes(origin)) return cb(null, true);
       return cb(new Error("CORS policy: origin not allowed"), false);
     },
+=======
+app.use(
+  cors({
+    origin: [
+      "http://127.0.0.1:5500",
+      "http://localhost:5500",
+      "https://mishra-industries-ltd.vercel.app",
+    ],
+>>>>>>> d6af449afae658f3056276f162bee9b4028035ad
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -45,6 +61,7 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+<<<<<<< HEAD
 // Simple in-memory response cache used as a fallback when DB is down.
 // Caches successful GET responses (status 200) for a short TTL.
 const responseCache = new Map();
@@ -114,6 +131,8 @@ app.use((req, res, next) => {
     .json({ message: "Service degraded - DB unavailable", cached: false });
 });
 
+=======
+>>>>>>> d6af449afae658f3056276f162bee9b4028035ad
 // 4. Robust Static Folder Configuration
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -128,6 +147,7 @@ app.use("/uploads", express.static(uploadDir));
 
 // 6. API Routes Integration
 
+<<<<<<< HEAD
 // Debug routes (development only)
 app.get("/__debug/env", (req, res) => {
   if (process.env.MODE !== "dev" && process.env.NODE_ENV === "production") {
@@ -182,6 +202,8 @@ const ensureDbConnected = async (req, res, next) => {
 // server non-blocking at startup.
 app.use("/api", ensureDbConnected);
 
+=======
+>>>>>>> d6af449afae658f3056276f162bee9b4028035ad
 app.use("/api/admin", adminRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
@@ -194,6 +216,7 @@ app.get("/", (req, res) => {
   res.send("Mishra Industries API is running correctly...");
 });
 
+<<<<<<< HEAD
 // Health check endpoint
 // Reports application status and database connection state.
 app.get("/health", (req, res) => {
@@ -223,6 +246,8 @@ app.get("/health", (req, res) => {
   return res.status(healthy ? 200 : 503).json(payload);
 });
 
+=======
+>>>>>>> d6af449afae658f3056276f162bee9b4028035ad
 // 8. Error Handling Middleware (Custom & Global)
 app.use(errorHandler); // Use the actual error handler function
 // Final catch-all error handling
