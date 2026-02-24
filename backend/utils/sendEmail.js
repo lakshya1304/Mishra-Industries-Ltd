@@ -1,36 +1,20 @@
-const nodemailer = require("nodemailer");
+import nodemailer from "nodemailer";
 
-// Changed to accept an object so it matches your controller calls
-const sendEmail = async ({
-  email,
-  subject,
-  message,
-  type,
-  name,
-  accountType,
-}) => {
+export const sendEmail = async (to, subject, text) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "mishraindustriesltd@gmail.com",
-      pass: process.env.GMAIL_APP_PASSWORD,
+      user: process.env.MAIL,
+      pass: process.env.MAIL_PASS,
     },
   });
 
-  // Dynamic template selection
-  let body = message;
-  if (type === "welcome") {
-    body = `Hello ${name},\n\nWelcome to Mishra Industries Limited! Your ${accountType} account has been successfully created.\n\nBest Regards,\nTeam Mishra Atlas`;
-  }
-
-  const mailOptions = {
-    from: '"Mishra Industries" <mishraindustriesltd@gmail.com>',
-    to: email,
-    subject: subject,
-    text: body,
-  };
-
-  await transporter.sendMail(mailOptions);
+  await transporter.sendMail({
+    from: `Mishra Industries ${process.env.MAIL}`,
+    to,
+    subject,
+    text,
+  });
 };
 
-module.exports = sendEmail;
+export default sendEmail;
