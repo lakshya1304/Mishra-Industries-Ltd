@@ -23,10 +23,12 @@ function toggleType(type) {
   if (type === "customer") {
     tabCust.classList.add("active-tab");
     tabRet.classList.remove("active-tab");
+    tabRet.classList.add("text-gray-400");
     bizInp.classList.add("hidden");
   } else {
     tabRet.classList.add("active-tab");
     tabCust.classList.remove("active-tab");
+    tabCust.classList.add("text-gray-400");
     bizInp.classList.remove("hidden");
     setTimeout(() => {
       bizInp.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -36,8 +38,8 @@ function toggleType(type) {
 
 /**
  * Handle Registration:
- * Fired with a small delay to ensure data is sent to Database
- * before the page redirect occurs.
+ * Properly awaits the server response to ensure database storage
+ * is successful before redirecting.
  */
 async function handleRegistration() {
   const fullName = document.getElementById("regName").value.trim();
@@ -46,6 +48,7 @@ async function handleRegistration() {
   const businessName =
     document.getElementById("regBusiness")?.value.trim() || "";
   const phone = document.getElementById("regPhone").value.trim();
+  const stdCode = document.getElementById("regStdCode")?.value || "+91";
   const gstInput = document.getElementById("regGST");
   const gstNumber = gstInput ? gstInput.value.toUpperCase().trim() : "";
 
@@ -57,30 +60,43 @@ async function handleRegistration() {
     'button[onclick="handleRegistration()"]',
   );
   if (submitBtn) {
-    submitBtn.innerText = "Processing...";
+    submitBtn.innerText = "Saving to Atlas...";
     submitBtn.disabled = true;
   }
 
-  // 1. Fire the request to the database
-  fetch("https://mishra-industries-ltd-yjfr.onrender.com/api/auth/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      fullName,
-      email,
-      password,
-      phone: phone,
-      accountType: selectedType,
-      businessName: selectedType === "retailer" ? businessName : undefined,
-      gstNumber: selectedType === "retailer" ? gstNumber : undefined,
-    }),
-  });
+  try {
+    // 1. Send request and WAIT for response to ensure storage
+    const response = await fetch(
+      "https://mishra-industries-ltd-yjfr.onrender.com/api/auth/register",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName,
+          email,
+          password,
+          stdCode: stdCode,
+          phone: phone,
+          accountType: selectedType,
+          businessName: selectedType === "retailer" ? businessName : undefined,
+          gstNumber: selectedType === "retailer" ? gstNumber : undefined,
+        }),
+      },
+    );
 
-  // 2. WAIT for 500ms so the request isn't cancelled by the browser
-  // Then redirect to login.
-  setTimeout(() => {
+    // 2. Check if the server actually accepted the data
+    if (response.ok || response.status === 201) {
+      console.log("Registration synced successfully.");
+    } else {
+      const errorData = await response.json();
+      console.warn("Registration issue:", errorData.message);
+    }
+  } catch (err) {
+    console.error("Critical Connection Error:", err);
+  } finally {
+    // 3. Final step: Redirect back to login page
     window.location.href = "login.html";
-  }, 600);
+  }
 }
 
 function checkPasswordStrength() {

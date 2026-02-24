@@ -6,9 +6,10 @@ const registerValidation = (data) => {
     email: Joi.string().email().required(),
 
     // FIX: Optimized for 10-digit Indian numbers sent by your frontend
-    phone: Joi.string()
-      .pattern(/^[0-9]{10,15}$/)
-      .required(),
+    
+    stdCode: Joi.string().pattern(/^\+[0-9]{1,4}$/).required(), 
+    
+    phone: Joi.string().pattern(/^[0-9]{7,15}$/).required(),
 
     password: Joi.string()
       .min(8)

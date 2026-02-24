@@ -47,6 +47,13 @@
       .requirement-item.unmet {
         color: #94a3b8;
       }
+      .std-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 0.5rem center;
+        background-size: 1rem;
+      }
     </style>
   </head>
   <body class="min-h-screen flex items-center justify-center p-6">
@@ -56,7 +63,7 @@
       <div class="absolute top-8 left-8 md:top-12 md:left-16">
         <a
           href="index.html"
-          class="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-widest hover:text-orange-500 transition-all whitespace-nowrap group"
+          class="flex items-center gap-2 text-blue-900 font-bold text-xs uppercase tracking-widest hover:text-orange-500 transition-all group"
         >
           <i
             class="fa-solid fa-arrow-left transition-transform group-hover:-translate-x-1"
@@ -155,25 +162,57 @@
           </div>
         </div>
 
-        <div class="floating-label-group relative">
-          <input
-            type="tel"
-            id="regPhone"
-            placeholder=" "
-            maxlength="10"
-            class="floating-input w-full p-5 bg-white border-2 border-gray-100 rounded-2xl outline-none focus:border-blue-900 transition-all font-bold text-sm peer"
-          />
-          <label
-            class="floating-label absolute top-5 left-5 text-gray-400 font-bold transition-all pointer-events-none uppercase tracking-widest text-xs"
-            >Mobile Number</label
-          >
+        <div class="flex gap-2 md:col-span-1">
+          <div class="w-32 shrink-0">
+            <select
+              id="regStdCode"
+              class="std-select w-full p-5 bg-white border-2 border-gray-100 rounded-2xl outline-none focus:border-blue-900 transition-all font-bold text-[11px] text-blue-900 cursor-pointer"
+            >
+              <optgroup label="Popular">
+                <option value="+91" selected>+91 (IN)</option>
+                <option value="+1">+1 (US/CA)</option>
+                <option value="+44">+44 (UK)</option>
+                <option value="+971">+971 (UAE)</option>
+              </optgroup>
+              <optgroup label="Other Regions">
+                <option value="+61">+61 (AU)</option>
+                <option value="+49">+49 (DE)</option>
+                <option value="+33">+33 (FR)</option>
+                <option value="+81">+81 (JP)</option>
+                <option value="+86">+86 (CN)</option>
+                <option value="+65">+65 (SG)</option>
+                <option value="+92">+92 (PK)</option>
+                <option value="+880">+880 (BD)</option>
+                <option value="+94">+94 (LK)</option>
+                <option value="+27">+27 (ZA)</option>
+                <option value="+7">+7 (RU)</option>
+                <option value="+55">+55 (BR)</option>
+                <option value="+39">+39 (IT)</option>
+                <option value="+34">+34 (ES)</option>
+                <option value="+82">+82 (KR)</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="floating-label-group flex-1">
+            <input
+              type="tel"
+              id="regPhone"
+              placeholder=" "
+              maxlength="10"
+              class="floating-input w-full p-5 bg-white border-2 border-gray-100 rounded-2xl outline-none focus:border-blue-900 transition-all font-bold text-sm peer"
+            />
+            <label
+              class="floating-label absolute top-5 left-5 text-gray-400 font-bold transition-all pointer-events-none uppercase tracking-widest text-xs"
+              >Mobile Number</label
+            >
+          </div>
         </div>
 
         <div class="relative">
           <input
             type="password"
             id="regPass"
-            placeholder="Create Secure Password"
+            placeholder="Create Password"
             oninput="checkPasswordStrength()"
             class="w-full p-4 bg-gray-50 border-2 border-transparent rounded-2xl outline-none focus:bg-white focus:border-blue-900 transition-all font-bold text-sm"
           />
@@ -188,27 +227,17 @@
               <span
                 id="req-len"
                 class="requirement-item unmet font-black uppercase tracking-tighter"
-                ><i class="fa-solid fa-circle-check"></i>8+ Digits</span
+                ><i class="fa-solid fa-circle-check"></i> 8+ Digits</span
               >
               <span
                 id="req-up"
                 class="requirement-item unmet font-black uppercase tracking-tighter"
-                ><i class="fa-solid fa-circle-check"></i>Upper Case</span
-              >
-              <span
-                id="req-low"
-                class="requirement-item unmet font-black uppercase tracking-tighter"
-                ><i class="fa-solid fa-circle-check"></i>Lower Case</span
+                ><i class="fa-solid fa-circle-check"></i> Upper Case</span
               >
               <span
                 id="req-num"
                 class="requirement-item unmet font-black uppercase tracking-tighter"
-                ><i class="fa-solid fa-circle-check"></i>1 Number</span
-              >
-              <span
-                id="req-sym"
-                class="requirement-item unmet font-black uppercase tracking-tighter"
-                ><i class="fa-solid fa-circle-check"></i>1 Symbol</span
+                ><i class="fa-solid fa-circle-check"></i> 1 Number</span
               >
             </div>
           </div>
@@ -217,7 +246,7 @@
         <button
           type="button"
           onclick="handleRegistration()"
-          class="md:col-span-2 bg-blue-900 text-white font-black py-5 rounded-2xl hover:bg-orange-500 transition-all shadow-xl shadow-blue-900/10 transform active:scale-95 mt-4 uppercase tracking-widest"
+          class="md:col-span-2 bg-blue-900 text-white font-black py-5 rounded-2xl hover:bg-orange-500 transition-all shadow-xl mt-4 uppercase tracking-widest active:scale-95"
         >
           Register Now
         </button>
