@@ -8,7 +8,12 @@
     "start": "node index.js",
     "dev": "npx nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "itest": "node tests/run_tests.js"
+    "itest": "node tests/run_tests.js",
+    "test:config": "node tests/test_config.js",
+    "test:api": "node tests/test_api_comprehensive.js",
+    "test:curl": "bash tests/test_with_curl.sh",
+    "test:db": "node tests/diagnose_db.js",
+    "test:all": "node tests/test_config.js && node tests/test_api_comprehensive.js"
   },
   "keywords": [],
   "author": "Lakshya Goyal",
